@@ -338,49 +338,7 @@ export default function Home() {
             </div>
           </div>
 
-          {/* Featured Courses */}
-          <div className="mb-6">
-            <h3 className="text-lg font-semibold mb-3">{t('featuredCourses')}</h3>
-            <div className="space-y-3">
-              {courses.slice(0, 3).map((course) => (
-                <Card key={course.id} className="p-4">
-                  <CardContent className="p-0">
-                    <div className="flex items-start space-x-3">
-                      <div className="w-16 h-16 bg-gray-200 rounded-lg flex items-center justify-center">
-                        {courseCategoryIcons[course.category as keyof typeof courseCategoryIcons]}
-                      </div>
-                      <div className="flex-1">
-                        <h4 className="font-medium text-gray-900">{course.title}</h4>
-                        <p className="text-gray-600 text-sm mb-2">{course.instructor}</p>
-                        <div className="flex items-center space-x-2 mb-2">
-                          <div className="flex">
-                            {Array.from({ length: 5 }, (_, i) => (
-                              <Star key={i} className={`h-3 w-3 ${i < Math.floor(Number(course.rating)) ? 'text-yellow-400 fill-current' : 'text-gray-300'}`} />
-                            ))}
-                          </div>
-                          <span className="text-sm text-gray-500">{course.rating} ({course.reviewCount})</span>
-                        </div>
-                        <div className="flex items-center justify-between">
-                          <span className="text-sm font-medium text-secondary">{course.price} EDU</span>
-                          <Button 
-                            size="sm" 
-                            onClick={() => enrollMutation.mutate({
-                              courseId: course.id,
-                              coursePrice: course.price,
-                              courseTitle: course.title
-                            })}
-                            disabled={enrollMutation.isPending}
-                          >
-                            {t('enroll')}
-                          </Button>
-                        </div>
-                      </div>
-                    </div>
-                  </CardContent>
-                </Card>
-              ))}
-            </div>
-          </div>
+
 
           {/* My Courses */}
           <div>
