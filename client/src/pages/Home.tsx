@@ -201,15 +201,27 @@ export default function Home() {
     }
   };
 
-  const categoryIcons = {
-    // Course categories
+  // Course categories only
+  const courseCategoryIcons = {
     'languages': <Globe className="h-6 w-6" />,
     'mind-thinking': <Brain className="h-6 w-6" />,
     'finance-economics': <TrendingUp className="h-6 w-6" />,
     'career-skills': <Briefcase className="h-6 w-6" />,
     'future-thinking': <Lightbulb className="h-6 w-6" />,
     'health-body': <Heart className="h-6 w-6" />,
-    // Book categories
+  };
+
+  const courseCategoryColors = {
+    'languages': "bg-blue-50 border-blue-200 text-blue-900",
+    'mind-thinking': "bg-purple-50 border-purple-200 text-purple-900",
+    'finance-economics': "bg-green-50 border-green-200 text-green-900",
+    'career-skills': "bg-orange-50 border-orange-200 text-orange-900",
+    'future-thinking': "bg-yellow-50 border-yellow-200 text-yellow-900",
+    'health-body': "bg-pink-50 border-pink-200 text-pink-900",
+  };
+
+  // Book categories only
+  const bookCategoryIcons = {
     'psychology-thinking-development': <Brain className="h-6 w-6" />,
     'financial-literacy-economics': <TrendingUp className="h-6 w-6" />,
     'marketing': <Megaphone className="h-6 w-6" />,
@@ -221,15 +233,7 @@ export default function Home() {
     'popular-personalities': <Star className="h-6 w-6" />,
   };
 
-  const categoryColors = {
-    // Course categories
-    'languages': "bg-blue-50 border-blue-200 text-blue-900",
-    'mind-thinking': "bg-purple-50 border-purple-200 text-purple-900",
-    'finance-economics': "bg-green-50 border-green-200 text-green-900",
-    'career-skills': "bg-orange-50 border-orange-200 text-orange-900",
-    'future-thinking': "bg-yellow-50 border-yellow-200 text-yellow-900",
-    'health-body': "bg-pink-50 border-pink-200 text-pink-900",
-    // Book categories
+  const bookCategoryColors = {
     'psychology-thinking-development': "bg-purple-50 border-purple-200 text-purple-900",
     'financial-literacy-economics': "bg-green-50 border-green-200 text-green-900",
     'marketing': "bg-red-50 border-red-200 text-red-900",
@@ -318,8 +322,8 @@ export default function Home() {
           <div className="mb-6">
             <h3 className="text-lg font-semibold mb-3">{t('browseCategories')}</h3>
             <div className="grid grid-cols-2 gap-3">
-              {Object.entries(categoryIcons).map(([category, icon]) => (
-                <Card key={category} className={`p-4 cursor-pointer transition-colors ${categoryColors[category as keyof typeof categoryColors]}`}>
+              {Object.entries(courseCategoryIcons).map(([category, icon]) => (
+                <Card key={category} className={`p-4 cursor-pointer transition-colors ${courseCategoryColors[category as keyof typeof courseCategoryColors]}`}>
                   <CardContent className="p-0">
                     <div className="text-center">
                       {icon}
@@ -343,7 +347,7 @@ export default function Home() {
                   <CardContent className="p-0">
                     <div className="flex items-start space-x-3">
                       <div className="w-16 h-16 bg-gray-200 rounded-lg flex items-center justify-center">
-                        {categoryIcons[course.category as keyof typeof categoryIcons]}
+                        {courseCategoryIcons[course.category as keyof typeof courseCategoryIcons]}
                       </div>
                       <div className="flex-1">
                         <h4 className="font-medium text-gray-900">{course.title}</h4>
@@ -388,7 +392,7 @@ export default function Home() {
                     <CardContent className="p-0">
                       <div className="flex items-center space-x-3">
                         <div className="w-12 h-12 bg-gray-200 rounded-lg flex items-center justify-center">
-                          {categoryIcons[enrollment.course.category as keyof typeof categoryIcons]}
+                          {courseCategoryIcons[enrollment.course.category as keyof typeof courseCategoryIcons]}
                         </div>
                         <div className="flex-1">
                           <h4 className="font-medium text-gray-900">{enrollment.course.title}</h4>
@@ -430,7 +434,7 @@ export default function Home() {
           <div className="mb-6">
             <h3 className="text-lg font-semibold mb-3">{t('categories')}</h3>
             <div className="flex space-x-2 overflow-x-auto pb-2">
-              {['all', 'business', 'psychology', 'technology', 'finance'].map((category) => (
+              {['all', 'psychology-thinking-development', 'financial-literacy-economics', 'marketing', 'health-fitness-nutrition', 'communication-soft-skills', 'entrepreneurship-career', 'technology-future', 'relationships', 'popular-personalities'].map((category) => (
                 <Button
                   key={category}
                   variant={selectedCategory === category ? "default" : "outline"}
@@ -438,7 +442,7 @@ export default function Home() {
                   onClick={() => setSelectedCategory(category)}
                   className="whitespace-nowrap"
                 >
-                  {t(category as any)}
+                  {category === 'all' ? t('all') : t(category as any)}
                 </Button>
               ))}
             </div>

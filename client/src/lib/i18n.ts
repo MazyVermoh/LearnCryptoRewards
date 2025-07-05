@@ -17,22 +17,22 @@ export const translations = {
     
     // Course Categories
     languages: "Languages",
-    mindThinking: "Mind & Thinking",
-    financeEconomics: "Finance & Economics",
-    careerSkills: "Career Skills",
-    futureThinking: "Future Thinking",
-    healthBody: "Health & Body",
+    "mind-thinking": "Mind & Thinking",
+    "finance-economics": "Finance & Economics",
+    "career-skills": "Career Skills",
+    "future-thinking": "Future Thinking",
+    "health-body": "Health & Body",
     
     // Book Categories
-    psychologyThinkingDevelopment: "Psychology, Thinking, Self-Development",
-    financialLiteracyEconomics: "Financial Literacy and Economics",
+    "psychology-thinking-development": "Psychology, Thinking, Self-Development",
+    "financial-literacy-economics": "Financial Literacy and Economics",
     marketing: "Marketing",
-    healthFitnessNutrition: "Health, Fitness, Nutrition",
-    communicationSoftSkills: "Communication and Soft Skills",
-    entrepreneurshipCareer: "Entrepreneurship and Career",
-    technologyFuture: "Technology and the Future",
+    "health-fitness-nutrition": "Health, Fitness, Nutrition",
+    "communication-soft-skills": "Communication and Soft Skills",
+    "entrepreneurship-career": "Entrepreneurship and Career",
+    "technology-future": "Technology and the Future",
     relationships: "Relationships",
-    popularPersonalities: "Popular Personalities",
+    "popular-personalities": "Popular Personalities",
     
     // Category Descriptions - Courses
     languagesDesc: "Learn new languages and improve communication skills",
@@ -130,22 +130,22 @@ export const translations = {
     
     // Course Categories
     languages: "Языки",
-    mindThinking: "Разум и мышление",
-    financeEconomics: "Финансы и экономика",
-    careerSkills: "Карьерные навыки",
-    futureThinking: "Мышление будущего",
-    healthBody: "Здоровье и тело",
+    "mind-thinking": "Разум и мышление",
+    "finance-economics": "Финансы и экономика",
+    "career-skills": "Карьерные навыки",
+    "future-thinking": "Мышление будущего",
+    "health-body": "Здоровье и тело",
     
     // Book Categories
-    psychologyThinkingDevelopment: "Психология, мышление, саморазвитие",
-    financialLiteracyEconomics: "Финансовая грамотность и экономика",
+    "psychology-thinking-development": "Психология, мышление, саморазвитие",
+    "financial-literacy-economics": "Финансовая грамотность и экономика",
     marketing: "Маркетинг",
-    healthFitnessNutrition: "Здоровье, фитнес, питание",
-    communicationSoftSkills: "Коммуникация и мягкие навыки",
-    entrepreneurshipCareer: "Предпринимательство и карьера",
-    technologyFuture: "Технологии и будущее",
+    "health-fitness-nutrition": "Здоровье, фитнес, питание",
+    "communication-soft-skills": "Коммуникация и мягкие навыки",
+    "entrepreneurship-career": "Предпринимательство и карьера",
+    "technology-future": "Технологии и будущее",
     relationships: "Отношения",
-    popularPersonalities: "Популярные личности",
+    "popular-personalities": "Популярные личности",
     
     // Category Descriptions - Courses
     languagesDesc: "Изучение новых языков и развитие коммуникативных навыков",
