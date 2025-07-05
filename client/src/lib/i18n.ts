@@ -26,7 +26,7 @@ export const translations = {
     featuredCourses: "Featured Courses",
     myCourses: "My Courses",
     enroll: "Enroll",
-    progress: "Progress",
+    courseProgress: "Progress",
     
     // Library
     searchBooks: "Search books and materials...",
@@ -107,7 +107,7 @@ export const translations = {
     featuredCourses: "Рекомендуемые курсы",
     myCourses: "Мои курсы",
     enroll: "Записаться",
-    progress: "Прогресс",
+    courseProgress: "Прогресс",
     
     // Library
     searchBooks: "Поиск книг и материалов...",

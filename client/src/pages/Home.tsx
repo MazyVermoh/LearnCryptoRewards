@@ -361,7 +361,7 @@ export default function Home() {
                         </div>
                         <div className="flex-1">
                           <h4 className="font-medium text-gray-900">{enrollment.course.title}</h4>
-                          <p className="text-gray-600 text-sm">{t('progress')}: {enrollment.progress}%</p>
+                          <p className="text-gray-600 text-sm">{t('courseProgress')}: {enrollment.progress}%</p>
                           <Progress value={enrollment.progress} className="mt-2" />
                         </div>
                       </div>
