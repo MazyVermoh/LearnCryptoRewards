@@ -1,0 +1,67 @@
+You are a senior-level developer working on a Telegram bot and web application. Please add the following book categories and books to the project. Structure them clearly in a database or JSON, grouping by category:
+
+Categories and books:
+
+Psychology, Thinking, Self-Development
+	•	Atomic Habits by James Clear
+	•	Thinking, Fast and Slow by Daniel Kahneman
+	•	The 7 Habits of Highly Effective People by Stephen Covey
+	•	The Power of Habit by Charles Duhigg
+	•	How to Win Friends and Influence People by Dale Carnegie
+
+Financial Literacy and Economics
+	•	Rich Dad Poor Dad by Robert Kiyosaki
+	•	The Intelligent Investor by Benjamin Graham
+	•	Your Road to Financial Freedom by Bodo Schäfer
+	•	Think and Grow Rich by Napoleon Hill
+	•	The Richest Man in Babylon by George Clason
+
+Marketing
+	•	Purple Cow by Seth Godin
+	•	Marketing from A to Z by Philip Kotler
+	•	Positioning: The Battle for Your Mind by Al Ries and Jack Trout
+	•	The 22 Immutable Laws of Marketing by Al Ries and Jack Trout
+	•	Made to Stick by Chip Heath and Dan Heath
+
+Health, Fitness, Nutrition
+	•	Why We Sleep by Matthew Walker
+	•	Eat to Live by Joel Fuhrman
+	•	Bigger Leaner Stronger by Michael Matthews
+	•	Fitness Mindset by Brian Keane
+	•	The Body Book by Cameron Diaz
+
+Communication and Soft Skills
+	•	Never Split the Difference by Chris Voss
+	•	Influence by Robert Cialdini
+	•	Talk Like TED by Carmine Gallo
+	•	Radical Candor by Kim Scott
+	•	Quiet by Susan Cain
+
+Entrepreneurship and Career
+	•	The Lean Startup by Eric Ries
+	•	Start with Why by Simon Sinek
+	•	Zero to One by Peter Thiel
+	•	Good to Great by Jim Collins
+	•	The Startup Owner’s Manual by Steve Blank
+
+Technology and the Future
+	•	Homo Deus by Yuval Noah Harari
+	•	Life 3.0 by Max Tegmark
+	•	Blockchain Revolution by Don Tapscott
+	•	Superintelligence by Nick Bostrom
+
+Popular Personalities
+	•	The Mamba Mentality by Kobe Bryant
+	•	Moment of Truth by Cristiano Ronaldo
+	•	I Am Zlatan by Zlatan Ibrahimović
+	•	“I can accept failure, but not trying” by Michael Jordan
+	•	Soul of a Butterfly by Muhammad Ali
+
+Relationships
+	•	The 5 Love Languages by Gary Chapman
+	•	Men Are from Mars, Women Are from Venus by John Gray
+	•	Mating in Captivity by Esther Perel
+	•	Why We Love by Helen Fisher
+	•	Games People Play by Eric Berne
+
+Please structure these clearly for easy database import, and suggest a JSON or SQL schema for implementation.
