@@ -35,7 +35,12 @@ import {
   Users,
   BookMarked,
   Target,
-  Coins
+  Coins,
+  Globe,
+  Lightbulb,
+  Heart,
+  Megaphone,
+  MessageCircle
 } from 'lucide-react';
 
 // Mock user data - in real app this would come from auth
@@ -197,17 +202,43 @@ export default function Home() {
   };
 
   const categoryIcons = {
-    business: <Briefcase className="h-6 w-6" />,
-    fitness: <Dumbbell className="h-6 w-6" />,
-    crypto: <Bitcoin className="h-6 w-6" />,
-    'self-development': <Brain className="h-6 w-6" />,
+    // Course categories
+    'languages': <Globe className="h-6 w-6" />,
+    'mind-thinking': <Brain className="h-6 w-6" />,
+    'finance-economics': <TrendingUp className="h-6 w-6" />,
+    'career-skills': <Briefcase className="h-6 w-6" />,
+    'future-thinking': <Lightbulb className="h-6 w-6" />,
+    'health-body': <Heart className="h-6 w-6" />,
+    // Book categories
+    'psychology-thinking-development': <Brain className="h-6 w-6" />,
+    'financial-literacy-economics': <TrendingUp className="h-6 w-6" />,
+    'marketing': <Megaphone className="h-6 w-6" />,
+    'health-fitness-nutrition': <Heart className="h-6 w-6" />,
+    'communication-soft-skills': <MessageCircle className="h-6 w-6" />,
+    'entrepreneurship-career': <Briefcase className="h-6 w-6" />,
+    'technology-future': <Lightbulb className="h-6 w-6" />,
+    'relationships': <Users className="h-6 w-6" />,
+    'popular-personalities': <Star className="h-6 w-6" />,
   };
 
   const categoryColors = {
-    business: "bg-blue-50 border-blue-200 text-blue-900",
-    fitness: "bg-green-50 border-green-200 text-green-900",
-    crypto: "bg-yellow-50 border-yellow-200 text-yellow-900",
-    'self-development': "bg-purple-50 border-purple-200 text-purple-900",
+    // Course categories
+    'languages': "bg-blue-50 border-blue-200 text-blue-900",
+    'mind-thinking': "bg-purple-50 border-purple-200 text-purple-900",
+    'finance-economics': "bg-green-50 border-green-200 text-green-900",
+    'career-skills': "bg-orange-50 border-orange-200 text-orange-900",
+    'future-thinking': "bg-yellow-50 border-yellow-200 text-yellow-900",
+    'health-body': "bg-pink-50 border-pink-200 text-pink-900",
+    // Book categories
+    'psychology-thinking-development': "bg-purple-50 border-purple-200 text-purple-900",
+    'financial-literacy-economics': "bg-green-50 border-green-200 text-green-900",
+    'marketing': "bg-red-50 border-red-200 text-red-900",
+    'health-fitness-nutrition': "bg-pink-50 border-pink-200 text-pink-900",
+    'communication-soft-skills': "bg-cyan-50 border-cyan-200 text-cyan-900",
+    'entrepreneurship-career': "bg-orange-50 border-orange-200 text-orange-900",
+    'technology-future': "bg-yellow-50 border-yellow-200 text-yellow-900",
+    'relationships': "bg-rose-50 border-rose-200 text-rose-900",
+    'popular-personalities': "bg-indigo-50 border-indigo-200 text-indigo-900",
   };
 
   return (
