@@ -60,7 +60,32 @@ export const translations = {
     allCourses: "All Courses",
     showAll: "Show All",
     enroll: "Enroll",
-    courseProgress: "Progress",
+    
+    // Progress View
+    learningProgress: "Learning Progress",
+    coursesCompleted: "Courses Completed",
+    totalCourses: "Total Courses",
+    booksRead: "Books Read",
+    courseProgress: "Course Progress",
+    completed: "Completed",
+    inProgress: "In Progress",
+    noCoursesEnrolled: "No courses enrolled yet",
+    
+    // Wallet View
+    totalBalance: "Total Balance",
+    earnRewards: "Earn Rewards",
+    referFriends: "Refer Friends",
+    recentTransactions: "Recent Transactions",
+    noTransactions: "No transactions yet",
+    
+    // Profile View
+    settings: "Settings",
+    language: "Language",
+    notifications: "Notifications",
+    manage: "Manage",
+    account: "Account",
+    shareApp: "Share App",
+    help: "Help & Support",
     
     // Library
     searchBooks: "Search books and materials...",
@@ -82,14 +107,12 @@ export const translations = {
     earnTokens: "Earn 50 EDU when completed",
     sponsorChannelRewards: "Sponsor Channel Rewards",
     subscribe: "Subscribe",
-    completed: "Completed",
     referralProgram: "Referral Program",
     friendsReferred: "Friends Referred",
     yourReferralCode: "Your Referral Code:",
     copy: "Copy",
     earnForFriend: "Earn 200 EDU for each friend who joins!",
     shareReferralLink: "Share Referral Link",
-    recentTransactions: "Recent Transactions",
     
     // Admin
     adminDashboard: "Admin Dashboard",

@@ -51,6 +51,7 @@ export default function Home() {
   const { toast } = useToast();
   const queryClient = useQueryClient();
   const [activeTab, setActiveTab] = useState('courses');
+  const [activeView, setActiveView] = useState('home');
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('all');
 
@@ -272,9 +273,12 @@ export default function Home() {
         </div>
       </header>
 
-      {/* User Profile */}
-      <div className="bg-gradient-to-r from-primary to-blue-600 text-white p-4">
-        <div className="flex items-center space-x-4">
+      {/* Home View */}
+      {activeView === 'home' && (
+        <>
+          {/* User Profile */}
+          <div className="bg-gradient-to-r from-primary to-blue-600 text-white p-4">
+            <div className="flex items-center space-x-4">
           <div className="w-16 h-16 bg-white rounded-full flex items-center justify-center">
             <User className="h-8 w-8 text-primary" />
           </div>
@@ -806,23 +810,267 @@ export default function Home() {
           </div>
         </TabsContent>
       </Tabs>
+        </>
+      )}
+
+      {/* Progress View */}
+      {activeView === 'progress' && (
+        <div className="p-4 pb-20">
+          <h2 className="text-2xl font-bold mb-6">{t('progress')}</h2>
+          
+          {/* Learning Progress */}
+          <div className="mb-6">
+            <h3 className="text-lg font-semibold mb-3">{t('learningProgress')}</h3>
+            <Card className="p-4 mb-4">
+              <CardContent className="p-0">
+                <div className="flex items-center justify-between mb-3">
+                  <span className="font-medium">{t('coursesCompleted')}</span>
+                  <span className="text-2xl font-bold text-primary">
+                    {enrollments?.filter((e: any) => e.progress === 100).length || 0}
+                  </span>
+                </div>
+                <div className="flex items-center justify-between mb-3">
+                  <span className="font-medium">{t('totalCourses')}</span>
+                  <span className="text-2xl font-bold text-secondary">
+                    {enrollments?.length || 0}
+                  </span>
+                </div>
+                <div className="flex items-center justify-between">
+                  <span className="font-medium">{t('booksRead')}</span>
+                  <span className="text-2xl font-bold text-accent">
+                    {userBooks?.length || 0}
+                  </span>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+
+          {/* Course Progress */}
+          <div className="mb-6">
+            <h3 className="text-lg font-semibold mb-3">{t('courseProgress')}</h3>
+            {enrollments?.length > 0 ? (
+              <div className="space-y-3">
+                {enrollments.map((enrollment: any) => (
+                  <Card key={enrollment.id} className="p-4">
+                    <CardContent className="p-0">
+                      <div className="flex items-center justify-between mb-2">
+                        <h4 className="font-medium">{enrollment.course.title}</h4>
+                        <span className="text-sm text-gray-600">{enrollment.progress}%</span>
+                      </div>
+                      <Progress value={enrollment.progress} className="mb-2" />
+                      <p className="text-sm text-gray-500">
+                        {enrollment.progress === 100 ? t('completed') : t('inProgress')}
+                      </p>
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
+            ) : (
+              <Card className="p-6 text-center">
+                <CardContent className="p-0">
+                  <BookOpen className="h-12 w-12 mx-auto mb-3 text-gray-400" />
+                  <p className="text-gray-500">{t('noCoursesEnrolled')}</p>
+                </CardContent>
+              </Card>
+            )}
+          </div>
+        </div>
+      )}
+
+      {/* Wallet View */}
+      {activeView === 'wallet' && (
+        <div className="p-4 pb-20">
+          <h2 className="text-2xl font-bold mb-6">{t('wallet')}</h2>
+          
+          {/* Balance Card */}
+          <Card className="bg-gradient-to-r from-primary to-blue-600 text-white p-6 mb-6">
+            <CardContent className="p-0">
+              <div className="text-center">
+                <div className="text-4xl font-bold mb-2">
+                  {user?.tokenBalance || "0"} EDU
+                </div>
+                <p className="text-blue-100">{t('totalBalance')}</p>
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Quick Actions */}
+          <div className="mb-6">
+            <h3 className="text-lg font-semibold mb-3">{t('quickActions')}</h3>
+            <div className="grid grid-cols-2 gap-3">
+              <Button className="bg-secondary text-white p-4 h-auto flex flex-col">
+                <Gift className="h-6 w-6 mb-2" />
+                {t('earnRewards')}
+              </Button>
+              <Button className="bg-accent text-white p-4 h-auto flex flex-col">
+                <Share className="h-6 w-6 mb-2" />
+                {t('referFriends')}
+              </Button>
+            </div>
+          </div>
+
+          {/* Recent Transactions */}
+          <div>
+            <h3 className="text-lg font-semibold mb-3">{t('recentTransactions')}</h3>
+            {transactions?.length > 0 ? (
+              <div className="space-y-3">
+                {transactions.slice(0, 10).map((transaction: any) => (
+                  <Card key={transaction.id} className="p-4">
+                    <CardContent className="p-0">
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center space-x-3">
+                          <div className="w-10 h-10 bg-primary/20 rounded-full flex items-center justify-center">
+                            <Coins className="h-5 w-5 text-primary" />
+                          </div>
+                          <div>
+                            <p className="font-medium">{transaction.type}</p>
+                            <p className="text-sm text-gray-500">{transaction.description}</p>
+                          </div>
+                        </div>
+                        <div className="text-right">
+                          <p className="font-bold text-green-600">+{transaction.amount} EDU</p>
+                          <p className="text-xs text-gray-500">
+                            {new Date(transaction.createdAt).toLocaleDateString()}
+                          </p>
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
+            ) : (
+              <Card className="p-6 text-center">
+                <CardContent className="p-0">
+                  <Wallet className="h-12 w-12 mx-auto mb-3 text-gray-400" />
+                  <p className="text-gray-500">{t('noTransactions')}</p>
+                </CardContent>
+              </Card>
+            )}
+          </div>
+        </div>
+      )}
+
+      {/* Profile View */}
+      {activeView === 'profile' && (
+        <div className="p-4 pb-20">
+          <h2 className="text-2xl font-bold mb-6">{t('profile')}</h2>
+          
+          {/* Profile Info */}
+          <Card className="p-6 mb-6">
+            <CardContent className="p-0">
+              <div className="flex items-center space-x-4 mb-4">
+                <div className="w-20 h-20 bg-primary/20 rounded-full flex items-center justify-center">
+                  <User className="h-10 w-10 text-primary" />
+                </div>
+                <div>
+                  <h3 className="text-xl font-bold">
+                    {user?.firstName || "User"} {user?.lastName || ""}
+                  </h3>
+                  <p className="text-gray-600">{user?.email}</p>
+                  <Badge variant="secondary">{t('level')} {user?.level || 1}</Badge>
+                </div>
+              </div>
+              
+              <div className="grid grid-cols-3 gap-4 text-center">
+                <div>
+                  <div className="text-2xl font-bold text-primary">{enrollments?.length || 0}</div>
+                  <p className="text-sm text-gray-600">{t('courses')}</p>
+                </div>
+                <div>
+                  <div className="text-2xl font-bold text-secondary">{userBooks?.length || 0}</div>
+                  <p className="text-sm text-gray-600">{t('books')}</p>
+                </div>
+                <div>
+                  <div className="text-2xl font-bold text-accent">{user?.tokenBalance || "0"}</div>
+                  <p className="text-sm text-gray-600">EDU</p>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Settings */}
+          <div className="mb-6">
+            <h3 className="text-lg font-semibold mb-3">{t('settings')}</h3>
+            <div className="space-y-3">
+              <Card className="p-4">
+                <CardContent className="p-0">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center space-x-3">
+                      <Globe className="h-5 w-5 text-gray-600" />
+                      <span>{t('language')}</span>
+                    </div>
+                    <Select value={language} onValueChange={changeLanguage}>
+                      <SelectTrigger className="w-32">
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="en">English</SelectItem>
+                        <SelectItem value="ru">Русский</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                </CardContent>
+              </Card>
+              
+              <Card className="p-4">
+                <CardContent className="p-0">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center space-x-3">
+                      <Bell className="h-5 w-5 text-gray-600" />
+                      <span>{t('notifications')}</span>
+                    </div>
+                    <Button variant="outline" size="sm">{t('manage')}</Button>
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
+          </div>
+
+          {/* Account Actions */}
+          <div>
+            <h3 className="text-lg font-semibold mb-3">{t('account')}</h3>
+            <div className="space-y-3">
+              <Button variant="outline" className="w-full justify-start">
+                <Share className="h-4 w-4 mr-2" />
+                {t('shareApp')}
+              </Button>
+              <Button variant="outline" className="w-full justify-start">
+                <Target className="h-4 w-4 mr-2" />
+                {t('help')}
+              </Button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Bottom Navigation */}
       <nav className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 max-w-sm mx-auto">
         <div className="flex">
-          <button className="flex-1 py-3 px-4 text-center text-primary">
+          <button 
+            onClick={() => setActiveView('home')}
+            className={`flex-1 py-3 px-4 text-center ${activeView === 'home' ? 'text-primary' : 'text-neutral-500'}`}
+          >
             <HomeIcon className="h-5 w-5 mx-auto mb-1" />
             <span className="text-xs">{t('home')}</span>
           </button>
-          <button className="flex-1 py-3 px-4 text-center text-neutral-500">
+          <button 
+            onClick={() => setActiveView('progress')}
+            className={`flex-1 py-3 px-4 text-center ${activeView === 'progress' ? 'text-primary' : 'text-neutral-500'}`}
+          >
             <TrendingUp className="h-5 w-5 mx-auto mb-1" />
             <span className="text-xs">{t('progress')}</span>
           </button>
-          <button className="flex-1 py-3 px-4 text-center text-neutral-500">
+          <button 
+            onClick={() => setActiveView('wallet')}
+            className={`flex-1 py-3 px-4 text-center ${activeView === 'wallet' ? 'text-primary' : 'text-neutral-500'}`}
+          >
             <Wallet className="h-5 w-5 mx-auto mb-1" />
             <span className="text-xs">{t('wallet')}</span>
           </button>
-          <button className="flex-1 py-3 px-4 text-center text-neutral-500">
+          <button 
+            onClick={() => setActiveView('profile')}
+            className={`flex-1 py-3 px-4 text-center ${activeView === 'profile' ? 'text-primary' : 'text-neutral-500'}`}
+          >
             <User className="h-5 w-5 mx-auto mb-1" />
             <span className="text-xs">{t('profile')}</span>
           </button>
