@@ -406,38 +406,7 @@ export default function Home() {
             </div>
           </div>
 
-          {/* Featured Books */}
-          <div className="mb-6">
-            <h3 className="text-lg font-semibold mb-3">{t('featuredBooks')}</h3>
-            <div className="grid grid-cols-2 gap-4">
-              {books.slice(0, 4).map((book) => (
-                <Card key={book.id} className="p-3">
-                  <CardContent className="p-0">
-                    <div className="w-full h-32 bg-gray-200 rounded-lg mb-3 flex items-center justify-center">
-                      <BookOpen className="h-8 w-8 text-gray-400" />
-                    </div>
-                    <h4 className="font-medium text-gray-900 text-sm mb-1">{book.title}</h4>
-                    <p className="text-gray-600 text-xs mb-2">{book.author}</p>
-                    <div className="flex items-center justify-between">
-                      <span className="text-xs text-secondary font-medium">{book.price} EDU</span>
-                      <Button 
-                        size="sm" 
-                        className="text-xs px-2 py-1"
-                        onClick={() => purchaseMutation.mutate({
-                          bookId: book.id,
-                          bookPrice: book.price,
-                          bookTitle: book.title
-                        })}
-                        disabled={purchaseMutation.isPending}
-                      >
-                        {t('buy')}
-                      </Button>
-                    </div>
-                  </CardContent>
-                </Card>
-              ))}
-            </div>
-          </div>
+
 
           {/* My Library */}
           <div>
