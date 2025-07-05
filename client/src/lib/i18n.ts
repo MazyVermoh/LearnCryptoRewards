@@ -64,10 +64,14 @@ export const translations = {
     searchBooks: "Search books and materials...",
     categories: "Categories",
     featuredBooks: "Featured Books",
+    availableBooks: "Available Books",
     myLibrary: "My Library",
+    pages: "pages",
     buy: "Buy",
+    getBook: "Get Book",
     read: "Read",
     download: "Download",
+    noBooksFound: "No books found",
     
     // Rewards
     dailyRewards: "Daily Rewards",
@@ -177,10 +181,14 @@ export const translations = {
     searchBooks: "Поиск книг и материалов...",
     categories: "Категории",
     featuredBooks: "Рекомендуемые книги",
+    availableBooks: "Доступные книги",
     myLibrary: "Моя библиотека",
+    pages: "страниц",
     buy: "Купить",
+    getBook: "Получить книгу",
     read: "Читать",
     download: "Скачать",
+    noBooksFound: "Книги не найдены",
     
     // Rewards
     dailyRewards: "Ежедневные награды",

@@ -406,7 +406,60 @@ export default function Home() {
             </div>
           </div>
 
-
+          {/* Available Books */}
+          <div className="mb-6">
+            <h3 className="text-lg font-semibold mb-3">{t('availableBooks')}</h3>
+            <div className="grid grid-cols-1 gap-4">
+              {books.filter(book => {
+                const matchesCategory = selectedCategory === 'all' || book.category === selectedCategory;
+                const matchesSearch = book.title.toLowerCase().includes(searchQuery.toLowerCase()) || 
+                                    book.author.toLowerCase().includes(searchQuery.toLowerCase());
+                return matchesCategory && matchesSearch;
+              }).map((book) => (
+                <Card key={book.id} className="p-4">
+                  <CardContent className="p-0">
+                    <div className="flex items-start space-x-3">
+                      <div className="w-16 h-20 bg-gray-200 rounded-lg flex items-center justify-center">
+                        <BookOpen className="h-8 w-8 text-gray-400" />
+                      </div>
+                      <div className="flex-1">
+                        <h4 className="font-medium text-gray-900">{book.title}</h4>
+                        <p className="text-gray-600 text-sm mb-1">{book.author}</p>
+                        <p className="text-gray-500 text-xs mb-2">{book.description}</p>
+                        <div className="flex items-center justify-between">
+                          <span className="text-sm text-gray-500">{book.pageCount} {t('pages')}</span>
+                          <Button 
+                            size="sm"
+                            onClick={() => purchaseMutation.mutate({
+                              bookId: book.id,
+                              bookPrice: book.price,
+                              bookTitle: book.title
+                            })}
+                            disabled={purchaseMutation.isPending}
+                          >
+                            {t('getBook')}
+                          </Button>
+                        </div>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+            {books.filter(book => {
+              const matchesCategory = selectedCategory === 'all' || book.category === selectedCategory;
+              const matchesSearch = book.title.toLowerCase().includes(searchQuery.toLowerCase()) || 
+                                  book.author.toLowerCase().includes(searchQuery.toLowerCase());
+              return matchesCategory && matchesSearch;
+            }).length === 0 && (
+              <Card className="p-4">
+                <CardContent className="p-0 text-center text-gray-500">
+                  <BookOpen className="h-12 w-12 mx-auto mb-2 opacity-50" />
+                  <p>{t('noBooksFound')}</p>
+                </CardContent>
+              </Card>
+            )}
+          </div>
 
           {/* My Library */}
           <div>
