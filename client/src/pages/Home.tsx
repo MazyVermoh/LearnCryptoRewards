@@ -321,7 +321,11 @@ export default function Home() {
             <h3 className="text-lg font-semibold mb-3">{t('browseCategories')}</h3>
             <div className="grid grid-cols-2 gap-3">
               {Object.entries(courseCategoryIcons).map(([category, icon]) => (
-                <Card key={category} className={`p-4 cursor-pointer transition-colors ${courseCategoryColors[category as keyof typeof courseCategoryColors]}`}>
+                <Card 
+                  key={category} 
+                  onClick={() => setSelectedCategory(category)}
+                  className={`p-4 cursor-pointer transition-colors ${courseCategoryColors[category as keyof typeof courseCategoryColors]} ${selectedCategory === category ? 'ring-2 ring-primary' : ''}`}
+                >
                   <CardContent className="p-0">
                     <div className="text-center">
                       {icon}
@@ -336,7 +340,66 @@ export default function Home() {
             </div>
           </div>
 
-
+          {/* All Courses by Category */}
+          <div className="mb-6">
+            <div className="flex items-center justify-between mb-3">
+              <h3 className="text-lg font-semibold">
+                {selectedCategory === 'all' ? t('allCourses') : t(selectedCategory as any)}
+              </h3>
+              {selectedCategory !== 'all' && (
+                <Button 
+                  variant="outline" 
+                  size="sm"
+                  onClick={() => setSelectedCategory('all')}
+                >
+                  {t('showAll')}
+                </Button>
+              )}
+            </div>
+            
+            <div className="grid grid-cols-1 gap-3">
+              {courses
+                .filter(course => selectedCategory === 'all' || course.category === selectedCategory)
+                .map((course) => (
+                  <Card key={course.id} className="p-4 cursor-pointer hover:shadow-md transition-shadow">
+                    <CardContent className="p-0">
+                      <div className="flex items-center space-x-3">
+                        <div className="w-16 h-16 bg-gradient-to-br from-blue-500 to-purple-600 rounded-lg flex items-center justify-center">
+                          {courseCategoryIcons[course.category as keyof typeof courseCategoryIcons]}
+                        </div>
+                        <div className="flex-1">
+                          <h4 className="font-semibold text-gray-900">{course.title}</h4>
+                          <p className="text-sm text-gray-600 mt-1">{course.description}</p>
+                          <div className="flex items-center mt-2 space-x-4">
+                            <span className="text-sm text-gray-500">👨‍🏫 {course.instructor}</span>
+                            <span className="text-sm text-gray-500">⏱️ {course.duration} min</span>
+                            <div className="flex items-center space-x-1">
+                              <Star className="h-4 w-4 text-yellow-400 fill-current" />
+                              <span className="text-sm text-gray-600">{course.rating}</span>
+                            </div>
+                          </div>
+                          <div className="mt-3">
+                            <Button 
+                              size="sm" 
+                              className="w-full"
+                              onClick={() => {
+                                // Handle course enrollment
+                                toast({
+                                  title: "Course enrolled!",
+                                  description: `You've enrolled in ${course.title}`,
+                                });
+                              }}
+                            >
+                              {t('enroll')}
+                            </Button>
+                          </div>
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
+                ))}
+            </div>
+          </div>
 
           {/* My Courses */}
           <div>

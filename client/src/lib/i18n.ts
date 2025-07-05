@@ -57,6 +57,8 @@ export const translations = {
     browseCategories: "Browse Categories",
     featuredCourses: "Featured Courses",
     myCourses: "My Courses",
+    allCourses: "All Courses",
+    showAll: "Show All",
     enroll: "Enroll",
     courseProgress: "Progress",
     
@@ -174,6 +176,8 @@ export const translations = {
     browseCategories: "Категории",
     featuredCourses: "Рекомендуемые курсы",
     myCourses: "Мои курсы",
+    allCourses: "Все курсы",
+    showAll: "Показать все",
     enroll: "Записаться",
     courseProgress: "Прогресс",
     
