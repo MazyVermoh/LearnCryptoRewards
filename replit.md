@@ -112,7 +112,11 @@ The application uses a comprehensive schema with the following main entities:
 
 ```
 Changelog:
-- July 05, 2025. Initial setup
+- July 05, 2025. Initial setup with comprehensive educational platform
+- July 05, 2025. Updated course categories to exact specification (5 categories, 26 courses)
+- July 05, 2025. Added complete book library with 44 books across 9 categories
+- July 05, 2025. Removed featured sections for cleaner UI design
+- July 05, 2025. Structured course catalog: Mind & Thinking (7), Finance & Economics (4), Career Skills (7), Future Thinking (4), Health & Body (4)
 ```
 
 ## User Preferences

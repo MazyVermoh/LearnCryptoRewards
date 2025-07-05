@@ -203,7 +203,6 @@ export default function Home() {
 
   // Course categories only
   const courseCategoryIcons = {
-    'languages': <Globe className="h-6 w-6" />,
     'mind-thinking': <Brain className="h-6 w-6" />,
     'finance-economics': <TrendingUp className="h-6 w-6" />,
     'career-skills': <Briefcase className="h-6 w-6" />,
@@ -212,7 +211,6 @@ export default function Home() {
   };
 
   const courseCategoryColors = {
-    'languages': "bg-blue-50 border-blue-200 text-blue-900",
     'mind-thinking': "bg-purple-50 border-purple-200 text-purple-900",
     'finance-economics': "bg-green-50 border-green-200 text-green-900",
     'career-skills': "bg-orange-50 border-orange-200 text-orange-900",

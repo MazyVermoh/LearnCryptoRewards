@@ -27,14 +27,6 @@ export interface Category {
 
 export const COURSE_CATEGORIES: Category[] = [
   {
-    id: "languages",
-    nameKey: "languages",
-    descriptionKey: "languagesDesc",
-    icon: Languages,
-    color: "text-blue-900",
-    bgColor: "bg-blue-50 border-blue-200",
-  },
-  {
     id: "mind-thinking",
     nameKey: "mindThinking", 
     descriptionKey: "mindThinkingDesc",

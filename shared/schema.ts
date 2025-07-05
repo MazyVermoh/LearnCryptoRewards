@@ -44,7 +44,7 @@ export const users = pgTable("users", {
 });
 
 // Course categories enum
-export const courseCategoryEnum = pgEnum("course_category", ["languages", "mind-thinking", "finance-economics", "career-skills", "future-thinking", "health-body"]);
+export const courseCategoryEnum = pgEnum("course_category", ["mind-thinking", "finance-economics", "career-skills", "future-thinking", "health-body"]);
 
 // Courses table
 export const courses = pgTable("courses", {
