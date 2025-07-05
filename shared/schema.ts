@@ -50,8 +50,11 @@ export const courseCategoryEnum = pgEnum("course_category", ["mind-thinking", "f
 export const courses = pgTable("courses", {
   id: serial("id").primaryKey(),
   title: varchar("title").notNull(),
+  titleRu: varchar("title_ru"),
   description: text("description"),
+  descriptionRu: text("description_ru"),
   instructor: varchar("instructor").notNull(),
+  instructorRu: varchar("instructor_ru"),
   category: courseCategoryEnum("category").notNull(),
   price: decimal("price", { precision: 10, scale: 2 }).default("0"),
   rating: decimal("rating", { precision: 3, scale: 2 }).default("0"),
@@ -80,8 +83,11 @@ export const bookCategoryEnum = pgEnum("book_category", ["psychology-thinking-de
 export const books = pgTable("books", {
   id: serial("id").primaryKey(),
   title: varchar("title").notNull(),
+  titleRu: varchar("title_ru"),
   author: varchar("author").notNull(),
+  authorRu: varchar("author_ru"),
   description: text("description"),
+  descriptionRu: text("description_ru"),
   category: bookCategoryEnum("category").notNull(),
   price: decimal("price", { precision: 10, scale: 2 }).default("0"),
   coverImageUrl: varchar("cover_image_url"),
