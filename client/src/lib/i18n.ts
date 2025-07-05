@@ -16,10 +16,42 @@ export const translations = {
     todaysSteps: "Today's Steps",
     
     // Course Categories
-    business: "Business",
-    fitness: "Fitness",
-    crypto: "Crypto",
-    selfDev: "Self-Dev",
+    languages: "Languages",
+    mindThinking: "Mind & Thinking",
+    financeEconomics: "Finance & Economics",
+    careerSkills: "Career Skills",
+    futureThinking: "Future Thinking",
+    healthBody: "Health & Body",
+    
+    // Book Categories
+    psychologyThinkingDevelopment: "Psychology, Thinking, Self-Development",
+    financialLiteracyEconomics: "Financial Literacy and Economics",
+    marketing: "Marketing",
+    healthFitnessNutrition: "Health, Fitness, Nutrition",
+    communicationSoftSkills: "Communication and Soft Skills",
+    entrepreneurshipCareer: "Entrepreneurship and Career",
+    technologyFuture: "Technology and the Future",
+    relationships: "Relationships",
+    popularPersonalities: "Popular Personalities",
+    
+    // Category Descriptions - Courses
+    languagesDesc: "Learn new languages and improve communication skills",
+    mindThinkingDesc: "Develop critical thinking and cognitive abilities",
+    financeEconomicsDesc: "Master financial literacy and economic principles",
+    careerSkillsDesc: "Build professional skills for career advancement",
+    futureThinkingDesc: "Explore innovation and future-oriented concepts",
+    healthBodyDesc: "Improve physical and mental well-being",
+    
+    // Category Descriptions - Books
+    psychologyThinkingDevelopmentDesc: "Books on mental growth and self-improvement",
+    financialLiteracyEconomicsDesc: "Understand money management and economics",
+    marketingDesc: "Learn marketing strategies and customer insights",
+    healthFitnessNutritionDesc: "Guides for healthy living and fitness",
+    communicationSoftSkillsDesc: "Develop interpersonal and social skills",
+    entrepreneurshipCareerDesc: "Business building and career development",
+    technologyFutureDesc: "Explore tech trends and future innovations",
+    relationshipsDesc: "Build better personal and professional relationships",
+    popularPersonalitiesDesc: "Biographies and stories of inspiring people",
     
     // Courses
     browseCategories: "Browse Categories",
@@ -97,10 +129,42 @@ export const translations = {
     todaysSteps: "Шаги сегодня",
     
     // Course Categories
-    business: "Бизнес",
-    fitness: "Фитнес",
-    crypto: "Крипто",
-    selfDev: "Саморазвитие",
+    languages: "Языки",
+    mindThinking: "Разум и мышление",
+    financeEconomics: "Финансы и экономика",
+    careerSkills: "Карьерные навыки",
+    futureThinking: "Мышление будущего",
+    healthBody: "Здоровье и тело",
+    
+    // Book Categories
+    psychologyThinkingDevelopment: "Психология, мышление, саморазвитие",
+    financialLiteracyEconomics: "Финансовая грамотность и экономика",
+    marketing: "Маркетинг",
+    healthFitnessNutrition: "Здоровье, фитнес, питание",
+    communicationSoftSkills: "Коммуникация и мягкие навыки",
+    entrepreneurshipCareer: "Предпринимательство и карьера",
+    technologyFuture: "Технологии и будущее",
+    relationships: "Отношения",
+    popularPersonalities: "Популярные личности",
+    
+    // Category Descriptions - Courses
+    languagesDesc: "Изучение новых языков и развитие коммуникативных навыков",
+    mindThinkingDesc: "Развитие критического мышления и когнитивных способностей",
+    financeEconomicsDesc: "Овладение финансовой грамотностью и экономическими принципами",
+    careerSkillsDesc: "Развитие профессиональных навыков для карьерного роста",
+    futureThinkingDesc: "Изучение инноваций и концепций будущего",
+    healthBodyDesc: "Улучшение физического и психического благополучия",
+    
+    // Category Descriptions - Books
+    psychologyThinkingDevelopmentDesc: "Книги о психическом росте и саморазвитии",
+    financialLiteracyEconomicsDesc: "Понимание управления деньгами и экономики",
+    marketingDesc: "Изучение маркетинговых стратегий и понимания клиентов",
+    healthFitnessNutritionDesc: "Руководства по здоровому образу жизни и фитнесу",
+    communicationSoftSkillsDesc: "Развитие межличностных и социальных навыков",
+    entrepreneurshipCareerDesc: "Создание бизнеса и развитие карьеры",
+    technologyFutureDesc: "Изучение технологических трендов и будущих инноваций",
+    relationshipsDesc: "Построение лучших личных и профессиональных отношений",
+    popularPersonalitiesDesc: "Биографии и истории вдохновляющих людей",
     
     // Courses
     browseCategories: "Категории",

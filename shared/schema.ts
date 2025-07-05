@@ -44,7 +44,7 @@ export const users = pgTable("users", {
 });
 
 // Course categories enum
-export const courseCategoryEnum = pgEnum("course_category", ["business", "fitness", "crypto", "self-development"]);
+export const courseCategoryEnum = pgEnum("course_category", ["languages", "mind-thinking", "finance-economics", "career-skills", "future-thinking", "health-body"]);
 
 // Courses table
 export const courses = pgTable("courses", {
@@ -74,7 +74,7 @@ export const enrollments = pgTable("enrollments", {
 });
 
 // Book categories enum
-export const bookCategoryEnum = pgEnum("book_category", ["business", "psychology", "technology", "finance", "all"]);
+export const bookCategoryEnum = pgEnum("book_category", ["psychology-thinking-development", "financial-literacy-economics", "marketing", "health-fitness-nutrition", "communication-soft-skills", "entrepreneurship-career", "technology-future", "relationships", "popular-personalities"]);
 
 // Books table
 export const books = pgTable("books", {
