@@ -642,6 +642,40 @@ export default function Home() {
 
         {/* Courses Tab */}
         <TabsContent value="courses" className="p-4 pb-20">
+          {/* My Courses Section */}
+          {enrollments.length > 0 && (
+            <div className="mb-6">
+              <h3 className="text-lg font-semibold mb-3">{t('myCourses')}</h3>
+              <div className="space-y-3">
+                {enrollments.map((enrollment) => (
+                  <Card key={enrollment.id} className="p-4">
+                    <CardContent className="p-0">
+                      <div className="flex items-center space-x-3">
+                        <div className="w-12 h-12 bg-gray-200 rounded-lg flex items-center justify-center">
+                          {courseCategoryIcons[enrollment.course.category as keyof typeof courseCategoryIcons]}
+                        </div>
+                        <div className="flex-1">
+                          <h4 className="font-medium text-gray-900">
+                            {language === 'ru' && enrollment.course.titleRu ? enrollment.course.titleRu : enrollment.course.title}
+                          </h4>
+                          <p className="text-gray-600 text-sm">{t('courseProgress')}: {enrollment.progress}%</p>
+                          <Progress value={enrollment.progress} className="mt-2" />
+                          <div className="flex items-center space-x-2 mt-2">
+                            <Button 
+                              size="sm"
+                              onClick={() => setLocation(`/courses/${enrollment.course.id}/read`)}
+                            >
+                              Читать
+                            </Button>
+                          </div>
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
+            </div>
+          )}
           {/* Course Categories */}
           <div className="mb-6">
             <h3 className="text-lg font-semibold mb-3">{t('browseCategories')}</h3>
@@ -709,19 +743,31 @@ export default function Home() {
                             </div>
                           </div>
                           <div className="mt-3">
-                            <Button 
-                              size="sm" 
-                              className="w-full"
-                              onClick={() => {
-                                // Handle course enrollment
-                                toast({
-                                  title: "Course enrolled!",
-                                  description: `You've enrolled in ${course.title}`,
-                                });
-                              }}
-                            >
-                              {t('enroll')}
-                            </Button>
+                            {enrollments.some(e => e.course.id === course.id) ? (
+                              <Button 
+                                size="sm" 
+                                className="w-full"
+                                variant="secondary"
+                                onClick={() => setLocation(`/courses/${course.id}/read`)}
+                              >
+                                Читать
+                              </Button>
+                            ) : (
+                              <Button 
+                                size="sm" 
+                                className="w-full"
+                                onClick={() => {
+                                  enrollMutation.mutate({
+                                    courseId: course.id,
+                                    coursePrice: course.price,
+                                    courseTitle: course.title
+                                  });
+                                }}
+                                disabled={enrollMutation.isPending}
+                              >
+                                {enrollMutation.isPending ? "Записываемся..." : t('enroll')}
+                              </Button>
+                            )}
                           </div>
                         </div>
                       </div>
@@ -731,28 +777,34 @@ export default function Home() {
             </div>
           </div>
 
-          {/* My Courses */}
-          <div>
-            <h3 className="text-lg font-semibold mb-3">{t('myCourses')}</h3>
-            {enrollments.length > 0 ? (
-              <div className="space-y-3">
-                {enrollments.map((enrollment) => (
-                  <Card key={enrollment.id} className="p-4">
+
+        </TabsContent>
+
+        {/* Library Tab */}
+        <TabsContent value="library" className="p-4 pb-20">
+          {/* My Books Section */}
+          {userBooks.length > 0 && (
+            <div className="mb-6">
+              <h3 className="text-lg font-semibold mb-3">Мои книги</h3>
+              <div className="grid grid-cols-1 gap-3">
+                {userBooks.map((purchase) => (
+                  <Card key={purchase.id} className="p-4">
                     <CardContent className="p-0">
-                      <div className="flex items-center space-x-3">
-                        <div className="w-12 h-12 bg-gray-200 rounded-lg flex items-center justify-center">
-                          {courseCategoryIcons[enrollment.course.category as keyof typeof courseCategoryIcons]}
+                      <div className="flex items-start space-x-3">
+                        <div className="w-12 h-16 bg-gray-200 rounded-lg flex items-center justify-center">
+                          <BookOpen className="h-6 w-6 text-gray-400" />
                         </div>
                         <div className="flex-1">
                           <h4 className="font-medium text-gray-900">
-                            {language === 'ru' && enrollment.course.titleRu ? enrollment.course.titleRu : enrollment.course.title}
+                            {language === 'ru' && purchase.book.titleRu ? purchase.book.titleRu : purchase.book.title}
                           </h4>
-                          <p className="text-gray-600 text-sm">{t('courseProgress')}: {enrollment.progress}%</p>
-                          <Progress value={enrollment.progress} className="mt-2" />
+                          <p className="text-gray-600 text-sm mb-1">
+                            {language === 'ru' && purchase.book.authorRu ? purchase.book.authorRu : purchase.book.author}
+                          </p>
                           <div className="flex items-center space-x-2 mt-2">
                             <Button 
                               size="sm"
-                              onClick={() => setLocation(`/courses/${enrollment.course.id}/read`)}
+                              onClick={() => setLocation(`/books/${purchase.book.id}/read`)}
                             >
                               Читать
                             </Button>
@@ -763,19 +815,9 @@ export default function Home() {
                   </Card>
                 ))}
               </div>
-            ) : (
-              <Card className="p-4">
-                <CardContent className="p-0 text-center text-gray-500">
-                  <BookOpen className="h-12 w-12 mx-auto mb-2 opacity-50" />
-                  <p>No courses enrolled yet</p>
-                </CardContent>
-              </Card>
-            )}
-          </div>
-        </TabsContent>
+            </div>
+          )}
 
-        {/* Library Tab */}
-        <TabsContent value="library" className="p-4 pb-20">
           {/* Search Bar */}
           <div className="mb-6">
             <div className="relative">
@@ -835,17 +877,27 @@ export default function Home() {
                         </p>
                         <div className="flex items-center justify-between">
                           <span className="text-sm text-gray-500">{book.pageCount} {t('pages')}</span>
-                          <Button 
-                            size="sm"
-                            onClick={() => purchaseMutation.mutate({
-                              bookId: book.id,
-                              bookPrice: book.price,
-                              bookTitle: book.title
-                            })}
-                            disabled={purchaseMutation.isPending}
-                          >
-                            {t('getBook')}
-                          </Button>
+                          {userBooks.some(p => p.book.id === book.id) ? (
+                            <Button 
+                              size="sm"
+                              variant="secondary"
+                              onClick={() => setLocation(`/books/${book.id}/read`)}
+                            >
+                              Читать
+                            </Button>
+                          ) : (
+                            <Button 
+                              size="sm"
+                              onClick={() => purchaseMutation.mutate({
+                                bookId: book.id,
+                                bookPrice: book.price,
+                                bookTitle: book.title
+                              })}
+                              disabled={purchaseMutation.isPending}
+                            >
+                              {purchaseMutation.isPending ? "Покупаем..." : `${book.price} MIND`}
+                            </Button>
+                          )}
                         </div>
                       </div>
                     </div>
