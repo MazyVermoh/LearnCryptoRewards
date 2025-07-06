@@ -1488,7 +1488,7 @@ export default function Home() {
                             variant="outline"
                             onClick={() => {
                               setManagingCourseChapters(course);
-                              setNumberOfChapters(1);
+                              setNumberOfChapters(5);
                             }}
                           >
                             Chapters
@@ -2761,7 +2761,7 @@ export default function Home() {
                 <input
                   type="number"
                   value={numberOfChapters}
-                  onChange={(e) => setNumberOfChapters(Number(e.target.value) || 1)}
+                  onChange={(e) => setNumberOfChapters(Number(e.target.value) || 0)}
                   className="w-full p-2 border rounded-md"
                   min="1"
                   max="50"
@@ -2779,7 +2779,7 @@ export default function Home() {
                       numberOfChapters: numberOfChapters
                     });
                   }}
-                  disabled={generateChapters.isPending}
+                  disabled={generateChapters.isPending || numberOfChapters < 1 || numberOfChapters > 50}
                   className="flex-1"
                 >
                   {generateChapters.isPending ? "Generating..." : "Generate Chapters"}
@@ -2808,7 +2808,7 @@ export default function Home() {
                 <input
                   type="number"
                   value={numberOfChapters}
-                  onChange={(e) => setNumberOfChapters(Number(e.target.value) || 1)}
+                  onChange={(e) => setNumberOfChapters(Number(e.target.value) || 0)}
                   className="w-full p-2 border rounded-md"
                   min="1"
                   max="50"
@@ -2826,7 +2826,7 @@ export default function Home() {
                       numberOfLessons: numberOfChapters
                     });
                   }}
-                  disabled={generateLessons.isPending}
+                  disabled={generateLessons.isPending || numberOfChapters < 1 || numberOfChapters > 50}
                   className="flex-1"
                 >
                   {generateLessons.isPending ? "Generating..." : "Generate Lessons"}
