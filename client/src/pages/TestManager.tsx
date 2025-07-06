@@ -81,7 +81,12 @@ export default function TestManager() {
       toast({ title: "Test created successfully" });
     },
     onError: (error) => {
-      toast({ title: "Error creating test", variant: "destructive" });
+      console.error('Create error:', error);
+      toast({ 
+        title: "Error creating test", 
+        description: "Please check that all required fields are filled",
+        variant: "destructive" 
+      });
     },
   });
 
@@ -188,9 +193,19 @@ export default function TestManager() {
     const cleanedOptions = testForm.options.filter(option => option.trim() !== '');
     const cleanedOptionsRu = testForm.optionsRu.filter(option => option.trim() !== '');
     
-    // Ensure we have at least 2 options
+    // Validate form data
+    if (!testForm.question.trim()) {
+      toast({ title: "Error", description: "Please provide a question", variant: "destructive" });
+      return;
+    }
+    
     if (cleanedOptions.length < 2) {
       toast({ title: "Error", description: "Please provide at least 2 answer options", variant: "destructive" });
+      return;
+    }
+    
+    if (!selectedId) {
+      toast({ title: "Error", description: "Please select a chapter or lesson first", variant: "destructive" });
       return;
     }
     
@@ -202,7 +217,13 @@ export default function TestManager() {
       options: cleanedOptions,
       optionsRu: cleanedOptionsRu,
       correctAnswer: adjustedCorrectAnswer,
+      // Remove the optionsCount field as it's not needed in the API
+      optionsCount: undefined,
     };
+    
+    console.log('Submitting form data:', cleanedForm);
+    console.log('Selected ID:', selectedId);
+    console.log('Selected Type:', selectedType);
     
     if (editingTest) {
       updateMutation.mutate(cleanedForm);
