@@ -22,13 +22,6 @@ export default function BookReader() {
   const { id } = useParams<{ id: string }>();
   const [, setLocation] = useLocation();
   const [currentChapterIndex, setCurrentChapterIndex] = useState(0);
-  
-  // Update chapter index when progress is loaded
-  useEffect(() => {
-    if (progress && progress.currentChapter > 0) {
-      setCurrentChapterIndex(progress.currentChapter - 1);
-    }
-  }, [progress]);
   const [showChapterList, setShowChapterList] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
   const { t, language } = useLanguage();
@@ -46,6 +39,13 @@ export default function BookReader() {
       document.removeEventListener('mousedown', handleClickOutside);
     };
   }, []);
+
+  // Update chapter index when progress is loaded
+  useEffect(() => {
+    if (progress && progress.currentChapter > 0) {
+      setCurrentChapterIndex(progress.currentChapter - 1);
+    }
+  }, [progress]);
 
   const { data: book, isLoading } = useQuery<BookWithChapters>({
     queryKey: ["/api/books", id],
@@ -104,6 +104,28 @@ export default function BookReader() {
           duration: 5000,
         });
       }
+    },
+  });
+
+  // Complete book manually
+  const completeBookMutation = useMutation({
+    mutationFn: async () => {
+      if (!user?.id) throw new Error("User not found");
+      const response = await fetch(`/api/users/${user.id}/books/${id}/complete`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+      });
+      if (!response.ok) throw new Error("Failed to complete book");
+      return response.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/users", user?.id, "books", id, "progress"] });
+      queryClient.invalidateQueries({ queryKey: ["/api/users", user?.id] });
+      toast({
+        title: "🎉 Congratulations!",
+        description: "You completed the book and earned 100 MIND tokens!",
+        duration: 5000,
+      });
     },
   });
 
@@ -310,6 +332,37 @@ export default function BookReader() {
                     </div>
                   )}
                 </div>
+                
+                {/* Complete Chapter Button */}
+                {currentChapter && (
+                  <div className="mt-8 pt-6 border-t border-gray-200 dark:border-gray-700">
+                    <div className="flex flex-col items-center space-y-4">
+                      <div className="text-center">
+                        <p className="text-sm text-gray-600 dark:text-gray-400 mb-2">
+                          Закончили читать эту главу?
+                        </p>
+                        <Button 
+                          onClick={() => completeBookMutation.mutate()}
+                          disabled={completeBookMutation.isPending || (progress && progress.isCompleted)}
+                          className="bg-green-600 hover:bg-green-700 text-white"
+                        >
+                          {completeBookMutation.isPending ? (
+                            "Завершаем..."
+                          ) : (progress && progress.isCompleted) ? (
+                            "✓ Книга завершена"
+                          ) : (
+                            "Завершить книгу"
+                          )}
+                        </Button>
+                        {!(progress && progress.isCompleted) && (
+                          <p className="text-xs text-gray-500 mt-2">
+                            Получите 100 MIND токенов за завершение
+                          </p>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                )}
               </CardContent>
             </Card>
           ) : (

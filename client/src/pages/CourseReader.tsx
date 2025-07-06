@@ -1,14 +1,16 @@
 import { useState, useEffect, useRef } from "react";
 import { useParams, useLocation } from "wouter";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { ArrowLeft, Menu, ChevronLeft, ChevronRight, BookOpen } from "lucide-react";
+import { ArrowLeft, Menu, ChevronLeft, ChevronRight, BookOpen, Gift } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import { Separator } from "@/components/ui/separator";
+import { Alert, AlertDescription } from "@/components/ui/alert";
 import { cn } from "@/lib/utils";
 import { useLanguage } from "@/hooks/useLanguage";
+import { useToast } from "@/hooks/use-toast";
 import type { Course, CourseLesson } from "@/lib/types";
 
 interface CourseWithLessons extends Course {
@@ -22,6 +24,8 @@ export default function CourseReader() {
   const [showLessonList, setShowLessonList] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
   const { t, language } = useLanguage();
+  const queryClient = useQueryClient();
+  const { toast } = useToast();
 
   // Close menu when clicking outside
   useEffect(() => {
@@ -46,6 +50,56 @@ export default function CourseReader() {
     },
   });
 
+  // Get current user
+  const { data: user } = useQuery({
+    queryKey: ["/api/users/user123"],
+    queryFn: async () => {
+      const response = await fetch(`/api/users/user123`);
+      if (!response.ok) throw new Error("Failed to fetch user");
+      return response.json();
+    },
+  });
+
+  // Get reading progress
+  const { data: progress } = useQuery({
+    queryKey: ["/api/users", user?.id, "courses", id, "progress"],
+    queryFn: async () => {
+      const response = await fetch(`/api/users/${user.id}/courses/${id}/progress`);
+      if (!response.ok) return null;
+      return response.json();
+    },
+    enabled: !!id && !!user?.id,
+  });
+
+  // Update chapter index when progress is loaded
+  useEffect(() => {
+    if (progress && progress.currentLesson > 0) {
+      setCurrentLessonIndex(progress.currentLesson - 1);
+    }
+  }, [progress]);
+
+  // Complete course manually
+  const completeCourseMutation = useMutation({
+    mutationFn: async () => {
+      if (!user?.id) throw new Error("User not found");
+      const response = await fetch(`/api/users/${user.id}/courses/${id}/complete`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+      });
+      if (!response.ok) throw new Error("Failed to complete course");
+      return response.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/users", user?.id, "courses", id, "progress"] });
+      queryClient.invalidateQueries({ queryKey: ["/api/users", user?.id] });
+      toast({
+        title: "🎉 Congratulations!",
+        description: "You completed the course and earned 50 MIND tokens!",
+        duration: 5000,
+      });
+    },
+  });
+
   const { data: lessons = [] } = useQuery<CourseLesson[]>({
     queryKey: ["/api/courses", id, "lessons"],
     queryFn: async () => {
@@ -57,7 +111,7 @@ export default function CourseReader() {
   });
 
   const currentLesson = lessons[currentLessonIndex];
-  const progress = lessons.length > 0 ? ((currentLessonIndex + 1) / lessons.length) * 100 : 0;
+  const progressPercent = lessons.length > 0 ? ((currentLessonIndex + 1) / lessons.length) * 100 : 0;
 
   const goToNextLesson = () => {
     if (currentLessonIndex < lessons.length - 1) {
@@ -133,7 +187,7 @@ export default function CourseReader() {
                 <span className="text-sm text-gray-600 dark:text-gray-400">
                   {currentLessonIndex + 1} / {lessons.length}
                 </span>
-                <Progress value={progress} className="w-20" />
+                <Progress value={progressPercent} className="w-20" />
               </div>
               
               <div className="relative" ref={menuRef}>
@@ -204,7 +258,7 @@ export default function CourseReader() {
                     )}
                   </div>
                   <Badge variant="secondary">
-                    {Math.round(progress)}% завершено
+                    {Math.round(progressPercent)}% завершено
                   </Badge>
                 </div>
               </CardHeader>
@@ -227,6 +281,37 @@ export default function CourseReader() {
                     {language === "ru" ? currentLesson.contentRu || currentLesson.content : currentLesson.content}
                   </div>
                 </div>
+                
+                {/* Complete Course Button */}
+                {currentLesson && (
+                  <div className="mt-8 pt-6 border-t border-gray-200 dark:border-gray-700">
+                    <div className="flex flex-col items-center space-y-4">
+                      <div className="text-center">
+                        <p className="text-sm text-gray-600 dark:text-gray-400 mb-2">
+                          Закончили изучать этот урок?
+                        </p>
+                        <Button 
+                          onClick={() => completeCourseMutation.mutate()}
+                          disabled={completeCourseMutation.isPending || (progress && progress.isCompleted)}
+                          className="bg-blue-600 hover:bg-blue-700 text-white"
+                        >
+                          {completeCourseMutation.isPending ? (
+                            "Завершаем..."
+                          ) : (progress && progress.isCompleted) ? (
+                            "✓ Курс завершен"
+                          ) : (
+                            "Завершить курс"
+                          )}
+                        </Button>
+                        {!(progress && progress.isCompleted) && (
+                          <p className="text-xs text-gray-500 mt-2">
+                            Получите 50 MIND токенов за завершение
+                          </p>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                )}
               </CardContent>
             </Card>
           ) : (

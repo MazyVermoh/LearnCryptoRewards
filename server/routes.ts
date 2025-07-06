@@ -609,6 +609,18 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Complete book manually
+  app.post("/api/users/:userId/books/:bookId/complete", async (req: Request, res: Response) => {
+    try {
+      const { userId, bookId } = req.params;
+      await storage.completeBookReading(userId, parseInt(bookId));
+      res.json({ success: true });
+    } catch (error) {
+      console.error("Error completing book:", error);
+      res.status(500).json({ error: "Failed to complete book" });
+    }
+  });
+
   // Course reading progress routes
   app.get("/api/users/:userId/courses/:courseId/progress", async (req: Request, res: Response) => {
     try {
@@ -637,6 +649,18 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error) {
       console.error("Error updating course reading progress:", error);
       res.status(500).json({ error: "Failed to update course reading progress" });
+    }
+  });
+
+  // Complete course manually
+  app.post("/api/users/:userId/courses/:courseId/complete", async (req: Request, res: Response) => {
+    try {
+      const { userId, courseId } = req.params;
+      await storage.completeCourseReading(userId, parseInt(courseId));
+      res.json({ success: true });
+    } catch (error) {
+      console.error("Error completing course:", error);
+      res.status(500).json({ error: "Failed to complete course" });
     }
   });
 
