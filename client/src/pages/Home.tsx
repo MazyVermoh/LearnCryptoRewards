@@ -115,6 +115,32 @@ export default function Home() {
     retry: false,
   });
 
+  // Admin panel states
+  const [showAddCourse, setShowAddCourse] = useState(false);
+  const [showAddBook, setShowAddBook] = useState(false);
+  const [newCourse, setNewCourse] = useState({
+    title: '',
+    titleRu: '',
+    description: '',
+    descriptionRu: '',
+    instructor: '',
+    instructorRu: '',
+    category: 'mind-thinking',
+    duration: 60,
+    price: '0'
+  });
+  const [newBook, setNewBook] = useState({
+    title: '',
+    titleRu: '',
+    description: '',
+    descriptionRu: '',
+    author: '',
+    authorRu: '',
+    category: 'psychology-thinking-development',
+    pages: 200,
+    price: '0'
+  });
+
   // Enroll in course mutation
   const enrollMutation = useMutation({
     mutationFn: async ({ courseId, coursePrice, courseTitle }: { courseId: number; coursePrice: string; courseTitle: string }) => {
@@ -186,6 +212,74 @@ export default function Home() {
       toast({
         title: "Error",
         description: error.message,
+        variant: "destructive",
+      });
+    },
+  });
+
+  // Add course mutation
+  const addCourseMutation = useMutation({
+    mutationFn: async (courseData: any) => {
+      await apiRequest('POST', '/api/courses', courseData);
+    },
+    onSuccess: () => {
+      toast({
+        title: "Success",
+        description: "Course added successfully",
+      });
+      setShowAddCourse(false);
+      setNewCourse({
+        title: '',
+        titleRu: '',
+        description: '',
+        descriptionRu: '',
+        instructor: '',
+        instructorRu: '',
+        category: 'mind-thinking',
+        duration: 60,
+        price: '0'
+      });
+      queryClient.invalidateQueries({ queryKey: ['/api/courses'] });
+      queryClient.invalidateQueries({ queryKey: ['/api/admin/stats'] });
+    },
+    onError: (error) => {
+      toast({
+        title: "Error",
+        description: "Failed to add course",
+        variant: "destructive",
+      });
+    },
+  });
+
+  // Add book mutation
+  const addBookMutation = useMutation({
+    mutationFn: async (bookData: any) => {
+      await apiRequest('POST', '/api/books', bookData);
+    },
+    onSuccess: () => {
+      toast({
+        title: "Success",
+        description: "Book added successfully",
+      });
+      setShowAddBook(false);
+      setNewBook({
+        title: '',
+        titleRu: '',
+        description: '',
+        descriptionRu: '',
+        author: '',
+        authorRu: '',
+        category: 'psychology-thinking-development',
+        pages: 200,
+        price: '0'
+      });
+      queryClient.invalidateQueries({ queryKey: ['/api/books'] });
+      queryClient.invalidateQueries({ queryKey: ['/api/admin/stats'] });
+    },
+    onError: (error) => {
+      toast({
+        title: "Error",
+        description: "Failed to add book",
         variant: "destructive",
       });
     },
@@ -750,11 +844,17 @@ export default function Home() {
           <div className="mb-6">
             <h3 className="text-lg font-semibold mb-3">{t('quickActions')}</h3>
             <div className="grid grid-cols-2 gap-3">
-              <Button className="bg-primary text-white p-3 h-auto flex flex-col">
+              <Button 
+                className="bg-primary text-white p-3 h-auto flex flex-col"
+                onClick={() => setShowAddCourse(true)}
+              >
                 <Plus className="h-5 w-5 mb-1" />
                 {t('addCourse')}
               </Button>
-              <Button className="bg-secondary text-white p-3 h-auto flex flex-col">
+              <Button 
+                className="bg-secondary text-white p-3 h-auto flex flex-col"
+                onClick={() => setShowAddBook(true)}
+              >
                 <BookOpen className="h-5 w-5 mb-1" />
                 {t('addBook')}
               </Button>
@@ -1092,6 +1192,232 @@ export default function Home() {
           </button>
         </div>
       </nav>
+
+      {/* Add Course Dialog */}
+      {showAddCourse && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-lg p-6 w-full max-w-md max-h-[90vh] overflow-y-auto">
+            <h3 className="text-lg font-semibold mb-4">Add New Course</h3>
+            <div className="space-y-4">
+              <div>
+                <label className="block text-sm font-medium mb-1">Title (English)</label>
+                <input
+                  type="text"
+                  value={newCourse.title}
+                  onChange={(e) => setNewCourse({...newCourse, title: e.target.value})}
+                  className="w-full p-2 border rounded-md"
+                  placeholder="Course title"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium mb-1">Title (Russian)</label>
+                <input
+                  type="text"
+                  value={newCourse.titleRu}
+                  onChange={(e) => setNewCourse({...newCourse, titleRu: e.target.value})}
+                  className="w-full p-2 border rounded-md"
+                  placeholder="Название курса"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium mb-1">Description (English)</label>
+                <textarea
+                  value={newCourse.description}
+                  onChange={(e) => setNewCourse({...newCourse, description: e.target.value})}
+                  className="w-full p-2 border rounded-md"
+                  rows={3}
+                  placeholder="Course description"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium mb-1">Description (Russian)</label>
+                <textarea
+                  value={newCourse.descriptionRu}
+                  onChange={(e) => setNewCourse({...newCourse, descriptionRu: e.target.value})}
+                  className="w-full p-2 border rounded-md"
+                  rows={3}
+                  placeholder="Описание курса"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium mb-1">Instructor (English)</label>
+                <input
+                  type="text"
+                  value={newCourse.instructor}
+                  onChange={(e) => setNewCourse({...newCourse, instructor: e.target.value})}
+                  className="w-full p-2 border rounded-md"
+                  placeholder="Instructor name"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium mb-1">Instructor (Russian)</label>
+                <input
+                  type="text"
+                  value={newCourse.instructorRu}
+                  onChange={(e) => setNewCourse({...newCourse, instructorRu: e.target.value})}
+                  className="w-full p-2 border rounded-md"
+                  placeholder="Имя инструктора"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium mb-1">Category</label>
+                <select
+                  value={newCourse.category}
+                  onChange={(e) => setNewCourse({...newCourse, category: e.target.value})}
+                  className="w-full p-2 border rounded-md"
+                >
+                  <option value="mind-thinking">Mind & Thinking</option>
+                  <option value="finance-economics">Finance & Economics</option>
+                  <option value="career-skills">Career Skills</option>
+                  <option value="future-thinking">Future Thinking</option>
+                  <option value="health-body">Health & Body</option>
+                </select>
+              </div>
+              <div>
+                <label className="block text-sm font-medium mb-1">Duration (minutes)</label>
+                <input
+                  type="number"
+                  value={newCourse.duration}
+                  onChange={(e) => setNewCourse({...newCourse, duration: Number(e.target.value)})}
+                  className="w-full p-2 border rounded-md"
+                  placeholder="60"
+                />
+              </div>
+              <div className="flex space-x-3 pt-4">
+                <Button 
+                  onClick={() => addCourseMutation.mutate(newCourse)}
+                  disabled={addCourseMutation.isPending}
+                  className="flex-1"
+                >
+                  {addCourseMutation.isPending ? 'Adding...' : 'Add Course'}
+                </Button>
+                <Button 
+                  onClick={() => setShowAddCourse(false)}
+                  variant="outline"
+                  className="flex-1"
+                >
+                  Cancel
+                </Button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Add Book Dialog */}
+      {showAddBook && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-lg p-6 w-full max-w-md max-h-[90vh] overflow-y-auto">
+            <h3 className="text-lg font-semibold mb-4">Add New Book</h3>
+            <div className="space-y-4">
+              <div>
+                <label className="block text-sm font-medium mb-1">Title (English)</label>
+                <input
+                  type="text"
+                  value={newBook.title}
+                  onChange={(e) => setNewBook({...newBook, title: e.target.value})}
+                  className="w-full p-2 border rounded-md"
+                  placeholder="Book title"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium mb-1">Title (Russian)</label>
+                <input
+                  type="text"
+                  value={newBook.titleRu}
+                  onChange={(e) => setNewBook({...newBook, titleRu: e.target.value})}
+                  className="w-full p-2 border rounded-md"
+                  placeholder="Название книги"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium mb-1">Description (English)</label>
+                <textarea
+                  value={newBook.description}
+                  onChange={(e) => setNewBook({...newBook, description: e.target.value})}
+                  className="w-full p-2 border rounded-md"
+                  rows={3}
+                  placeholder="Book description"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium mb-1">Description (Russian)</label>
+                <textarea
+                  value={newBook.descriptionRu}
+                  onChange={(e) => setNewBook({...newBook, descriptionRu: e.target.value})}
+                  className="w-full p-2 border rounded-md"
+                  rows={3}
+                  placeholder="Описание книги"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium mb-1">Author (English)</label>
+                <input
+                  type="text"
+                  value={newBook.author}
+                  onChange={(e) => setNewBook({...newBook, author: e.target.value})}
+                  className="w-full p-2 border rounded-md"
+                  placeholder="Author name"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium mb-1">Author (Russian)</label>
+                <input
+                  type="text"
+                  value={newBook.authorRu}
+                  onChange={(e) => setNewBook({...newBook, authorRu: e.target.value})}
+                  className="w-full p-2 border rounded-md"
+                  placeholder="Имя автора"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium mb-1">Category</label>
+                <select
+                  value={newBook.category}
+                  onChange={(e) => setNewBook({...newBook, category: e.target.value})}
+                  className="w-full p-2 border rounded-md"
+                >
+                  <option value="psychology-thinking-development">Psychology & Thinking Development</option>
+                  <option value="financial-literacy-economics">Financial Literacy & Economics</option>
+                  <option value="marketing">Marketing</option>
+                  <option value="health-fitness-nutrition">Health, Fitness & Nutrition</option>
+                  <option value="communication-soft-skills">Communication & Soft Skills</option>
+                  <option value="entrepreneurship-career">Entrepreneurship & Career</option>
+                  <option value="technology-future">Technology & Future</option>
+                  <option value="relationships">Relationships</option>
+                  <option value="popular-personalities">Popular Personalities</option>
+                </select>
+              </div>
+              <div>
+                <label className="block text-sm font-medium mb-1">Pages</label>
+                <input
+                  type="number"
+                  value={newBook.pages}
+                  onChange={(e) => setNewBook({...newBook, pages: Number(e.target.value)})}
+                  className="w-full p-2 border rounded-md"
+                  placeholder="200"
+                />
+              </div>
+              <div className="flex space-x-3 pt-4">
+                <Button 
+                  onClick={() => addBookMutation.mutate(newBook)}
+                  disabled={addBookMutation.isPending}
+                  className="flex-1"
+                >
+                  {addBookMutation.isPending ? 'Adding...' : 'Add Book'}
+                </Button>
+                <Button 
+                  onClick={() => setShowAddBook(false)}
+                  variant="outline"
+                  className="flex-1"
+                >
+                  Cancel
+                </Button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
