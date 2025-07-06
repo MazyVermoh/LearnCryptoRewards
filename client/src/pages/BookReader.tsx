@@ -53,13 +53,20 @@ export default function BookReader() {
     queryFn: async () => {
       const response = await fetch(`/api/books/${id}/chapters`);
       if (!response.ok) throw new Error("Failed to fetch chapters");
-      return response.json();
+      const data = await response.json();
+      console.log("Loaded chapters:", data);
+      return data;
     },
     enabled: !!id,
   });
 
   const currentChapter = chapters[currentChapterIndex];
   const progress = chapters.length > 0 ? ((currentChapterIndex + 1) / chapters.length) * 100 : 0;
+  
+  // Debug info
+  console.log("Current chapter:", currentChapter);
+  console.log("Current chapter index:", currentChapterIndex);
+  console.log("Total chapters:", chapters.length);
 
   const goToNextChapter = () => {
     if (currentChapterIndex < chapters.length - 1) {
