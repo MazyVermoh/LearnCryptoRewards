@@ -1695,6 +1695,26 @@ export default function Home() {
                   placeholder="60"
                 />
               </div>
+              <div>
+                <label className="block text-sm font-medium mb-1">Добавить текст (English)</label>
+                <textarea
+                  value={newCourse.content || ''}
+                  onChange={(e) => setNewCourse({...newCourse, content: e.target.value})}
+                  className="w-full p-2 border rounded-md"
+                  rows={6}
+                  placeholder="Добавить текст содержимого курса здесь..."
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium mb-1">Добавить текст (Russian)</label>
+                <textarea
+                  value={newCourse.contentRu || ''}
+                  onChange={(e) => setNewCourse({...newCourse, contentRu: e.target.value})}
+                  className="w-full p-2 border rounded-md"
+                  rows={6}
+                  placeholder="Добавить текст содержимого курса здесь..."
+                />
+              </div>
               <div className="flex space-x-3 pt-4">
                 <Button 
                   onClick={() => addCourseMutation.mutate(newCourse)}
@@ -1808,6 +1828,26 @@ export default function Home() {
                   onChange={(e) => setNewBook({...newBook, pages: Number(e.target.value)})}
                   className="w-full p-2 border rounded-md"
                   placeholder="200"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium mb-1">Добавить текст (English)</label>
+                <textarea
+                  value={newBook.content || ''}
+                  onChange={(e) => setNewBook({...newBook, content: e.target.value})}
+                  className="w-full p-2 border rounded-md"
+                  rows={6}
+                  placeholder="Добавить текст содержимого книги здесь..."
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium mb-1">Добавить текст (Russian)</label>
+                <textarea
+                  value={newBook.contentRu || ''}
+                  onChange={(e) => setNewBook({...newBook, contentRu: e.target.value})}
+                  className="w-full p-2 border rounded-md"
+                  rows={6}
+                  placeholder="Добавить текст содержимого книги здесь..."
                 />
               </div>
               <div className="flex space-x-3 pt-4">
@@ -1930,6 +1970,26 @@ export default function Home() {
                   min="0"
                 />
               </div>
+              <div>
+                <label className="block text-sm font-medium mb-1">Добавить текст (English)</label>
+                <textarea
+                  value={editingCourse.content || ''}
+                  onChange={(e) => setEditingCourse({...editingCourse, content: e.target.value})}
+                  className="w-full p-2 border rounded-md"
+                  rows={6}
+                  placeholder="Добавить текст содержимого курса здесь..."
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium mb-1">Добавить текст (Russian)</label>
+                <textarea
+                  value={editingCourse.contentRu || ''}
+                  onChange={(e) => setEditingCourse({...editingCourse, contentRu: e.target.value})}
+                  className="w-full p-2 border rounded-md"
+                  rows={6}
+                  placeholder="Добавить текст содержимого курса здесь..."
+                />
+              </div>
               <div className="flex space-x-3 pt-4">
                 <Button 
                   onClick={async () => {
@@ -2036,6 +2096,26 @@ export default function Home() {
                   onChange={(e) => setEditingBook({...editingBook, pages: Number(e.target.value) || 0})}
                   className="w-full p-2 border rounded-md"
                   min="0"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium mb-1">Добавить текст (English)</label>
+                <textarea
+                  value={editingBook.content || ''}
+                  onChange={(e) => setEditingBook({...editingBook, content: e.target.value})}
+                  className="w-full p-2 border rounded-md"
+                  rows={6}
+                  placeholder="Добавить текст содержимого книги здесь..."
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium mb-1">Добавить текст (Russian)</label>
+                <textarea
+                  value={editingBook.contentRu || ''}
+                  onChange={(e) => setEditingBook({...editingBook, contentRu: e.target.value})}
+                  className="w-full p-2 border rounded-md"
+                  rows={6}
+                  placeholder="Добавить текст содержимого книги здесь..."
                 />
               </div>
               <div className="flex space-x-3 pt-4">
