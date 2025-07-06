@@ -1,0 +1,74 @@
+# MIND Token Reward System Configuration
+# Все значения в MIND токенах (1 MIND = 0.000001 TON)
+
+# Коэффициент перебалансировки (изменяется автоматически)
+rebalance_coefficient: 1.0
+
+# Настройки вознаграждений
+rewards:
+  steps:
+    action_id: "steps"
+    base_reward: 1 # 1 MIND за 1000 шагов
+    daily_cap: 20  # Максимум 20 MIND в день
+    notes: "1 MIND за каждые 1000 шагов, максимум 20 MIND/день"
+  
+  book_completion:
+    action_id: "book_completion"
+    base_reward: 10 # 10 MIND за прочтение 80%+ книги
+    daily_cap: null # Без ограничений
+    notes: "10 MIND за завершение книги (80%+ прогресс)"
+  
+  course_completion_basic:
+    action_id: "course_completion_basic"
+    base_reward: 5 # 5 MIND за базовый курс
+    daily_cap: null
+    notes: "5 MIND за завершение базового курса"
+  
+  course_completion_intermediate:
+    action_id: "course_completion_intermediate"
+    base_reward: 8 # 8 MIND за промежуточный курс
+    daily_cap: null
+    notes: "8 MIND за завершение продвинутого курса"
+  
+  course_completion_advanced:
+    action_id: "course_completion_advanced"
+    base_reward: 15 # 15 MIND за продвинутый курс
+    daily_cap: null
+    notes: "15 MIND за завершение экспертного курса"
+  
+  partner_subscription:
+    action_id: "partner_subscription"
+    base_reward: 2 # 2 MIND за подписку на партнерский канал
+    daily_cap: 10 # Максимум 10 MIND в день (5 каналов)
+    notes: "2 MIND за подписку на партнерский канал, максимум 5 в день"
+  
+  referral_bonus:
+    action_id: "referral_bonus"
+    base_reward: 25 # 25 MIND за привлечение друга
+    daily_cap: null
+    notes: "25 MIND за каждого приглашенного друга"
+
+# Настройки автоперебалансировки
+auto_rebalance:
+  enabled: true
+  schedule: "0 0 1 * *" # Каждое 1 число месяца в 00:00 UTC
+  remaining_pool_months: 24 # Остаток пула рассчитан на 24 месяца
+
+# Настройки безопасности
+security:
+  idempotency_enabled: true # Предотвращение дублирования наград
+  server_side_verification: true # Проверка действий на сервере
+  duplicate_prevention: true # Защита от повторных начислений
+
+# Лимиты системы
+limits:
+  max_daily_steps_reward: 20 # MIND
+  max_daily_subscription_reward: 10 # MIND
+  max_batch_size: 100 # Максимальное количество событий в одном запросе
+
+# Метаданные
+metadata:
+  version: "1.0.0"
+  last_updated: "2025-01-06"
+  description: "Конфигурация системы вознаграждений MIND Token"
+  total_reward_pool: 2_000_000_000 # 2B MIND токенов

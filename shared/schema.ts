@@ -10,6 +10,7 @@ import {
   boolean,
   decimal,
   pgEnum,
+  unique,
 } from "drizzle-orm/pg-core";
 import { relations } from "drizzle-orm";
 import { createInsertSchema } from "drizzle-zod";
@@ -151,6 +152,38 @@ export const dailyChallenges = pgTable("daily_challenges", {
   createdAt: timestamp("created_at").defaultNow(),
 });
 
+// MIND Token reward system tables
+export const userDailyCounters = pgTable("user_daily_counters", {
+  id: serial("id").primaryKey(),
+  userId: varchar("user_id").references(() => users.id).notNull(),
+  date: varchar("date").notNull(), // YYYY-MM-DD format
+  stepsMind: integer("steps_mind").default(0),
+  booksMind: integer("books_mind").default(0),
+  coursesMind: integer("courses_mind").default(0),
+  subsMind: integer("subs_mind").default(0),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+}, (table) => ({
+  userDateIdx: index("user_date_idx").on(table.userId, table.date),
+  uniqueUserDate: unique("unique_user_date").on(table.userId, table.date),
+}));
+
+export const userRewards = pgTable("user_rewards", {
+  id: serial("id").primaryKey(),
+  txHash: varchar("tx_hash"),
+  userId: varchar("user_id").references(() => users.id).notNull(),
+  actionId: varchar("action_id").notNull(),
+  mindAmount: integer("mind_amount").notNull(),
+  idempotencyKey: varchar("idempotency_key").notNull().unique(),
+  metadata: jsonb("metadata"),
+  timestamp: timestamp("timestamp").defaultNow(),
+  createdAt: timestamp("created_at").defaultNow(),
+}, (table) => ({
+  userIdx: index("user_rewards_user_idx").on(table.userId),
+  timestampIdx: index("user_rewards_timestamp_idx").on(table.timestamp),
+  actionIdx: index("user_rewards_action_idx").on(table.actionId),
+}));
+
 // Relations
 export const usersRelations = relations(users, ({ many, one }) => ({
   enrollments: many(enrollments),
@@ -226,3 +259,9 @@ export type ChannelSubscription = typeof channelSubscriptions.$inferSelect;
 export type InsertChannelSubscription = z.infer<typeof insertChannelSubscriptionSchema>;
 export type DailyChallenge = typeof dailyChallenges.$inferSelect;
 export type InsertDailyChallenge = z.infer<typeof insertDailyChallengeSchema>;
+
+// MIND Token reward system types
+export type UserDailyCounter = typeof userDailyCounters.$inferSelect;
+export type InsertUserDailyCounter = typeof userDailyCounters.$inferInsert;
+export type UserReward = typeof userRewards.$inferSelect;
+export type InsertUserReward = typeof userRewards.$inferInsert;

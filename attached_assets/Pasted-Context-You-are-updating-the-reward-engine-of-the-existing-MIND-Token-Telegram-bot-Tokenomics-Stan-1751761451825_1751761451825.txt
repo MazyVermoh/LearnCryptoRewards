@@ -1,0 +1,44 @@
+Context
+You are updating the reward engine of the existing MIND-Token Telegram bot.
+Tokenomics (Standard model, total supply = 10 B MIND) is already deployed on TON.
+All content is free; MIND is only a reward/utility token.
+Reward rules to implement
+Action	Reward (MIND)	Notes	Daily user cap
+Steps	1 MIND per 1 000 steps	Round down to the nearest 1 000; use Apple Health / Google Fit API.	50 MIND
+Book completion	10 MIND	Count a book when progress ≥ 0.80.	30 MIND
+Course completion	30 MIND (basic)
+50 MIND (intermediate)
+80 MIND (advanced)	Mark “completed” when all mandatory lessons passed.	160 MIND (sum of any courses)
+Partner-channel subscription	15 MIND	Only after Telegram API verifies status = member.	45 MIND
+Referral bonus	50 MIND to inviter and invitee	Trigger after both perform ≥ 1 rewarded action.	—
+Back-end requirements
+Config file — create rewards.yml (or JSON) with keys action_id, base_reward, daily_cap.
+Reward engine
+Accepts a batch of user_action events.
+Checks current k (auto-rebalancing coefficient, default = 1.0).
+Calculates reward = floor(base_reward × k), applies caps, then calls jetton.transfer().
+Scheduler / cron — resets per-user daily counters at UTC 00:00.
+Auto-rebalancer — once per month:
+if actual_monthly_emission > remaining_pool / months_left:
+    k = actual_monthly_emission ÷ (remaining_pool / months_left)
+else:
+    k = 1.0
+write k to rewards.yml
+Database tables
+user_daily_counters(user_id, date, steps_mind, books_mind, courses_mind, subs_mind)
+user_rewards(tx_hash, user_id, action_id, mind_amount, timestamp)
+Bot commands/UI
+/balance → on-chain balance.
+/stats → steps today, books read, courses finished, remaining daily caps.
+When a reward is paid, send toast: “+ ## MIND for 1 000 steps” etc.
+Security
+Verify all progress via server-side webhooks (no client trust).
+Deny duplicate events with idempotency key.
+Unit tests — cover: cap enforcement, k-scaling, idempotency.
+Deliverables
+rewards.yml with the table above.
+reward_engine.py (or rewards.ts) implementing steps 1–3.
+auto_rebalance.py cloud-function.
+Migration script adding new DB tables.
+Updated README showing how to trigger a test reward.
+Start by outputting the exact rewards.yml file, then the reward-engine pseudocode, followed by the database migration.

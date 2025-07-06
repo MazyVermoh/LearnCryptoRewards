@@ -1,6 +1,7 @@
 import type { Express } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
+import { registerRewardRoutes } from "./reward-routes";
 import { z } from "zod";
 import {
   insertCourseSchema,
@@ -401,6 +402,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.status(500).json({ message: "Failed to fetch admin stats" });
     }
   });
+
+  // Register MIND Token reward system routes
+  registerRewardRoutes(app);
 
   const httpServer = createServer(app);
   return httpServer;
