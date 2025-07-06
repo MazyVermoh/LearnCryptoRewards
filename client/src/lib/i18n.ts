@@ -144,6 +144,8 @@ export const translations = {
     addSponsorChannel: "Add Sponsor Channel",
     viewTransactions: "View Transactions",
     searchBooks: "Search books...",
+    backToBooks: "Back to Books",
+    loading: "Loading...",
   },
   ru: {
     // Navigation
@@ -291,6 +293,8 @@ export const translations = {
     booksRead: "Книг прочитано",
     addSponsorChannel: "Добавить спонсорский канал",
     viewTransactions: "Просмотр транзакций",
+    backToBooks: "Назад к книгам",
+    loading: "Загрузка...",
   },
 };
 

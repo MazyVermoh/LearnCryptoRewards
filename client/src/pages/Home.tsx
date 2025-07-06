@@ -866,7 +866,12 @@ export default function Home() {
                             {language === 'ru' && userBook.book.authorRu ? userBook.book.authorRu : userBook.book.author}
                           </p>
                           <div className="flex items-center space-x-2 mt-2">
-                            <Button size="sm">{t('read')}</Button>
+                            <Button 
+                              size="sm"
+                              onClick={() => setLocation(`/books/${userBook.book.id}/read`)}
+                            >
+                              {t('read')}
+                            </Button>
                             <Button size="sm" variant="outline">{t('download')}</Button>
                           </div>
                         </div>
