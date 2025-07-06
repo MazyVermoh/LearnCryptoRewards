@@ -933,13 +933,25 @@ export default function Home() {
                           <BookOpen className="h-6 w-6 text-gray-400" />
                         </div>
                         <div className="flex-1">
-                          <h4 className="font-medium text-gray-900">
-                            {language === 'ru' && purchase.book.titleRu ? purchase.book.titleRu : purchase.book.title}
-                          </h4>
-                          <p className="text-gray-600 text-sm mb-1">
+                          <div className="flex items-center justify-between mb-1">
+                            <h4 className="font-medium text-gray-900">
+                              {language === 'ru' && purchase.book.titleRu ? purchase.book.titleRu : purchase.book.title}
+                            </h4>
+                            <span className="text-sm text-gray-600">
+                              {purchase.is_completed ? `${t('completed')} 100%` : `${t('completed')} ${purchase.progress || 0}%`}
+                            </span>
+                          </div>
+                          <p className="text-gray-600 text-sm mb-2">
                             {language === 'ru' && purchase.book.authorRu ? purchase.book.authorRu : purchase.book.author}
                           </p>
-                          <div className="flex items-center space-x-2 mt-2">
+                          <Progress 
+                            value={purchase.is_completed ? 100 : (purchase.progress || 0)} 
+                            className="mb-2" 
+                          />
+                          <p className="text-sm text-gray-500 mb-2">
+                            {purchase.is_completed ? t('completed') : t('inProgress')}
+                          </p>
+                          <div className="flex items-center space-x-2">
                             <Button 
                               size="sm"
                               onClick={() => setLocation(`/books/${purchase.book.id}/read`)}
@@ -1071,13 +1083,25 @@ export default function Home() {
                           <BookOpen className="h-6 w-6 text-gray-400" />
                         </div>
                         <div className="flex-1">
-                          <h4 className="font-medium text-gray-900">
-                            {language === 'ru' && userBook.book.titleRu ? userBook.book.titleRu : userBook.book.title}
-                          </h4>
-                          <p className="text-gray-600 text-sm">
+                          <div className="flex items-center justify-between mb-1">
+                            <h4 className="font-medium text-gray-900">
+                              {language === 'ru' && userBook.book.titleRu ? userBook.book.titleRu : userBook.book.title}
+                            </h4>
+                            <span className="text-sm text-gray-600">
+                              {userBook.is_completed ? `${t('completed')} 100%` : `${t('completed')} ${userBook.progress || 0}%`}
+                            </span>
+                          </div>
+                          <p className="text-gray-600 text-sm mb-2">
                             {language === 'ru' && userBook.book.authorRu ? userBook.book.authorRu : userBook.book.author}
                           </p>
-                          <div className="flex items-center space-x-2 mt-2">
+                          <Progress 
+                            value={userBook.is_completed ? 100 : (userBook.progress || 0)} 
+                            className="mb-2" 
+                          />
+                          <p className="text-sm text-gray-500 mb-2">
+                            {userBook.is_completed ? t('completed') : t('inProgress')}
+                          </p>
+                          <div className="flex items-center space-x-2">
                             <Button 
                               size="sm"
                               onClick={() => setLocation(`/books/${userBook.book.id}/read`)}
