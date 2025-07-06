@@ -188,6 +188,21 @@ export class DatabaseStorage implements IStorage {
   }
 
   async enrollUser(enrollment: InsertEnrollment): Promise<Enrollment> {
+    // Check if user is already enrolled in this course
+    const existingEnrollment = await db
+      .select()
+      .from(enrollments)
+      .where(
+        and(
+          eq(enrollments.userId, enrollment.userId),
+          eq(enrollments.courseId, enrollment.courseId)
+        )
+      );
+    
+    if (existingEnrollment.length > 0) {
+      throw new Error('User is already enrolled in this course');
+    }
+    
     const [newEnrollment] = await db.insert(enrollments).values(enrollment).returning();
     return newEnrollment;
   }
@@ -256,6 +271,21 @@ export class DatabaseStorage implements IStorage {
   }
 
   async purchaseBook(purchase: InsertBookPurchase): Promise<BookPurchase> {
+    // Check if user has already purchased this book
+    const existingPurchase = await db
+      .select()
+      .from(bookPurchases)
+      .where(
+        and(
+          eq(bookPurchases.userId, purchase.userId),
+          eq(bookPurchases.bookId, purchase.bookId)
+        )
+      );
+    
+    if (existingPurchase.length > 0) {
+      throw new Error('User has already purchased this book');
+    }
+    
     const [newPurchase] = await db.insert(bookPurchases).values(purchase).returning();
     return newPurchase;
   }

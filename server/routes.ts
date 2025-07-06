@@ -104,7 +104,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.status(201).json(enrollment);
     } catch (error) {
       console.error("Error creating enrollment:", error);
-      res.status(400).json({ message: "Failed to enroll user" });
+      if (error.message === 'User is already enrolled in this course') {
+        res.status(409).json({ message: "You are already enrolled in this course" });
+      } else {
+        res.status(400).json({ message: "Failed to enroll user" });
+      }
     }
   });
 
@@ -208,7 +212,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.status(201).json(purchase);
     } catch (error) {
       console.error("Error purchasing book:", error);
-      res.status(400).json({ message: "Failed to purchase book" });
+      if (error.message === 'User has already purchased this book') {
+        res.status(409).json({ message: "You have already purchased this book" });
+      } else {
+        res.status(400).json({ message: "Failed to purchase book" });
+      }
     }
   });
 
