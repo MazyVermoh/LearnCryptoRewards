@@ -1,11 +1,25 @@
 import express, { type Request, Response, NextFunction } from "express";
 import { registerRoutes } from "./routes";
 import { setupVite, serveStatic, log } from "./vite";
-import { telegramBot } from "./telegram-bot.js";
+
+// Telegram bot will be initialized safely
+let telegramBot: any = null;
 
 const app = express();
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
+
+// Health check endpoint for deployment (root path)
+app.get('/', (req: Request, res: Response) => {
+  res.status(200).json({ 
+    status: 'ok', 
+    message: 'MIND Token Educational Platform is running',
+    timestamp: new Date().toISOString(),
+    uptime: process.uptime(),
+    environment: process.env.NODE_ENV || 'development',
+    version: '1.0.0'
+  });
+});
 
 // Health check endpoint for deployment
 app.get('/api/health', (req: Request, res: Response) => {
@@ -57,10 +71,12 @@ app.use((req, res, next) => {
   next();
 });
 
-// Telegram webhook endpoints
+// Telegram webhook endpoints (with error handling to prevent server startup issues)
 app.post('/telegram/webhook', async (req: Request, res: Response) => {
   try {
-    await telegramBot.processUpdate(req.body);
+    if (telegramBot) {
+      await telegramBot.processUpdate(req.body);
+    }
     res.status(200).json({ ok: true });
   } catch (error) {
     console.error('Telegram webhook error:', error);
@@ -70,6 +86,9 @@ app.post('/telegram/webhook', async (req: Request, res: Response) => {
 
 app.get('/telegram/info', async (req: Request, res: Response) => {
   try {
+    if (!telegramBot) {
+      return res.status(503).json({ error: 'Telegram bot not initialized' });
+    }
     const botInfo = await telegramBot.getMe();
     res.json(botInfo);
   } catch (error) {
@@ -80,6 +99,9 @@ app.get('/telegram/info', async (req: Request, res: Response) => {
 
 app.post('/telegram/set-webhook', async (req: Request, res: Response) => {
   try {
+    if (!telegramBot) {
+      return res.status(503).json({ error: 'Telegram bot not initialized' });
+    }
     const { url } = req.body;
     if (!url) {
       return res.status(400).json({ error: 'Webhook URL is required' });
@@ -94,16 +116,17 @@ app.post('/telegram/set-webhook', async (req: Request, res: Response) => {
 
 (async () => {
   try {
-    const server = await registerRoutes(app);
+    // Initialize telegram bot safely
+    try {
+      const telegramModule = await import("./telegram-bot.js");
+      telegramBot = telegramModule.telegramBot;
+      console.log('✅ Telegram bot initialized successfully');
+    } catch (error) {
+      console.warn('⚠️ Telegram bot not available:', error.message);
+      console.warn('Telegram features will be disabled');
+    }
 
-    // Error handling middleware
-    app.use((err: any, _req: Request, res: Response, _next: NextFunction) => {
-      const status = err.status || err.statusCode || 500;
-      const message = err.message || "Internal Server Error";
-      
-      console.error('Server error:', err);
-      res.status(status).json({ message });
-    });
+    const server = await registerRoutes(app);
 
     // Setup environment-specific middleware
     if (app.get("env") === "development") {
@@ -112,17 +135,23 @@ app.post('/telegram/set-webhook', async (req: Request, res: Response) => {
       serveStatic(app);
     }
 
+    // Error handling middleware (must be last)
+    app.use((err: any, _req: Request, res: Response, _next: NextFunction) => {
+      const status = err.status || err.statusCode || 500;
+      const message = err.message || "Internal Server Error";
+      
+      console.error('Server error:', err);
+      res.status(status).json({ message });
+    });
+
     // Server configuration
-    const port = 5000;
+    const port = process.env.PORT || 5000;
     const host = "0.0.0.0";
     
-    server.listen({
-      port,
-      host,
-      reusePort: true,
-    }, () => {
+    server.listen(port, host, () => {
       log(`🚀 MIND Token Educational Platform server running on http://${host}:${port}`);
-      log(`📊 Health check available at http://${host}:${port}/health`);
+      log(`📊 Health check available at http://${host}:${port}/`);
+      log(`📊 API health check available at http://${host}:${port}/api/health`);
       log(`🌍 Environment: ${process.env.NODE_ENV || 'development'}`);
     });
 
