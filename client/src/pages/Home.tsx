@@ -177,6 +177,16 @@ function BookChaptersDisplay({ bookId }: { bookId: number }) {
                 <div className="text-xs text-gray-500 mt-2">
                   Order: {chapter.orderIndex}
                 </div>
+                <div className="text-sm text-gray-600 mt-2">
+                  {chapter.content ? (
+                    <div>
+                      <strong>Содержимое:</strong> {chapter.content.substring(0, 100)}
+                      {chapter.content.length > 100 && '...'}
+                    </div>
+                  ) : (
+                    <div className="text-red-500">Содержимое не добавлено</div>
+                  )}
+                </div>
               </div>
               <Button
                 size="sm"
@@ -225,11 +235,13 @@ function BookChaptersDisplay({ bookId }: { bookId: number }) {
                 onClick={async () => {
                   try {
                     const { createdAt, updatedAt, ...chapterData } = editingChapter;
+                    console.log("Saving chapter data:", chapterData);
                     await apiRequest('PUT', `/api/book-chapters/${editingChapter.id}`, chapterData);
-                    queryClient.invalidateQueries({ queryKey: [`/api/books/${bookId}/chapters`] });
+                    queryClient.invalidateQueries({ queryKey: [`/api/books/${editingChapter.bookId}/chapters`] });
                     setEditingChapter(null);
                     toast({ title: "Success", description: "Chapter updated successfully" });
                   } catch (error) {
+                    console.error("Failed to save chapter:", error);
                     toast({ title: "Error", description: "Failed to update chapter", variant: "destructive" });
                   }
                 }}
