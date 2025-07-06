@@ -620,9 +620,9 @@ export default function Home() {
             <Gift className="h-4 w-4 mb-1" />
             <span className="text-sm">{t('rewards')}</span>
           </TabsTrigger>
-          <TabsTrigger value="admin" className="flex flex-col py-3 px-4 data-[state=active]:border-b-2 data-[state=active]:border-primary">
+          <TabsTrigger value="admin" className="flex flex-col py-3 px-4 data-[state=active]:border-b-2 data-[state=active]:border-primary bg-red-100">
             <Settings className="h-4 w-4 mb-1" />
-            <span className="text-sm">Admin</span>
+            <span className="text-sm font-bold">ADMIN</span>
           </TabsTrigger>
         </TabsList>
 
