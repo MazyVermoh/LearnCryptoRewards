@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useParams, useLocation } from "wouter";
 import { useQuery } from "@tanstack/react-query";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -21,8 +21,23 @@ export default function BookReader() {
   const { id } = useParams<{ id: string }>();
   const [, setLocation] = useLocation();
   const [currentChapterIndex, setCurrentChapterIndex] = useState(0);
-  const [isNavigationOpen, setIsNavigationOpen] = useState(false);
+  const [showChapterList, setShowChapterList] = useState(false);
+  const menuRef = useRef<HTMLDivElement>(null);
   const { t, language } = useLanguage();
+
+  // Close menu when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
+        setShowChapterList(false);
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, []);
 
   const { data: book, isLoading } = useQuery<BookWithChapters>({
     queryKey: ["/api/books", id],
@@ -60,7 +75,7 @@ export default function BookReader() {
 
   const goToChapter = (index: number) => {
     setCurrentChapterIndex(index);
-    setIsNavigationOpen(false);
+    setShowChapterList(false);
   };
 
   if (isLoading) {
@@ -80,10 +95,10 @@ export default function BookReader() {
         <div className="text-center">
           <p className="text-gray-600 dark:text-gray-300">Книга не найдена</p>
           <Button 
-            onClick={() => setLocation("/books")} 
+            onClick={() => setLocation("/")} 
             className="mt-4"
           >
-            {t("backToBooks")}
+            Назад
           </Button>
         </div>
       </div>
@@ -100,11 +115,11 @@ export default function BookReader() {
               <Button
                 variant="ghost"
                 size="sm"
-                onClick={() => setLocation("/books")}
+                onClick={() => setLocation("/")}
                 className="flex items-center space-x-2"
               >
                 <ArrowLeft className="w-4 h-4" />
-                <span className="hidden sm:inline">{t("backToBooks")}</span>
+                <span className="hidden sm:inline">Назад</span>
               </Button>
               <Separator orientation="vertical" className="h-6" />
               <div className="flex items-center space-x-2">
@@ -123,9 +138,48 @@ export default function BookReader() {
                 <Progress value={progress} className="w-20" />
               </div>
               
-              <Button variant="outline" size="sm">
-                <Menu className="w-4 h-4" />
-              </Button>
+              <div className="relative" ref={menuRef}>
+                <Button 
+                  variant="outline" 
+                  size="sm"
+                  onClick={() => setShowChapterList(!showChapterList)}
+                >
+                  <Menu className="w-4 h-4" />
+                </Button>
+                
+                {showChapterList && (
+                  <div className="absolute right-0 top-full mt-2 w-80 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-lg z-50">
+                    <div className="p-4">
+                      <h3 className="text-lg font-semibold mb-4">Содержание</h3>
+                      <div className="max-h-96 overflow-y-auto space-y-2">
+                        {chapters.map((chapter, index) => (
+                          <button
+                            key={chapter.id}
+                            onClick={() => goToChapter(index)}
+                            className={cn(
+                              "w-full text-left p-3 rounded-lg transition-colors",
+                              index === currentChapterIndex
+                                ? "bg-blue-100 dark:bg-blue-900 text-blue-900 dark:text-blue-100"
+                                : "hover:bg-gray-100 dark:hover:bg-gray-700"
+                            )}
+                          >
+                            <div className="flex items-start space-x-3">
+                              <Badge variant="outline" className="text-xs">
+                                {index + 1}
+                              </Badge>
+                              <div className="flex-1 min-w-0">
+                                <p className="text-sm font-medium truncate">
+                                  {language === "ru" ? chapter.titleRu || chapter.title : chapter.title}
+                                </p>
+                              </div>
+                            </div>
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+                )}
+              </div>
             </div>
           </div>
         </div>
