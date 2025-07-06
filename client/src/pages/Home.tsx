@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useLocation } from 'wouter';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useLanguage } from '@/hooks/useLanguage';
 import { apiRequest } from '@/lib/queryClient';
@@ -244,6 +245,7 @@ function BookChaptersDisplay({ bookId }: { bookId: number }) {
 }
 
 export default function Home() {
+  const [, setLocation] = useLocation();
   const { language, changeLanguage, t } = useLanguage();
   const { toast } = useToast();
   const queryClient = useQueryClient();
@@ -735,6 +737,14 @@ export default function Home() {
                           </h4>
                           <p className="text-gray-600 text-sm">{t('courseProgress')}: {enrollment.progress}%</p>
                           <Progress value={enrollment.progress} className="mt-2" />
+                          <div className="flex items-center space-x-2 mt-2">
+                            <Button 
+                              size="sm"
+                              onClick={() => setLocation(`/courses/${enrollment.course.id}/read`)}
+                            >
+                              Читать
+                            </Button>
+                          </div>
                         </div>
                       </div>
                     </CardContent>
