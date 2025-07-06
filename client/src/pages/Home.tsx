@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useLanguage } from '@/hooks/useLanguage';
-import { apiRequest, queryClient } from '@/lib/queryClient';
+import { apiRequest } from '@/lib/queryClient';
 import { useToast } from '@/hooks/use-toast';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -1737,10 +1737,7 @@ export default function Home() {
                 <Button 
                   onClick={async () => {
                     try {
-                      await apiRequest(`/api/courses/${editingCourse.id}`, {
-                        method: 'PUT',
-                        body: JSON.stringify(editingCourse)
-                      });
+                      await apiRequest('PUT', `/api/courses/${editingCourse.id}`, editingCourse);
                       queryClient.invalidateQueries({ queryKey: ['/api/courses'] });
                       setEditingCourse(null);
                       toast({
@@ -1846,10 +1843,7 @@ export default function Home() {
                 <Button 
                   onClick={async () => {
                     try {
-                      await apiRequest(`/api/books/${editingBook.id}`, {
-                        method: 'PUT',
-                        body: JSON.stringify(editingBook)
-                      });
+                      await apiRequest('PUT', `/api/books/${editingBook.id}`, editingBook);
                       queryClient.invalidateQueries({ queryKey: ['/api/books'] });
                       setEditingBook(null);
                       toast({
@@ -2075,10 +2069,7 @@ export default function Home() {
               <Button
                 onClick={async () => {
                   try {
-                    await apiRequest(`/api/courses/${addingLesson.courseId}/lessons`, {
-                      method: 'POST',
-                      body: JSON.stringify(addingLesson)
-                    });
+                    await apiRequest('POST', `/api/courses/${addingLesson.courseId}/lessons`, addingLesson);
                     setAddingLesson(null);
                     toast({ title: "Success", description: "Lesson added successfully" });
                   } catch (error) {
@@ -2159,10 +2150,7 @@ export default function Home() {
               <Button
                 onClick={async () => {
                   try {
-                    await apiRequest(`/api/books/${addingChapter.bookId}/chapters`, {
-                      method: 'POST',
-                      body: JSON.stringify(addingChapter)
-                    });
+                    await apiRequest('POST', `/api/books/${addingChapter.bookId}/chapters`, addingChapter);
                     setAddingChapter(null);
                     toast({ title: "Success", description: "Chapter added successfully" });
                   } catch (error) {
