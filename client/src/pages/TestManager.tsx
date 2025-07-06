@@ -19,6 +19,7 @@ interface TestForm {
   correctAnswer: number;
   explanation?: string;
   explanationRu?: string;
+  optionsCount: number;
 }
 
 export default function TestManager() {
@@ -32,11 +33,12 @@ export default function TestManager() {
   const [testForm, setTestForm] = useState<TestForm>({
     question: '',
     questionRu: '',
-    options: ['', '', '', ''],
-    optionsRu: ['', '', '', ''],
+    options: ['', ''],
+    optionsRu: ['', ''],
     correctAnswer: 0,
     explanation: '',
     explanationRu: '',
+    optionsCount: 2,
   });
 
   // Fetch chapters or lessons based on type
@@ -126,11 +128,12 @@ export default function TestManager() {
     setTestForm({
       question: '',
       questionRu: '',
-      options: ['', '', '', ''],
-      optionsRu: ['', '', '', ''],
+      options: ['', ''],
+      optionsRu: ['', ''],
       correctAnswer: 0,
       explanation: '',
       explanationRu: '',
+      optionsCount: 2,
     });
   };
 
@@ -139,13 +142,40 @@ export default function TestManager() {
     setTestForm({
       question: test.question || '',
       questionRu: test.questionRu || '',
-      options: test.options || ['', '', '', ''],
-      optionsRu: test.optionsRu || ['', '', '', ''],
+      options: test.options || ['', ''],
+      optionsRu: test.optionsRu || ['', ''],
       correctAnswer: test.correctAnswer || 0,
       explanation: test.explanation || '',
       explanationRu: test.explanationRu || '',
+      optionsCount: test.options ? test.options.length : 2,
     });
     setShowForm(true);
+  };
+
+  const handleOptionsCountChange = (count: number) => {
+    const newOptions = [...testForm.options];
+    const newOptionsRu = [...testForm.optionsRu];
+    
+    if (count > testForm.options.length) {
+      // Add empty options
+      for (let i = testForm.options.length; i < count; i++) {
+        newOptions.push('');
+        newOptionsRu.push('');
+      }
+    } else if (count < testForm.options.length) {
+      // Remove excess options
+      newOptions.splice(count);
+      newOptionsRu.splice(count);
+    }
+    
+    setTestForm({
+      ...testForm,
+      options: newOptions,
+      optionsRu: newOptionsRu,
+      optionsCount: count,
+      // Reset correct answer if it's out of range
+      correctAnswer: testForm.correctAnswer >= count ? 0 : testForm.correctAnswer,
+    });
   };
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -361,7 +391,27 @@ export default function TestManager() {
 
                 {/* Options */}
                 <div>
-                  <h4 className="font-medium mb-4">Answer Options</h4>
+                  <div className="flex items-center justify-between mb-4">
+                    <h4 className="font-medium">Answer Options</h4>
+                    <div className="flex items-center space-x-2">
+                      <label className="text-sm font-medium">Number of options:</label>
+                      <Select
+                        value={testForm.optionsCount.toString()}
+                        onValueChange={(value) => handleOptionsCountChange(parseInt(value))}
+                      >
+                        <SelectTrigger className="w-20">
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="2">2</SelectItem>
+                          <SelectItem value="3">3</SelectItem>
+                          <SelectItem value="4">4</SelectItem>
+                          <SelectItem value="5">5</SelectItem>
+                          <SelectItem value="6">6</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                  </div>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div>
                       <label className="block text-sm font-medium mb-2">English Options</label>
