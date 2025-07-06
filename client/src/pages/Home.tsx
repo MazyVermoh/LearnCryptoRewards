@@ -369,6 +369,7 @@ export default function Home() {
   const [addingLesson, setAddingLesson] = useState(null);
   const [addingChapter, setAddingChapter] = useState(null);
   const [managingBookChapters, setManagingBookChapters] = useState(null);
+  const [managingCourseChapters, setManagingCourseChapters] = useState(null);
   const [numberOfChapters, setNumberOfChapters] = useState(5);
 
   // Enroll in course mutation
@@ -571,6 +572,30 @@ export default function Home() {
       });
       setManagingBookChapters(null);
       queryClient.invalidateQueries({ queryKey: [`/api/books/${managingBookChapters?.id}/chapters`] });
+    },
+    onError: (error) => {
+      toast({
+        title: "Error",
+        description: error.message,
+        variant: "destructive",
+      });
+    },
+  });
+
+  // Generate course lessons mutation
+  const generateLessons = useMutation({
+    mutationFn: async ({ courseId, numberOfLessons }: { courseId: number; numberOfLessons: number }) => {
+      await apiRequest('POST', `/api/courses/${courseId}/generate-lessons`, {
+        numberOfLessons,
+      });
+    },
+    onSuccess: () => {
+      toast({
+        title: "Success",
+        description: "Course lessons generated successfully",
+      });
+      setManagingCourseChapters(null);
+      queryClient.invalidateQueries({ queryKey: [`/api/courses/${managingCourseChapters?.id}/lessons`] });
     },
     onError: (error) => {
       toast({
@@ -1460,8 +1485,18 @@ export default function Home() {
                           </Button>
                           <Button
                             size="sm"
+                            variant="outline"
+                            onClick={() => {
+                              setManagingCourseChapters(course);
+                              setNumberOfChapters(1);
+                            }}
+                          >
+                            Chapters
+                          </Button>
+                          <Button
+                            size="sm"
                             variant="destructive"
-                            onClick={() => deleteCourse(course.id)}
+                            onClick={() => deleteCourse.mutate(course.id)}
                           >
                             Delete
                           </Button>
@@ -1511,7 +1546,7 @@ export default function Home() {
                           <Button
                             size="sm"
                             variant="destructive"
-                            onClick={() => deleteBook(book.id)}
+                            onClick={() => deleteBook.mutate(book.id)}
                           >
                             Delete
                           </Button>
@@ -2751,6 +2786,53 @@ export default function Home() {
                 </Button>
                 <Button 
                   onClick={() => setManagingBookChapters(null)}
+                  variant="outline"
+                  className="flex-1"
+                >
+                  Cancel
+                </Button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Manage Course Chapters Modal */}
+      {managingCourseChapters && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-lg p-6 w-full max-w-md">
+            <h3 className="text-lg font-semibold mb-4">Generate Lessons for: {managingCourseChapters.title}</h3>
+            <div className="space-y-4">
+              <div>
+                <label className="block text-sm font-medium mb-1">Number of Lessons</label>
+                <input
+                  type="number"
+                  value={numberOfChapters}
+                  onChange={(e) => setNumberOfChapters(Number(e.target.value) || 1)}
+                  className="w-full p-2 border rounded-md"
+                  min="1"
+                  max="50"
+                  placeholder="Enter number of lessons (1-50)"
+                />
+                <p className="text-sm text-gray-500 mt-1">
+                  This will replace all existing lessons with {numberOfChapters} new empty lessons
+                </p>
+              </div>
+              <div className="flex space-x-3 pt-4">
+                <Button 
+                  onClick={() => {
+                    generateLessons.mutate({
+                      courseId: managingCourseChapters.id,
+                      numberOfLessons: numberOfChapters
+                    });
+                  }}
+                  disabled={generateLessons.isPending}
+                  className="flex-1"
+                >
+                  {generateLessons.isPending ? "Generating..." : "Generate Lessons"}
+                </Button>
+                <Button 
+                  onClick={() => setManagingCourseChapters(null)}
                   variant="outline"
                   className="flex-1"
                 >

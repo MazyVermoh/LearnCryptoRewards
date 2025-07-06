@@ -67,6 +67,7 @@ export interface IStorage {
   deleteBook(id: number): Promise<void>;
   permanentlyDeleteBook(id: number): Promise<void>;
   generateBookChapters(bookId: number, numberOfChapters: number): Promise<BookChapter[]>;
+  generateCourseLessons(courseId: number, numberOfLessons: number): Promise<CourseLesson[]>;
   
   // Book purchase operations
   purchaseBook(purchase: InsertBookPurchase): Promise<BookPurchase>;
@@ -306,7 +307,7 @@ export class DatabaseStorage implements IStorage {
         titleRu: `Глава ${i}`,
         content: `Content for Chapter ${i}...`,
         contentRu: `Содержание для главы ${i}...`,
-        order: i,
+        orderIndex: i,
       };
       chapters.push(chapterData);
     }
@@ -315,6 +316,36 @@ export class DatabaseStorage implements IStorage {
     if (chapters.length > 0) {
       const insertedChapters = await db.insert(bookChapters).values(chapters).returning();
       return insertedChapters;
+    }
+    
+    return [];
+  }
+
+  async generateCourseLessons(courseId: number, numberOfLessons: number): Promise<CourseLesson[]> {
+    // First, delete existing lessons
+    await db.delete(courseLessons).where(eq(courseLessons.courseId, courseId));
+    
+    // Generate new lessons
+    const lessons = [];
+    for (let i = 1; i <= numberOfLessons; i++) {
+      const lessonData = {
+        courseId,
+        title: `Lesson ${i}`,
+        titleRu: `Урок ${i}`,
+        description: `Description for Lesson ${i}...`,
+        descriptionRu: `Описание для урока ${i}...`,
+        content: `Content for Lesson ${i}...`,
+        contentRu: `Содержание для урока ${i}...`,
+        duration: 10,
+        orderIndex: i,
+      };
+      lessons.push(lessonData);
+    }
+    
+    // Insert all lessons at once
+    if (lessons.length > 0) {
+      const insertedLessons = await db.insert(courseLessons).values(lessons).returning();
+      return insertedLessons;
     }
     
     return [];

@@ -234,6 +234,24 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Generate course lessons
+  app.post("/api/courses/:id/generate-lessons", async (req, res) => {
+    try {
+      const id = parseInt(req.params.id);
+      const { numberOfLessons } = req.body;
+      
+      if (!numberOfLessons || numberOfLessons < 1 || numberOfLessons > 50) {
+        return res.status(400).json({ message: "Number of lessons must be between 1 and 50" });
+      }
+      
+      const lessons = await storage.generateCourseLessons(id, numberOfLessons);
+      res.status(201).json(lessons);
+    } catch (error) {
+      console.error("Error generating course lessons:", error);
+      res.status(500).json({ message: "Failed to generate course lessons" });
+    }
+  });
+
   // Book purchase routes
   app.post("/api/book-purchases", async (req, res) => {
     try {
