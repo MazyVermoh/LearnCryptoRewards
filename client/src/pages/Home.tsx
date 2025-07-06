@@ -524,6 +524,44 @@ export default function Home() {
     }
   };
 
+  // Share referral link
+  const shareReferralLink = () => {
+    const referralLink = `https://t.me/MindTokenEducationBot?start=${user?.referralCode || 'DEMO123'}`;
+    
+    if (navigator.share) {
+      navigator.share({
+        title: 'Join MIND Token Education Platform',
+        text: 'Learn and earn MIND tokens with me! Get free courses and books.',
+        url: referralLink,
+      });
+    } else {
+      // Fallback to copy link
+      navigator.clipboard.writeText(referralLink);
+      toast({
+        title: "Link copied!",
+        description: "Referral link copied to clipboard",
+      });
+    }
+  };
+
+  // Generate referral code
+  const generateReferralCode = async () => {
+    try {
+      const response = await apiRequest('POST', `/api/users/${mockUserId}/referral-code`, {});
+      queryClient.invalidateQueries({ queryKey: [`/api/users/${mockUserId}`] });
+      toast({
+        title: "Success!",
+        description: "Referral code generated successfully",
+      });
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to generate referral code",
+        variant: "destructive",
+      });
+    }
+  };
+
   // Course categories only
   const courseCategoryIcons = {
     'mind-thinking': <Brain className="h-6 w-6" />,
@@ -1046,15 +1084,25 @@ export default function Home() {
                     <code className="font-mono text-sm bg-white px-2 py-1 rounded">
                       {user?.referralCode || 'Generate code'}
                     </code>
-                    <Button size="sm" onClick={copyReferralCode}>
-                      <Copy className="h-4 w-4 mr-1" />
-                      {t('copy')}
-                    </Button>
+                    {user?.referralCode ? (
+                      <Button size="sm" onClick={copyReferralCode}>
+                        <Copy className="h-4 w-4 mr-1" />
+                        {t('copy')}
+                      </Button>
+                    ) : (
+                      <Button size="sm" onClick={generateReferralCode}>
+                        <Plus className="h-4 w-4 mr-1" />
+                        Generate
+                      </Button>
+                    )}
                   </div>
                 </div>
                 <div className="text-center">
                   <p className="text-sm text-gray-600 mb-2">{t('earnForFriend')}</p>
-                  <Button className="bg-secondary text-white">
+                  <Button 
+                    className="bg-secondary text-white"
+                    onClick={() => shareReferralLink()}
+                  >
                     <Share className="h-4 w-4 mr-1" />
                     {t('shareReferralLink')}
                   </Button>
@@ -1396,7 +1444,12 @@ export default function Home() {
               <CardContent className="p-0">
                 <div className="flex items-center justify-between mb-4">
                   <h4 className="font-medium">{t('recentUsers')}</h4>
-                  <Button size="sm">{t('viewAll')}</Button>
+                  <Button 
+                    size="sm"
+                    onClick={() => setAdminView('users')}
+                  >
+                    {t('viewAll')}
+                  </Button>
                 </div>
                 <div className="space-y-3">
                   <div className="flex items-center justify-between">
@@ -1505,11 +1558,17 @@ export default function Home() {
           <div className="mb-6">
             <h3 className="text-lg font-semibold mb-3">{t('quickActions')}</h3>
             <div className="grid grid-cols-2 gap-3">
-              <Button className="bg-secondary text-white p-4 h-auto flex flex-col">
+              <Button 
+                className="bg-secondary text-white p-4 h-auto flex flex-col"
+                onClick={() => setActiveView('home')}
+              >
                 <Gift className="h-6 w-6 mb-2" />
                 {t('earnRewards')}
               </Button>
-              <Button className="bg-accent text-white p-4 h-auto flex flex-col">
+              <Button 
+                className="bg-accent text-white p-4 h-auto flex flex-col"
+                onClick={() => shareReferralLink()}
+              >
                 <Share className="h-6 w-6 mb-2" />
                 {t('referFriends')}
               </Button>
@@ -1626,7 +1685,16 @@ export default function Home() {
                       <Bell className="h-5 w-5 text-gray-600" />
                       <span>{t('notifications')}</span>
                     </div>
-                    <Button variant="outline" size="sm">{t('manage')}</Button>
+                    <Button 
+                      variant="outline" 
+                      size="sm"
+                      onClick={() => toast({
+                        title: "Notifications",
+                        description: "Notification settings opened",
+                      })}
+                    >
+                      {t('manage')}
+                    </Button>
                   </div>
                 </CardContent>
               </Card>
@@ -1637,11 +1705,22 @@ export default function Home() {
           <div>
             <h3 className="text-lg font-semibold mb-3">{t('account')}</h3>
             <div className="space-y-3">
-              <Button variant="outline" className="w-full justify-start">
+              <Button 
+                variant="outline" 
+                className="w-full justify-start"
+                onClick={() => shareReferralLink()}
+              >
                 <Share className="h-4 w-4 mr-2" />
                 {t('shareApp')}
               </Button>
-              <Button variant="outline" className="w-full justify-start">
+              <Button 
+                variant="outline" 
+                className="w-full justify-start"
+                onClick={() => toast({
+                  title: "Help",
+                  description: "Help and support coming soon!",
+                })}
+              >
                 <Target className="h-4 w-4 mr-2" />
                 {t('help')}
               </Button>
