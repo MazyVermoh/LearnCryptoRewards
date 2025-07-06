@@ -9,6 +9,8 @@ import {
   bookReadingProgress,
   books,
   courseReadingProgress,
+  bookChapters,
+  courseLessons,
 } from "@shared/schema";
 import {
   insertCourseSchema,
@@ -19,6 +21,9 @@ import {
   insertSponsorChannelSchema,
   insertChannelSubscriptionSchema,
   insertDailyChallengeSchema,
+  insertChapterTestSchema,
+  insertLessonTestSchema,
+  insertTestAttemptSchema,
 } from "@shared/schema";
 
 export async function registerRoutes(app: Express): Promise<Server> {
@@ -680,6 +685,198 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error) {
       console.error("Error getting book reading progress:", error);
       res.status(500).json({ error: "Failed to get book reading progress" });
+    }
+  });
+
+  // Chapter Tests Routes
+  app.get("/api/chapters/:chapterId/tests", async (req: Request, res: Response) => {
+    try {
+      const chapterId = parseInt(req.params.chapterId);
+      const tests = await storage.getChapterTests(chapterId);
+      res.json(tests);
+    } catch (error) {
+      console.error("Error fetching chapter tests:", error);
+      res.status(500).json({ error: "Failed to fetch chapter tests" });
+    }
+  });
+
+  app.post("/api/chapters/:chapterId/tests", async (req: Request, res: Response) => {
+    try {
+      const chapterId = parseInt(req.params.chapterId);
+      const testData = insertChapterTestSchema.parse({
+        ...req.body,
+        chapterId
+      });
+      const test = await storage.createChapterTest(testData);
+      res.json(test);
+    } catch (error) {
+      console.error("Error creating chapter test:", error);
+      res.status(500).json({ error: "Failed to create chapter test" });
+    }
+  });
+
+  app.put("/api/chapter-tests/:id", async (req: Request, res: Response) => {
+    try {
+      const id = parseInt(req.params.id);
+      const testData = req.body;
+      const test = await storage.updateChapterTest(id, testData);
+      res.json(test);
+    } catch (error) {
+      console.error("Error updating chapter test:", error);
+      res.status(500).json({ error: "Failed to update chapter test" });
+    }
+  });
+
+  app.delete("/api/chapter-tests/:id", async (req: Request, res: Response) => {
+    try {
+      const id = parseInt(req.params.id);
+      await storage.deleteChapterTest(id);
+      res.json({ success: true });
+    } catch (error) {
+      console.error("Error deleting chapter test:", error);
+      res.status(500).json({ error: "Failed to delete chapter test" });
+    }
+  });
+
+  // Lesson Tests Routes
+  app.get("/api/lessons/:lessonId/tests", async (req: Request, res: Response) => {
+    try {
+      const lessonId = parseInt(req.params.lessonId);
+      const tests = await storage.getLessonTests(lessonId);
+      res.json(tests);
+    } catch (error) {
+      console.error("Error fetching lesson tests:", error);
+      res.status(500).json({ error: "Failed to fetch lesson tests" });
+    }
+  });
+
+  app.post("/api/lessons/:lessonId/tests", async (req: Request, res: Response) => {
+    try {
+      const lessonId = parseInt(req.params.lessonId);
+      const testData = insertLessonTestSchema.parse({
+        ...req.body,
+        lessonId
+      });
+      const test = await storage.createLessonTest(testData);
+      res.json(test);
+    } catch (error) {
+      console.error("Error creating lesson test:", error);
+      res.status(500).json({ error: "Failed to create lesson test" });
+    }
+  });
+
+  app.put("/api/lesson-tests/:id", async (req: Request, res: Response) => {
+    try {
+      const id = parseInt(req.params.id);
+      const testData = req.body;
+      const test = await storage.updateLessonTest(id, testData);
+      res.json(test);
+    } catch (error) {
+      console.error("Error updating lesson test:", error);
+      res.status(500).json({ error: "Failed to update lesson test" });
+    }
+  });
+
+  app.delete("/api/lesson-tests/:id", async (req: Request, res: Response) => {
+    try {
+      const id = parseInt(req.params.id);
+      await storage.deleteLessonTest(id);
+      res.json({ success: true });
+    } catch (error) {
+      console.error("Error deleting lesson test:", error);
+      res.status(500).json({ error: "Failed to delete lesson test" });
+    }
+  });
+
+  // Test Submission Routes
+  app.post("/api/test-attempts", async (req: Request, res: Response) => {
+    try {
+      const attemptData = insertTestAttemptSchema.parse(req.body);
+      const attempt = await storage.submitTestAnswer(attemptData);
+      
+      // Check if answer was wrong - if so, reset progress
+      if (!attempt.isCorrect) {
+        if (attempt.testType === 'chapter' && attempt.chapterId) {
+          // Reset book reading progress - user must re-read from beginning
+          const bookChapter = await db.select().from(bookChapters)
+            .where(eq(bookChapters.id, attempt.chapterId));
+          if (bookChapter.length > 0) {
+            await db.update(bookReadingProgress)
+              .set({ 
+                currentChapter: 1,
+                isCompleted: false,
+                completedAt: null
+              })
+              .where(and(
+                eq(bookReadingProgress.userId, attempt.userId),
+                eq(bookReadingProgress.bookId, bookChapter[0].bookId)
+              ));
+          }
+        } else if (attempt.testType === 'lesson' && attempt.lessonId) {
+          // Reset course reading progress - user must re-read from beginning
+          const courseLesson = await db.select().from(courseLessons)
+            .where(eq(courseLessons.id, attempt.lessonId));
+          if (courseLesson.length > 0) {
+            await db.update(courseReadingProgress)
+              .set({ 
+                currentLesson: 1,
+                isCompleted: false,
+                completedAt: null
+              })
+              .where(and(
+                eq(courseReadingProgress.userId, attempt.userId),
+                eq(courseReadingProgress.courseId, courseLesson[0].courseId)
+              ));
+          }
+        }
+      }
+      
+      res.json(attempt);
+    } catch (error) {
+      console.error("Error submitting test answer:", error);
+      res.status(500).json({ error: "Failed to submit test answer" });
+    }
+  });
+
+  app.get("/api/users/:userId/test-attempts", async (req: Request, res: Response) => {
+    try {
+      const { userId } = req.params;
+      const { testType, testId } = req.query;
+      
+      if (!testType || !testId) {
+        return res.status(400).json({ error: "testType and testId are required" });
+      }
+      
+      const attempts = await storage.getUserTestAttempts(
+        userId, 
+        testType as 'chapter' | 'lesson', 
+        parseInt(testId as string)
+      );
+      res.json(attempts);
+    } catch (error) {
+      console.error("Error fetching test attempts:", error);
+      res.status(500).json({ error: "Failed to fetch test attempts" });
+    }
+  });
+
+  app.get("/api/users/:userId/test-status", async (req: Request, res: Response) => {
+    try {
+      const { userId } = req.params;
+      const { testType, testId } = req.query;
+      
+      if (!testType || !testId) {
+        return res.status(400).json({ error: "testType and testId are required" });
+      }
+      
+      const hasPassed = await storage.hasUserPassedTest(
+        userId, 
+        testType as 'chapter' | 'lesson', 
+        parseInt(testId as string)
+      );
+      res.json({ hasPassed });
+    } catch (error) {
+      console.error("Error checking test status:", error);
+      res.status(500).json({ error: "Failed to check test status" });
     }
   });
 

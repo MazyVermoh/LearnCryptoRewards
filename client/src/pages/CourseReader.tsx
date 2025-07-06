@@ -11,6 +11,7 @@ import { Alert, AlertDescription } from "@/components/ui/alert";
 import { cn } from "@/lib/utils";
 import { useLanguage } from "@/hooks/useLanguage";
 import { useToast } from "@/hooks/use-toast";
+import Test from "@/components/Test";
 import type { Course, CourseLesson } from "@/lib/types";
 
 interface CourseWithLessons extends Course {
@@ -299,6 +300,27 @@ export default function CourseReader() {
                     {language === "ru" ? currentLesson.contentRu || currentLesson.content : currentLesson.content}
                   </div>
                 </div>
+
+                {/* Lesson Test */}
+                {currentLesson && (
+                  <Test
+                    testType="lesson"
+                    testId={currentLesson.id}
+                    lessonId={currentLesson.id}
+                    userId="user123"
+                    onTestPassed={() => {
+                      toast({ title: "Test passed! You can continue reading." });
+                    }}
+                    onTestFailed={() => {
+                      setCurrentLessonIndex(0);
+                      toast({ 
+                        title: "Test failed", 
+                        description: "You need to re-read from the beginning.",
+                        variant: "destructive" 
+                      });
+                    }}
+                  />
+                )}
                 
                 {/* Complete Course Button */}
                 {currentLesson && (

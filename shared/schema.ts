@@ -246,6 +246,48 @@ export const courseReadingProgress = pgTable("course_reading_progress", {
   unique().on(table.userId, table.courseId),
 ]);
 
+// Tests for chapters and lessons
+export const chapterTests = pgTable("chapter_tests", {
+  id: serial("id").primaryKey(),
+  chapterId: integer("chapter_id").notNull().references(() => bookChapters.id, { onDelete: "cascade" }),
+  question: text("question").notNull(),
+  questionRu: text("question_ru"),
+  options: text("options").array().notNull(), // JSON array of options
+  optionsRu: text("options_ru").array(), // JSON array of Russian options
+  correctAnswer: integer("correct_answer").notNull(), // Index of correct option (0-based)
+  explanation: text("explanation"),
+  explanationRu: text("explanation_ru"),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+export const lessonTests = pgTable("lesson_tests", {
+  id: serial("id").primaryKey(),
+  lessonId: integer("lesson_id").notNull().references(() => courseLessons.id, { onDelete: "cascade" }),
+  question: text("question").notNull(),
+  questionRu: text("question_ru"),
+  options: text("options").array().notNull(), // JSON array of options
+  optionsRu: text("options_ru").array(), // JSON array of Russian options
+  correctAnswer: integer("correct_answer").notNull(), // Index of correct option (0-based)
+  explanation: text("explanation"),
+  explanationRu: text("explanation_ru"),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+// Test attempts/results
+export const testAttempts = pgTable("test_attempts", {
+  id: serial("id").primaryKey(),
+  userId: varchar("user_id").notNull().references(() => users.id, { onDelete: "cascade" }),
+  testType: varchar("test_type").notNull(), // 'chapter' or 'lesson'
+  testId: integer("test_id").notNull(), // chapterTests.id or lessonTests.id
+  chapterId: integer("chapter_id").references(() => bookChapters.id, { onDelete: "cascade" }),
+  lessonId: integer("lesson_id").references(() => courseLessons.id, { onDelete: "cascade" }),
+  selectedAnswer: integer("selected_answer").notNull(),
+  isCorrect: boolean("is_correct").notNull(),
+  attemptedAt: timestamp("attempted_at").defaultNow(),
+});
+
 // Relations
 export const usersRelations = relations(users, ({ many, one }) => ({
   enrollments: many(enrollments),
@@ -297,12 +339,30 @@ export const dailyChallengesRelations = relations(dailyChallenges, ({ one }) => 
   user: one(users, { fields: [dailyChallenges.userId], references: [users.id] }),
 }));
 
-export const courseLessonsRelations = relations(courseLessons, ({ one }) => ({
+export const courseLessonsRelations = relations(courseLessons, ({ one, many }) => ({
   course: one(courses, { fields: [courseLessons.courseId], references: [courses.id] }),
+  tests: many(lessonTests),
 }));
 
-export const bookChaptersRelations = relations(bookChapters, ({ one }) => ({
+export const bookChaptersRelations = relations(bookChapters, ({ one, many }) => ({
   book: one(books, { fields: [bookChapters.bookId], references: [books.id] }),
+  tests: many(chapterTests),
+}));
+
+export const chapterTestsRelations = relations(chapterTests, ({ one, many }) => ({
+  chapter: one(bookChapters, { fields: [chapterTests.chapterId], references: [bookChapters.id] }),
+  attempts: many(testAttempts),
+}));
+
+export const lessonTestsRelations = relations(lessonTests, ({ one, many }) => ({
+  lesson: one(courseLessons, { fields: [lessonTests.lessonId], references: [courseLessons.id] }),
+  attempts: many(testAttempts),
+}));
+
+export const testAttemptsRelations = relations(testAttempts, ({ one }) => ({
+  user: one(users, { fields: [testAttempts.userId], references: [users.id] }),
+  chapter: one(bookChapters, { fields: [testAttempts.chapterId], references: [bookChapters.id] }),
+  lesson: one(courseLessons, { fields: [testAttempts.lessonId], references: [courseLessons.id] }),
 }));
 
 export const bookReadingProgressRelations = relations(bookReadingProgress, ({ one }) => ({
@@ -327,6 +387,9 @@ export const insertChannelSubscriptionSchema = createInsertSchema(channelSubscri
 export const insertDailyChallengeSchema = createInsertSchema(dailyChallenges);
 export const insertCourseLessonSchema = createInsertSchema(courseLessons);
 export const insertBookChapterSchema = createInsertSchema(bookChapters);
+export const insertChapterTestSchema = createInsertSchema(chapterTests);
+export const insertLessonTestSchema = createInsertSchema(lessonTests);
+export const insertTestAttemptSchema = createInsertSchema(testAttempts);
 export const insertBookReadingProgressSchema = createInsertSchema(bookReadingProgress);
 export const insertCourseReadingProgressSchema = createInsertSchema(courseReadingProgress);
 
@@ -363,3 +426,11 @@ export type BookReadingProgress = typeof bookReadingProgress.$inferSelect;
 export type InsertBookReadingProgress = z.infer<typeof insertBookReadingProgressSchema>;
 export type CourseReadingProgress = typeof courseReadingProgress.$inferSelect;
 export type InsertCourseReadingProgress = z.infer<typeof insertCourseReadingProgressSchema>;
+
+// Test types
+export type ChapterTest = typeof chapterTests.$inferSelect;
+export type InsertChapterTest = z.infer<typeof insertChapterTestSchema>;
+export type LessonTest = typeof lessonTests.$inferSelect;
+export type InsertLessonTest = z.infer<typeof insertLessonTestSchema>;
+export type TestAttempt = typeof testAttempts.$inferSelect;
+export type InsertTestAttempt = z.infer<typeof insertTestAttemptSchema>;

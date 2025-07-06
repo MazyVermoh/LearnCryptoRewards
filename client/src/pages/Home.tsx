@@ -28,6 +28,7 @@ import {
   Star,
   Search,
   Plus,
+  FileText,
   UserPlus,
   Check,
   Copy,
@@ -1336,6 +1337,13 @@ export default function Home() {
               >
                 <BarChart3 className="h-5 w-5 mb-1" />
                 {t('analytics')}
+              </Button>
+              <Button 
+                className="bg-orange-600 text-white p-3 h-auto flex flex-col"
+                onClick={() => setLocation('/admin/tests')}
+              >
+                <FileText className="h-5 w-5 mb-1" />
+                Manage Tests
               </Button>
             </div>
           </div>

@@ -38,6 +38,15 @@ import {
   type InsertBookReadingProgress,
   type CourseReadingProgress,
   type InsertCourseReadingProgress,
+  chapterTests,
+  lessonTests,
+  testAttempts,
+  type ChapterTest,
+  type InsertChapterTest,
+  type LessonTest,
+  type InsertLessonTest,
+  type TestAttempt,
+  type InsertTestAttempt,
 } from "@shared/schema";
 import { db } from "./db";
 import { eq, desc, asc, and, sql, like } from "drizzle-orm";
@@ -127,6 +136,21 @@ export interface IStorage {
   
   // Get all book reading progress for a user
   getAllBookReadingProgress(userId: string): Promise<any[]>;
+  
+  // Test operations
+  getChapterTests(chapterId: number): Promise<ChapterTest[]>;
+  getLessonTests(lessonId: number): Promise<LessonTest[]>;
+  createChapterTest(test: InsertChapterTest): Promise<ChapterTest>;
+  createLessonTest(test: InsertLessonTest): Promise<LessonTest>;
+  updateChapterTest(id: number, test: Partial<InsertChapterTest>): Promise<ChapterTest>;
+  updateLessonTest(id: number, test: Partial<InsertLessonTest>): Promise<LessonTest>;
+  deleteChapterTest(id: number): Promise<void>;
+  deleteLessonTest(id: number): Promise<void>;
+  
+  // Test attempt operations
+  submitTestAnswer(attempt: InsertTestAttempt): Promise<TestAttempt>;
+  getUserTestAttempts(userId: string, testType: 'chapter' | 'lesson', testId: number): Promise<TestAttempt[]>;
+  hasUserPassedTest(userId: string, testType: 'chapter' | 'lesson', testId: number): Promise<boolean>;
 }
 
 export class DatabaseStorage implements IStorage {
@@ -795,6 +819,72 @@ export class DatabaseStorage implements IStorage {
     return await db.select().from(bookReadingProgress)
       .leftJoin(books, eq(bookReadingProgress.bookId, books.id))
       .where(eq(bookReadingProgress.userId, userId));
+  }
+
+  // Test operations
+  async getChapterTests(chapterId: number): Promise<ChapterTest[]> {
+    return await db.select().from(chapterTests)
+      .where(eq(chapterTests.chapterId, chapterId));
+  }
+
+  async getLessonTests(lessonId: number): Promise<LessonTest[]> {
+    return await db.select().from(lessonTests)
+      .where(eq(lessonTests.lessonId, lessonId));
+  }
+
+  async createChapterTest(test: InsertChapterTest): Promise<ChapterTest> {
+    const [newTest] = await db.insert(chapterTests).values(test).returning();
+    return newTest;
+  }
+
+  async createLessonTest(test: InsertLessonTest): Promise<LessonTest> {
+    const [newTest] = await db.insert(lessonTests).values(test).returning();
+    return newTest;
+  }
+
+  async updateChapterTest(id: number, test: Partial<InsertChapterTest>): Promise<ChapterTest> {
+    const [updatedTest] = await db.update(chapterTests)
+      .set({ ...test, updatedAt: new Date() })
+      .where(eq(chapterTests.id, id))
+      .returning();
+    return updatedTest;
+  }
+
+  async updateLessonTest(id: number, test: Partial<InsertLessonTest>): Promise<LessonTest> {
+    const [updatedTest] = await db.update(lessonTests)
+      .set({ ...test, updatedAt: new Date() })
+      .where(eq(lessonTests.id, id))
+      .returning();
+    return updatedTest;
+  }
+
+  async deleteChapterTest(id: number): Promise<void> {
+    await db.delete(chapterTests).where(eq(chapterTests.id, id));
+  }
+
+  async deleteLessonTest(id: number): Promise<void> {
+    await db.delete(lessonTests).where(eq(lessonTests.id, id));
+  }
+
+  // Test attempt operations
+  async submitTestAnswer(attempt: InsertTestAttempt): Promise<TestAttempt> {
+    const [newAttempt] = await db.insert(testAttempts).values(attempt).returning();
+    return newAttempt;
+  }
+
+  async getUserTestAttempts(userId: string, testType: 'chapter' | 'lesson', testId: number): Promise<TestAttempt[]> {
+    return await db.select().from(testAttempts)
+      .where(and(
+        eq(testAttempts.userId, userId),
+        eq(testAttempts.testType, testType),
+        eq(testAttempts.testId, testId)
+      ))
+      .orderBy(desc(testAttempts.attemptedAt));
+  }
+
+  async hasUserPassedTest(userId: string, testType: 'chapter' | 'lesson', testId: number): Promise<boolean> {
+    const attempts = await this.getUserTestAttempts(userId, testType, testId);
+    return attempts.length > 0 && attempts[0].isCorrect;
   }
 }
 

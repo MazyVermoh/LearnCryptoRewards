@@ -12,6 +12,7 @@ import { Alert, AlertDescription } from "@/components/ui/alert";
 import { cn } from "@/lib/utils";
 import { useLanguage } from "@/hooks/useLanguage";
 import { useToast } from "@/hooks/use-toast";
+import Test from "@/components/Test";
 import type { Book, BookChapter } from "@/lib/types";
 
 interface BookWithChapters extends Book {
@@ -340,6 +341,29 @@ export default function BookReader() {
                     </div>
                   )}
                 </div>
+
+                {/* Chapter Test */}
+                {currentChapter && (
+                  <Test
+                    testType="chapter"
+                    testId={currentChapter.id}
+                    chapterId={currentChapter.id}
+                    userId="user123"
+                    onTestPassed={() => {
+                      // User can continue to next chapter
+                      toast({ title: "Test passed! You can continue reading." });
+                    }}
+                    onTestFailed={() => {
+                      // Reset to beginning
+                      setCurrentChapterIndex(0);
+                      toast({ 
+                        title: "Test failed", 
+                        description: "You need to re-read from the beginning.",
+                        variant: "destructive" 
+                      });
+                    }}
+                  />
+                )}
                 
                 {/* Complete Chapter Button */}
                 {currentChapter && (
