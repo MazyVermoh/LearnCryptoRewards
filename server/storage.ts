@@ -124,6 +124,9 @@ export interface IStorage {
   getCourseReadingProgress(userId: string, courseId: number): Promise<CourseReadingProgress | undefined>;
   updateCourseReadingProgress(userId: string, courseId: number, currentLesson: number): Promise<CourseReadingProgress>;
   completeCourseReading(userId: string, courseId: number): Promise<void>;
+  
+  // Get all book reading progress for a user
+  getAllBookReadingProgress(userId: string): Promise<any[]>;
 }
 
 export class DatabaseStorage implements IStorage {
@@ -385,8 +388,8 @@ export class DatabaseStorage implements IStorage {
     return newPurchase;
   }
 
-  async getUserBooks(userId: string): Promise<(BookPurchase & { book: Book })[]> {
-    return await db
+  async getUserBooks(userId: string): Promise<(BookPurchase & { book: Book; is_completed?: boolean; progress?: number })[]> {
+    const purchases = await db
       .select({
         id: bookPurchases.id,
         userId: bookPurchases.userId,
@@ -397,6 +400,33 @@ export class DatabaseStorage implements IStorage {
       .from(bookPurchases)
       .innerJoin(books, eq(bookPurchases.bookId, books.id))
       .where(eq(bookPurchases.userId, userId));
+
+    // Get completion status for each book
+    const result = [];
+    for (const purchase of purchases) {
+      const progress = await db
+        .select()
+        .from(bookReadingProgress)
+        .where(
+          and(
+            eq(bookReadingProgress.userId, userId),
+            eq(bookReadingProgress.bookId, purchase.bookId)
+          )
+        );
+      
+      const isCompleted = progress.length > 0 && progress[0].isCompleted;
+      const completionPercentage = progress.length > 0 && progress[0].totalChapters > 0 
+        ? Math.round((progress[0].currentChapter / progress[0].totalChapters) * 100)
+        : 0;
+      
+      result.push({
+        ...purchase,
+        is_completed: isCompleted,
+        progress: isCompleted ? 100 : completionPercentage,
+      });
+    }
+
+    return result;
   }
 
   async createTransaction(transaction: InsertTransaction): Promise<Transaction> {
@@ -759,6 +789,12 @@ export class DatabaseStorage implements IStorage {
           eq(enrollments.courseId, courseId)
         ));
     }
+  }
+
+  async getAllBookReadingProgress(userId: string): Promise<any[]> {
+    return await db.select().from(bookReadingProgress)
+      .leftJoin(books, eq(bookReadingProgress.bookId, books.id))
+      .where(eq(bookReadingProgress.userId, userId));
   }
 }
 

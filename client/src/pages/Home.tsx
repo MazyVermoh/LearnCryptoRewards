@@ -320,10 +320,11 @@ export default function Home() {
     retry: false,
   });
 
-  // Fetch book reading progress
-  const { data: bookProgress = [] } = useQuery({
-    queryKey: [`/api/users/${mockUserId}/book-progress`],
+  // Fetch book reading progress - using direct call since API has issues
+  const { data: completedBooks = [] } = useQuery({
+    queryKey: [`/api/users/${mockUserId}/books`],
     retry: false,
+    select: (data) => data?.filter((book: any) => book.is_completed) || [],
   });
 
   // Fetch admin stats
@@ -1628,7 +1629,7 @@ export default function Home() {
                 <div className="flex items-center justify-between">
                   <span className="font-medium">{t('booksRead')}</span>
                   <span className="text-2xl font-bold text-accent">
-                    {bookProgress?.filter((bp: any) => bp.book_reading_progress?.is_completed).length || 0}
+                    {completedBooks?.length || 0}
                   </span>
                 </div>
               </CardContent>
@@ -1668,25 +1669,23 @@ export default function Home() {
           {/* Book Progress */}
           <div className="mb-6">
             <h3 className="text-lg font-semibold mb-3">{t('bookProgress', 'Book Progress')}</h3>
-            {bookProgress?.length > 0 ? (
+            {userBooks?.length > 0 ? (
               <div className="space-y-3">
-                {bookProgress.map((progress: any) => (
-                  <Card key={progress.book_reading_progress.id} className="p-4">
+                {userBooks.map((book: any) => (
+                  <Card key={book.id} className="p-4">
                     <CardContent className="p-0">
                       <div className="flex items-center justify-between mb-2">
-                        <h4 className="font-medium">{language === 'ru' ? (progress.books?.titleRu || progress.books?.title) : progress.books?.title}</h4>
+                        <h4 className="font-medium">{language === 'ru' ? (book.book.titleRu || book.book.title) : book.book.title}</h4>
                         <span className="text-sm text-gray-600">
-                          {progress.book_reading_progress.is_completed ? '100%' : 
-                           Math.round((progress.book_reading_progress.currentChapter / progress.book_reading_progress.totalChapters) * 100)}%
+                          {book.is_completed ? `${t('completed')} 100%` : `${t('completed')} ${book.progress || 0}%`}
                         </span>
                       </div>
                       <Progress 
-                        value={progress.book_reading_progress.is_completed ? 100 : 
-                               Math.round((progress.book_reading_progress.currentChapter / progress.book_reading_progress.totalChapters) * 100)} 
+                        value={book.is_completed ? 100 : (book.progress || 0)} 
                         className="mb-2" 
                       />
                       <p className="text-sm text-gray-500">
-                        {progress.book_reading_progress.is_completed ? t('completed') : t('inProgress')}
+                        {book.is_completed ? t('completed') : t('inProgress')}
                       </p>
                     </CardContent>
                   </Card>

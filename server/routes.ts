@@ -3,6 +3,13 @@ import { createServer, type Server } from "http";
 import { storage } from "./storage";
 import { registerRewardRoutes } from "./reward-routes";
 import { z } from "zod";
+import { db } from "./db";
+import { eq, desc, and, sql } from "drizzle-orm";
+import {
+  bookReadingProgress,
+  books,
+  courseReadingProgress,
+} from "@shared/schema";
 import {
   insertCourseSchema,
   insertBookSchema,
@@ -668,9 +675,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.get("/api/users/:userId/book-progress", async (req: Request, res: Response) => {
     try {
       const { userId } = req.params;
-      const progressList = await db.select().from(bookReadingProgress)
-        .leftJoin(books, eq(bookReadingProgress.bookId, books.id))
-        .where(eq(bookReadingProgress.userId, userId));
+      const progressList = await storage.getAllBookReadingProgress(userId);
       res.json(progressList);
     } catch (error) {
       console.error("Error getting book reading progress:", error);
