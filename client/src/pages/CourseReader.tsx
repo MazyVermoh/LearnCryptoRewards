@@ -245,7 +245,7 @@ export default function CourseReader() {
       <div className="container mx-auto px-4 py-8">
         <div className="max-w-4xl mx-auto space-y-6">
           {/* Completion Alert */}
-          {progress && progress.isCompleted && (
+          {progress && progress.is_completed && (
             <Alert className="bg-green-50 dark:bg-green-900/20 border-green-200 dark:border-green-800">
               <Gift className="h-4 w-4" />
               <AlertDescription className="text-green-800 dark:text-green-200">
@@ -305,18 +305,18 @@ export default function CourseReader() {
                         </p>
                         <Button 
                           onClick={() => completeCourseMutation.mutate()}
-                          disabled={completeCourseMutation.isPending || (progress && progress.isCompleted)}
+                          disabled={completeCourseMutation.isPending || (progress && progress.is_completed)}
                           className="bg-blue-600 hover:bg-blue-700 text-white"
                         >
                           {completeCourseMutation.isPending ? (
                             "Завершаем..."
-                          ) : (progress && progress.isCompleted) ? (
+                          ) : (progress && progress.is_completed) ? (
                             "✓ Курс завершен"
                           ) : (
                             "Завершить курс"
                           )}
                         </Button>
-                        {!(progress && progress.isCompleted) && (
+                        {!(progress && progress.is_completed) && (
                           <p className="text-xs text-gray-500 mt-2">
                             Получите 50 MIND токенов за завершение
                           </p>

@@ -298,7 +298,7 @@ export default function BookReader() {
       <div className="container mx-auto px-4 py-8">
         <div className="max-w-4xl mx-auto">
           {/* Book Completion Reward Alert */}
-          {progress && progress.isCompleted && (
+          {progress && progress.is_completed && (
             <Alert className="mb-6 bg-green-50 border-green-200 dark:bg-green-900/20 dark:border-green-800">
               <Gift className="h-4 w-4" />
               <AlertDescription className="text-green-800 dark:text-green-200">
@@ -346,18 +346,18 @@ export default function BookReader() {
                         </p>
                         <Button 
                           onClick={() => completeBookMutation.mutate()}
-                          disabled={completeBookMutation.isPending || (progress && progress.isCompleted)}
+                          disabled={completeBookMutation.isPending || (progress && progress.is_completed)}
                           className="bg-green-600 hover:bg-green-700 text-white"
                         >
                           {completeBookMutation.isPending ? (
                             "Завершаем..."
-                          ) : (progress && progress.isCompleted) ? (
+                          ) : (progress && progress.is_completed) ? (
                             "✓ Книга завершена"
                           ) : (
                             "Завершить книгу"
                           )}
                         </Button>
-                        {!(progress && progress.isCompleted) && (
+                        {!(progress && progress.is_completed) && (
                           <p className="text-xs text-gray-500 mt-2">
                             Получите 100 MIND токенов за завершение
                           </p>
