@@ -134,6 +134,11 @@ export default function BookReader() {
       queryClient.invalidateQueries({ queryKey: ["/api/users", user?.id] });
       queryClient.invalidateQueries({ queryKey: ["/api/users", user?.id, "transactions"] });
       
+      // Force refetch immediately
+      setTimeout(() => {
+        queryClient.refetchQueries({ queryKey: ["/api/users", user?.id, "books", id, "progress"] });
+      }, 100);
+      
       toast({
         title: "🎉 Congratulations!",
         description: "You completed the book and earned 100 MIND tokens!",

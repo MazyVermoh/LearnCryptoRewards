@@ -598,7 +598,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const progress = await storage.updateBookReadingProgress(userId, parseInt(bookId), currentChapter);
       
       // Check if book is completed (currentChapter equals totalChapters)
-      if (currentChapter >= progress.totalChapters && !progress.isCompleted) {
+      if (currentChapter >= progress.totalChapters && !progress.is_completed) {
         await storage.completeBookReading(userId, parseInt(bookId));
       }
       
@@ -641,7 +641,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const progress = await storage.updateCourseReadingProgress(userId, parseInt(courseId), currentLesson);
       
       // Check if course is completed (currentLesson equals totalLessons)
-      if (currentLesson >= progress.totalLessons && !progress.isCompleted) {
+      if (currentLesson >= progress.totalLessons && !progress.is_completed) {
         await storage.completeCourseReading(userId, parseInt(courseId));
       }
       

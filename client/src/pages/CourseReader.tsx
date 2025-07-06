@@ -96,6 +96,11 @@ export default function CourseReader() {
       queryClient.invalidateQueries({ queryKey: ["/api/users", user?.id] });
       queryClient.invalidateQueries({ queryKey: ["/api/users", user?.id, "transactions"] });
       
+      // Force refetch immediately
+      setTimeout(() => {
+        queryClient.refetchQueries({ queryKey: ["/api/users", user?.id, "courses", id, "progress"] });
+      }, 100);
+      
       toast({
         title: "🎉 Congratulations!",
         description: "You completed the course and earned 50 MIND tokens!",
