@@ -53,20 +53,13 @@ export default function BookReader() {
     queryFn: async () => {
       const response = await fetch(`/api/books/${id}/chapters`);
       if (!response.ok) throw new Error("Failed to fetch chapters");
-      const data = await response.json();
-      console.log("Loaded chapters:", data);
-      return data;
+      return response.json();
     },
     enabled: !!id,
   });
 
   const currentChapter = chapters[currentChapterIndex];
   const progress = chapters.length > 0 ? ((currentChapterIndex + 1) / chapters.length) * 100 : 0;
-  
-  // Debug info
-  console.log("Current chapter:", currentChapter);
-  console.log("Current chapter index:", currentChapterIndex);
-  console.log("Total chapters:", chapters.length);
 
   const goToNextChapter = () => {
     if (currentChapterIndex < chapters.length - 1) {
@@ -214,9 +207,15 @@ export default function BookReader() {
               </CardHeader>
               <CardContent>
                 <div className="prose dark:prose-invert max-w-none">
-                  <div className="whitespace-pre-wrap text-gray-800 dark:text-gray-200 leading-relaxed">
+                  <div className="whitespace-pre-wrap text-gray-800 dark:text-gray-200 leading-relaxed text-lg">
                     {language === "ru" ? currentChapter.contentRu || currentChapter.content : currentChapter.content}
                   </div>
+                  {(!currentChapter.content && !currentChapter.contentRu) && (
+                    <div className="text-center text-gray-500 py-8">
+                      <p>Содержимое главы пока не добавлено</p>
+                      <p className="text-sm mt-2">Вы можете добавить содержимое через админ-панель</p>
+                    </div>
+                  )}
                 </div>
               </CardContent>
             </Card>
