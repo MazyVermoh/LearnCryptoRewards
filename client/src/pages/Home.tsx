@@ -373,13 +373,13 @@ export default function Home() {
                         </div>
                         <div className="flex-1">
                           <h4 className="font-semibold text-gray-900">
-                            {language === 'ru' && course.title_ru ? course.title_ru : course.title}
+                            {language === 'ru' && course.titleRu ? course.titleRu : course.title}
                           </h4>
                           <p className="text-sm text-gray-600 mt-1">
-                            {language === 'ru' && course.description_ru ? course.description_ru : course.description}
+                            {language === 'ru' && course.descriptionRu ? course.descriptionRu : course.description}
                           </p>
                           <div className="flex items-center mt-2 space-x-4">
-                            <span className="text-sm text-gray-500">👨‍🏫 {language === 'ru' && course.instructor_ru ? course.instructor_ru : course.instructor}</span>
+                            <span className="text-sm text-gray-500">👨‍🏫 {language === 'ru' && course.instructorRu ? course.instructorRu : course.instructor}</span>
                             <span className="text-sm text-gray-500">⏱️ {course.duration} min</span>
                             <div className="flex items-center space-x-1">
                               <Star className="h-4 w-4 text-yellow-400 fill-current" />
@@ -423,7 +423,7 @@ export default function Home() {
                         </div>
                         <div className="flex-1">
                           <h4 className="font-medium text-gray-900">
-                            {language === 'ru' && enrollment.course.title_ru ? enrollment.course.title_ru : enrollment.course.title}
+                            {language === 'ru' && enrollment.course.titleRu ? enrollment.course.titleRu : enrollment.course.title}
                           </h4>
                           <p className="text-gray-600 text-sm">{t('courseProgress')}: {enrollment.progress}%</p>
                           <Progress value={enrollment.progress} className="mt-2" />
@@ -495,13 +495,13 @@ export default function Home() {
                       </div>
                       <div className="flex-1">
                         <h4 className="font-medium text-gray-900">
-                          {language === 'ru' && book.title_ru ? book.title_ru : book.title}
+                          {language === 'ru' && book.titleRu ? book.titleRu : book.title}
                         </h4>
                         <p className="text-gray-600 text-sm mb-1">
-                          {language === 'ru' && book.author_ru ? book.author_ru : book.author}
+                          {language === 'ru' && book.authorRu ? book.authorRu : book.author}
                         </p>
                         <p className="text-gray-500 text-xs mb-2">
-                          {language === 'ru' && book.description_ru ? book.description_ru : book.description}
+                          {language === 'ru' && book.descriptionRu ? book.descriptionRu : book.description}
                         </p>
                         <div className="flex items-center justify-between">
                           <span className="text-sm text-gray-500">{book.pageCount} {t('pages')}</span>
@@ -552,10 +552,10 @@ export default function Home() {
                         </div>
                         <div className="flex-1">
                           <h4 className="font-medium text-gray-900">
-                            {language === 'ru' && userBook.book.title_ru ? userBook.book.title_ru : userBook.book.title}
+                            {language === 'ru' && userBook.book.titleRu ? userBook.book.titleRu : userBook.book.title}
                           </h4>
                           <p className="text-gray-600 text-sm">
-                            {language === 'ru' && userBook.book.author_ru ? userBook.book.author_ru : userBook.book.author}
+                            {language === 'ru' && userBook.book.authorRu ? userBook.book.authorRu : userBook.book.author}
                           </p>
                           <div className="flex items-center space-x-2 mt-2">
                             <Button size="sm">{t('read')}</Button>
