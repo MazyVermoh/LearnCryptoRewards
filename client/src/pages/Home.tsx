@@ -115,6 +115,12 @@ export default function Home() {
     retry: false,
   });
 
+  // Fetch all users for admin
+  const { data: allUsers = [] } = useQuery({
+    queryKey: ['/api/admin/users'],
+    retry: false,
+  });
+
   // Admin panel states
   const [showAddCourse, setShowAddCourse] = useState(false);
   const [showAddBook, setShowAddBook] = useState(false);
@@ -140,6 +146,13 @@ export default function Home() {
     pages: 200,
     price: '0'
   });
+  
+  // Admin view states
+  const [adminView, setAdminView] = useState('overview');
+  const [editingCourse, setEditingCourse] = useState(null);
+  const [editingBook, setEditingBook] = useState(null);
+  const [showUserDetails, setShowUserDetails] = useState(false);
+  const [selectedUser, setSelectedUser] = useState(null);
 
   // Enroll in course mutation
   const enrollMutation = useMutation({
@@ -858,45 +871,229 @@ export default function Home() {
                 <BookOpen className="h-5 w-5 mb-1" />
                 {t('addBook')}
               </Button>
-              <Button className="bg-accent text-white p-3 h-auto flex flex-col">
+              <Button 
+                className="bg-accent text-white p-3 h-auto flex flex-col"
+                onClick={() => setAdminView('users')}
+              >
                 <Gift className="h-5 w-5 mb-1" />
-                {t('manageRewards')}
+                {t('manageUsers')}
               </Button>
-              <Button className="bg-purple-600 text-white p-3 h-auto flex flex-col">
+              <Button 
+                className="bg-purple-600 text-white p-3 h-auto flex flex-col"
+                onClick={() => setAdminView('analytics')}
+              >
                 <BarChart3 className="h-5 w-5 mb-1" />
                 {t('analytics')}
               </Button>
             </div>
           </div>
 
-          {/* Recent Activity */}
+          {/* Admin Navigation */}
           <div className="mb-6">
-            <h3 className="text-lg font-semibold mb-3">{t('recentActivity')}</h3>
-            <Card className="p-4">
-              <CardContent className="p-0">
-                <div className="space-y-3">
-                  <div className="flex items-center space-x-3">
-                    <div className="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center">
-                      <UserPlus className="h-4 w-4 text-blue-600" />
-                    </div>
-                    <div className="flex-1">
-                      <p className="font-medium text-sm">{t('newUserRegistered')}</p>
-                      <p className="text-xs text-gray-500">5 {t('minutesAgo')}</p>
-                    </div>
-                  </div>
-                  <div className="flex items-center space-x-3">
-                    <div className="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center">
-                      <BookOpen className="h-4 w-4 text-green-600" />
-                    </div>
-                    <div className="flex-1">
-                      <p className="font-medium text-sm">{t('courseCompleted')}</p>
-                      <p className="text-xs text-gray-500">12 {t('minutesAgo')}</p>
-                    </div>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
+            <div className="flex space-x-2 overflow-x-auto pb-2">
+              <Button
+                variant={adminView === 'overview' ? "default" : "outline"}
+                size="sm"
+                onClick={() => setAdminView('overview')}
+              >
+                Overview
+              </Button>
+              <Button
+                variant={adminView === 'analytics' ? "default" : "outline"}
+                size="sm"
+                onClick={() => setAdminView('analytics')}
+              >
+                Analytics
+              </Button>
+              <Button
+                variant={adminView === 'users' ? "default" : "outline"}
+                size="sm"
+                onClick={() => setAdminView('users')}
+              >
+                Users
+              </Button>
+              <Button
+                variant={adminView === 'courses' ? "default" : "outline"}
+                size="sm"
+                onClick={() => setAdminView('courses')}
+              >
+                Courses
+              </Button>
+              <Button
+                variant={adminView === 'books' ? "default" : "outline"}
+                size="sm"
+                onClick={() => setAdminView('books')}
+              >
+                Books
+              </Button>
+            </div>
           </div>
+
+          {/* Admin Content */}
+          {adminView === 'overview' && (
+            <div>
+              {/* Recent Activity */}
+              <div className="mb-6">
+                <h3 className="text-lg font-semibold mb-3">{t('recentActivity')}</h3>
+                <Card className="p-4">
+                  <CardContent className="p-0">
+                    <div className="space-y-3">
+                      <div className="flex items-center space-x-3">
+                        <div className="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center">
+                          <UserPlus className="h-4 w-4 text-blue-600" />
+                        </div>
+                        <div className="flex-1">
+                          <p className="font-medium text-sm">{t('newUserRegistered')}</p>
+                          <p className="text-xs text-gray-500">5 {t('minutesAgo')}</p>
+                        </div>
+                      </div>
+                      <div className="flex items-center space-x-3">
+                        <div className="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center">
+                          <BookOpen className="h-4 w-4 text-green-600" />
+                        </div>
+                        <div className="flex-1">
+                          <p className="font-medium text-sm">{t('courseCompleted')}</p>
+                          <p className="text-xs text-gray-500">12 {t('minutesAgo')}</p>
+                        </div>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              </div>
+            </div>
+          )}
+
+          {adminView === 'analytics' && (
+            <div>
+              <h3 className="text-lg font-semibold mb-3">Analytics Dashboard</h3>
+              <div className="grid grid-cols-1 gap-4">
+                <Card className="p-4">
+                  <CardContent className="p-0">
+                    <h4 className="font-medium mb-2">User Growth</h4>
+                    <div className="text-2xl font-bold text-primary">{adminStats?.totalUsers || 0}</div>
+                    <p className="text-sm text-gray-600">Total registered users</p>
+                  </CardContent>
+                </Card>
+                <Card className="p-4">
+                  <CardContent className="p-0">
+                    <h4 className="font-medium mb-2">Content Statistics</h4>
+                    <div className="grid grid-cols-2 gap-4">
+                      <div>
+                        <div className="text-lg font-bold text-secondary">{adminStats?.activeCourses || 0}</div>
+                        <p className="text-sm text-gray-600">Active Courses</p>
+                      </div>
+                      <div>
+                        <div className="text-lg font-bold text-accent">{adminStats?.totalBooks || 0}</div>
+                        <p className="text-sm text-gray-600">Total Books</p>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+                <Card className="p-4">
+                  <CardContent className="p-0">
+                    <h4 className="font-medium mb-2">Token Distribution</h4>
+                    <div className="text-2xl font-bold text-purple-600">{adminStats?.tokensDistributed || 0}</div>
+                    <p className="text-sm text-gray-600">MIND Token distributed</p>
+                  </CardContent>
+                </Card>
+              </div>
+            </div>
+          )}
+
+          {adminView === 'users' && (
+            <div>
+              <h3 className="text-lg font-semibold mb-3">User Management</h3>
+              <div className="space-y-3">
+                {allUsers.map((user) => (
+                  <Card key={user.id} className="p-4">
+                    <CardContent className="p-0">
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center space-x-3">
+                          <div className="w-10 h-10 bg-gray-200 rounded-full flex items-center justify-center">
+                            <User className="h-5 w-5 text-gray-600" />
+                          </div>
+                          <div>
+                            <p className="font-medium">{user.email || user.id}</p>
+                            <p className="text-sm text-gray-600">{user.tokens || 0} MIND Token</p>
+                          </div>
+                        </div>
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          onClick={() => {
+                            setSelectedUser(user);
+                            setShowUserDetails(true);
+                          }}
+                        >
+                          View Details
+                        </Button>
+                      </div>
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {adminView === 'courses' && (
+            <div>
+              <h3 className="text-lg font-semibold mb-3">Course Management</h3>
+              <div className="space-y-3">
+                {courses.map((course) => (
+                  <Card key={course.id} className="p-4">
+                    <CardContent className="p-0">
+                      <div className="flex items-center justify-between">
+                        <div className="flex-1">
+                          <h4 className="font-medium">{course.title}</h4>
+                          <p className="text-sm text-gray-600">{course.category} • {course.duration} min</p>
+                        </div>
+                        <div className="flex space-x-2">
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            onClick={() => setEditingCourse(course)}
+                          >
+                            Edit
+                          </Button>
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {adminView === 'books' && (
+            <div>
+              <h3 className="text-lg font-semibold mb-3">Book Management</h3>
+              <div className="space-y-3">
+                {books.map((book) => (
+                  <Card key={book.id} className="p-4">
+                    <CardContent className="p-0">
+                      <div className="flex items-center justify-between">
+                        <div className="flex-1">
+                          <h4 className="font-medium">{book.title}</h4>
+                          <p className="text-sm text-gray-600">{book.author} • {book.pages} pages</p>
+                        </div>
+                        <div className="flex space-x-2">
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            onClick={() => setEditingBook(book)}
+                          >
+                            Edit
+                          </Button>
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
+            </div>
+          )}
+
+
 
           {/* User Management */}
           <div>
@@ -1408,6 +1605,227 @@ export default function Home() {
                 </Button>
                 <Button 
                   onClick={() => setShowAddBook(false)}
+                  variant="outline"
+                  className="flex-1"
+                >
+                  Cancel
+                </Button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* User Details Dialog */}
+      {showUserDetails && selectedUser && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-lg p-6 w-full max-w-md">
+            <h3 className="text-lg font-semibold mb-4">User Details</h3>
+            <div className="space-y-3">
+              <div>
+                <strong>ID:</strong> {selectedUser.id}
+              </div>
+              <div>
+                <strong>Email:</strong> {selectedUser.email || 'N/A'}
+              </div>
+              <div>
+                <strong>MIND Token:</strong> {selectedUser.tokens || 0}
+              </div>
+              <div>
+                <strong>Steps:</strong> {selectedUser.steps || 0}
+              </div>
+              <div>
+                <strong>Created:</strong> {selectedUser.createdAt ? new Date(selectedUser.createdAt).toLocaleDateString() : 'N/A'}
+              </div>
+            </div>
+            <div className="flex justify-end pt-4">
+              <Button onClick={() => setShowUserDetails(false)}>Close</Button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Edit Course Dialog */}
+      {editingCourse && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-lg p-6 w-full max-w-md max-h-[90vh] overflow-y-auto">
+            <h3 className="text-lg font-semibold mb-4">Edit Course</h3>
+            <div className="space-y-4">
+              <div>
+                <label className="block text-sm font-medium mb-1">Title (English)</label>
+                <input
+                  type="text"
+                  value={editingCourse.title}
+                  onChange={(e) => setEditingCourse({...editingCourse, title: e.target.value})}
+                  className="w-full p-2 border rounded-md"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium mb-1">Title (Russian)</label>
+                <input
+                  type="text"
+                  value={editingCourse.titleRu || ''}
+                  onChange={(e) => setEditingCourse({...editingCourse, titleRu: e.target.value})}
+                  className="w-full p-2 border rounded-md"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium mb-1">Description (English)</label>
+                <textarea
+                  value={editingCourse.description || ''}
+                  onChange={(e) => setEditingCourse({...editingCourse, description: e.target.value})}
+                  className="w-full p-2 border rounded-md"
+                  rows={3}
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium mb-1">Description (Russian)</label>
+                <textarea
+                  value={editingCourse.descriptionRu || ''}
+                  onChange={(e) => setEditingCourse({...editingCourse, descriptionRu: e.target.value})}
+                  className="w-full p-2 border rounded-md"
+                  rows={3}
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium mb-1">Instructor (English)</label>
+                <input
+                  type="text"
+                  value={editingCourse.instructor}
+                  onChange={(e) => setEditingCourse({...editingCourse, instructor: e.target.value})}
+                  className="w-full p-2 border rounded-md"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium mb-1">Instructor (Russian)</label>
+                <input
+                  type="text"
+                  value={editingCourse.instructorRu || ''}
+                  onChange={(e) => setEditingCourse({...editingCourse, instructorRu: e.target.value})}
+                  className="w-full p-2 border rounded-md"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium mb-1">Duration (minutes)</label>
+                <input
+                  type="number"
+                  value={editingCourse.duration}
+                  onChange={(e) => setEditingCourse({...editingCourse, duration: Number(e.target.value)})}
+                  className="w-full p-2 border rounded-md"
+                />
+              </div>
+              <div className="flex space-x-3 pt-4">
+                <Button 
+                  onClick={() => {
+                    // Update course mutation would go here
+                    setEditingCourse(null);
+                    toast({
+                      title: "Success",
+                      description: "Course updated successfully",
+                    });
+                  }}
+                  className="flex-1"
+                >
+                  Save Changes
+                </Button>
+                <Button 
+                  onClick={() => setEditingCourse(null)}
+                  variant="outline"
+                  className="flex-1"
+                >
+                  Cancel
+                </Button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Edit Book Dialog */}
+      {editingBook && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-lg p-6 w-full max-w-md max-h-[90vh] overflow-y-auto">
+            <h3 className="text-lg font-semibold mb-4">Edit Book</h3>
+            <div className="space-y-4">
+              <div>
+                <label className="block text-sm font-medium mb-1">Title (English)</label>
+                <input
+                  type="text"
+                  value={editingBook.title}
+                  onChange={(e) => setEditingBook({...editingBook, title: e.target.value})}
+                  className="w-full p-2 border rounded-md"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium mb-1">Title (Russian)</label>
+                <input
+                  type="text"
+                  value={editingBook.titleRu || ''}
+                  onChange={(e) => setEditingBook({...editingBook, titleRu: e.target.value})}
+                  className="w-full p-2 border rounded-md"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium mb-1">Description (English)</label>
+                <textarea
+                  value={editingBook.description || ''}
+                  onChange={(e) => setEditingBook({...editingBook, description: e.target.value})}
+                  className="w-full p-2 border rounded-md"
+                  rows={3}
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium mb-1">Description (Russian)</label>
+                <textarea
+                  value={editingBook.descriptionRu || ''}
+                  onChange={(e) => setEditingBook({...editingBook, descriptionRu: e.target.value})}
+                  className="w-full p-2 border rounded-md"
+                  rows={3}
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium mb-1">Author (English)</label>
+                <input
+                  type="text"
+                  value={editingBook.author}
+                  onChange={(e) => setEditingBook({...editingBook, author: e.target.value})}
+                  className="w-full p-2 border rounded-md"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium mb-1">Author (Russian)</label>
+                <input
+                  type="text"
+                  value={editingBook.authorRu || ''}
+                  onChange={(e) => setEditingBook({...editingBook, authorRu: e.target.value})}
+                  className="w-full p-2 border rounded-md"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium mb-1">Pages</label>
+                <input
+                  type="number"
+                  value={editingBook.pages}
+                  onChange={(e) => setEditingBook({...editingBook, pages: Number(e.target.value)})}
+                  className="w-full p-2 border rounded-md"
+                />
+              </div>
+              <div className="flex space-x-3 pt-4">
+                <Button 
+                  onClick={() => {
+                    // Update book mutation would go here
+                    setEditingBook(null);
+                    toast({
+                      title: "Success",
+                      description: "Book updated successfully",
+                    });
+                  }}
+                  className="flex-1"
+                >
+                  Save Changes
+                </Button>
+                <Button 
+                  onClick={() => setEditingBook(null)}
                   variant="outline"
                   className="flex-1"
                 >

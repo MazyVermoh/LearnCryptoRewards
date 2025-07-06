@@ -86,6 +86,7 @@ export interface IStorage {
     totalBooks: number;
     tokensDistributed: string;
   }>;
+  getAllUsers(): Promise<User[]>;
 }
 
 export class DatabaseStorage implements IStorage {
@@ -344,6 +345,10 @@ export class DatabaseStorage implements IStorage {
       totalBooks: Number(bookCount.count),
       tokensDistributed: tokenSum.sum || "0",
     };
+  }
+
+  async getAllUsers(): Promise<User[]> {
+    return await db.select().from(users).orderBy(desc(users.createdAt));
   }
 }
 
