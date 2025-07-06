@@ -153,6 +153,10 @@ export default function Home() {
   const [editingBook, setEditingBook] = useState(null);
   const [showUserDetails, setShowUserDetails] = useState(false);
   const [selectedUser, setSelectedUser] = useState(null);
+  const [editingCourseContent, setEditingCourseContent] = useState(null);
+  const [editingBookContent, setEditingBookContent] = useState(null);
+  const [addingLesson, setAddingLesson] = useState(null);
+  const [addingChapter, setAddingChapter] = useState(null);
 
   // Enroll in course mutation
   const enrollMutation = useMutation({
@@ -1055,6 +1059,13 @@ export default function Home() {
                           >
                             Edit
                           </Button>
+                          <Button
+                            size="sm"
+                            variant="secondary"
+                            onClick={() => setEditingCourseContent(course)}
+                          >
+                            Content
+                          </Button>
                         </div>
                       </div>
                     </CardContent>
@@ -1083,6 +1094,13 @@ export default function Home() {
                             onClick={() => setEditingBook(book)}
                           >
                             Edit
+                          </Button>
+                          <Button
+                            size="sm"
+                            variant="secondary"
+                            onClick={() => setEditingBookContent(book)}
+                          >
+                            Content
                           </Button>
                         </div>
                       </div>
@@ -1832,6 +1850,302 @@ export default function Home() {
                   Cancel
                 </Button>
               </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Course Content Management Modal */}
+      {editingCourseContent && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-lg w-full max-w-4xl max-h-[90vh] overflow-y-auto">
+            <div className="p-6 border-b">
+              <h3 className="text-lg font-semibold">Manage Course Content: {editingCourseContent.title}</h3>
+            </div>
+            <div className="p-6">
+              <div className="flex justify-between items-center mb-4">
+                <h4 className="font-medium">Lessons</h4>
+                <Button
+                  onClick={() => setAddingLesson({
+                    courseId: editingCourseContent.id,
+                    title: '',
+                    titleRu: '',
+                    description: '',
+                    descriptionRu: '',
+                    content: '',
+                    contentRu: '',
+                    videoUrl: '',
+                    duration: 0,
+                    orderIndex: 1
+                  })}
+                  className="bg-primary text-white"
+                >
+                  Add Lesson
+                </Button>
+              </div>
+              
+              <div className="space-y-3">
+                <div className="p-4 border rounded-lg">
+                  <p className="text-gray-600">Lessons will be displayed here. Click "Add Lesson" to create your first lesson.</p>
+                </div>
+              </div>
+            </div>
+            <div className="p-6 border-t flex justify-end">
+              <Button
+                variant="outline"
+                onClick={() => setEditingCourseContent(null)}
+              >
+                Close
+              </Button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Book Content Management Modal */}
+      {editingBookContent && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-lg w-full max-w-4xl max-h-[90vh] overflow-y-auto">
+            <div className="p-6 border-b">
+              <h3 className="text-lg font-semibold">Manage Book Content: {editingBookContent.title}</h3>
+            </div>
+            <div className="p-6">
+              <div className="flex justify-between items-center mb-4">
+                <h4 className="font-medium">Chapters</h4>
+                <Button
+                  onClick={() => setAddingChapter({
+                    bookId: editingBookContent.id,
+                    title: '',
+                    titleRu: '',
+                    content: '',
+                    contentRu: '',
+                    orderIndex: 1
+                  })}
+                  className="bg-primary text-white"
+                >
+                  Add Chapter
+                </Button>
+              </div>
+              
+              <div className="space-y-3">
+                <div className="p-4 border rounded-lg">
+                  <p className="text-gray-600">Chapters will be displayed here. Click "Add Chapter" to create your first chapter.</p>
+                </div>
+              </div>
+            </div>
+            <div className="p-6 border-t flex justify-end">
+              <Button
+                variant="outline"
+                onClick={() => setEditingBookContent(null)}
+              >
+                Close
+              </Button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Add Lesson Modal */}
+      {addingLesson && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-lg w-full max-w-2xl max-h-[90vh] overflow-y-auto">
+            <div className="p-6 border-b">
+              <h3 className="text-lg font-semibold">Add New Lesson</h3>
+            </div>
+            <div className="p-6">
+              <div className="space-y-4">
+                <div>
+                  <label className="block text-sm font-medium mb-1">Title (English)*</label>
+                  <input
+                    type="text"
+                    value={addingLesson.title}
+                    onChange={(e) => setAddingLesson({...addingLesson, title: e.target.value})}
+                    className="w-full p-2 border rounded-md"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium mb-1">Title (Russian)</label>
+                  <input
+                    type="text"
+                    value={addingLesson.titleRu}
+                    onChange={(e) => setAddingLesson({...addingLesson, titleRu: e.target.value})}
+                    className="w-full p-2 border rounded-md"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium mb-1">Description (English)</label>
+                  <textarea
+                    value={addingLesson.description}
+                    onChange={(e) => setAddingLesson({...addingLesson, description: e.target.value})}
+                    className="w-full p-2 border rounded-md"
+                    rows={2}
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium mb-1">Description (Russian)</label>
+                  <textarea
+                    value={addingLesson.descriptionRu}
+                    onChange={(e) => setAddingLesson({...addingLesson, descriptionRu: e.target.value})}
+                    className="w-full p-2 border rounded-md"
+                    rows={2}
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium mb-1">Content (English)*</label>
+                  <textarea
+                    value={addingLesson.content}
+                    onChange={(e) => setAddingLesson({...addingLesson, content: e.target.value})}
+                    className="w-full p-2 border rounded-md"
+                    rows={6}
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium mb-1">Content (Russian)</label>
+                  <textarea
+                    value={addingLesson.contentRu}
+                    onChange={(e) => setAddingLesson({...addingLesson, contentRu: e.target.value})}
+                    className="w-full p-2 border rounded-md"
+                    rows={6}
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium mb-1">Video URL</label>
+                  <input
+                    type="text"
+                    value={addingLesson.videoUrl}
+                    onChange={(e) => setAddingLesson({...addingLesson, videoUrl: e.target.value})}
+                    className="w-full p-2 border rounded-md"
+                  />
+                </div>
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-sm font-medium mb-1">Duration (minutes)</label>
+                    <input
+                      type="number"
+                      value={addingLesson.duration}
+                      onChange={(e) => setAddingLesson({...addingLesson, duration: Number(e.target.value)})}
+                      className="w-full p-2 border rounded-md"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium mb-1">Order Index</label>
+                    <input
+                      type="number"
+                      value={addingLesson.orderIndex}
+                      onChange={(e) => setAddingLesson({...addingLesson, orderIndex: Number(e.target.value)})}
+                      className="w-full p-2 border rounded-md"
+                    />
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div className="p-6 border-t flex justify-end space-x-3">
+              <Button
+                variant="outline"
+                onClick={() => setAddingLesson(null)}
+              >
+                Cancel
+              </Button>
+              <Button
+                onClick={async () => {
+                  try {
+                    await apiRequest(`/api/courses/${addingLesson.courseId}/lessons`, {
+                      method: 'POST',
+                      body: JSON.stringify(addingLesson)
+                    });
+                    setAddingLesson(null);
+                    toast({ title: "Success", description: "Lesson added successfully" });
+                  } catch (error) {
+                    toast({ title: "Error", description: "Failed to add lesson", variant: "destructive" });
+                  }
+                }}
+              >
+                Add Lesson
+              </Button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Add Chapter Modal */}
+      {addingChapter && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-lg w-full max-w-2xl max-h-[90vh] overflow-y-auto">
+            <div className="p-6 border-b">
+              <h3 className="text-lg font-semibold">Add New Chapter</h3>
+            </div>
+            <div className="p-6">
+              <div className="space-y-4">
+                <div>
+                  <label className="block text-sm font-medium mb-1">Title (English)*</label>
+                  <input
+                    type="text"
+                    value={addingChapter.title}
+                    onChange={(e) => setAddingChapter({...addingChapter, title: e.target.value})}
+                    className="w-full p-2 border rounded-md"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium mb-1">Title (Russian)</label>
+                  <input
+                    type="text"
+                    value={addingChapter.titleRu}
+                    onChange={(e) => setAddingChapter({...addingChapter, titleRu: e.target.value})}
+                    className="w-full p-2 border rounded-md"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium mb-1">Content (English)*</label>
+                  <textarea
+                    value={addingChapter.content}
+                    onChange={(e) => setAddingChapter({...addingChapter, content: e.target.value})}
+                    className="w-full p-2 border rounded-md"
+                    rows={10}
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium mb-1">Content (Russian)</label>
+                  <textarea
+                    value={addingChapter.contentRu}
+                    onChange={(e) => setAddingChapter({...addingChapter, contentRu: e.target.value})}
+                    className="w-full p-2 border rounded-md"
+                    rows={10}
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium mb-1">Order Index</label>
+                  <input
+                    type="number"
+                    value={addingChapter.orderIndex}
+                    onChange={(e) => setAddingChapter({...addingChapter, orderIndex: Number(e.target.value)})}
+                    className="w-full p-2 border rounded-md"
+                  />
+                </div>
+              </div>
+            </div>
+            <div className="p-6 border-t flex justify-end space-x-3">
+              <Button
+                variant="outline"
+                onClick={() => setAddingChapter(null)}
+              >
+                Cancel
+              </Button>
+              <Button
+                onClick={async () => {
+                  try {
+                    await apiRequest(`/api/books/${addingChapter.bookId}/chapters`, {
+                      method: 'POST',
+                      body: JSON.stringify(addingChapter)
+                    });
+                    setAddingChapter(null);
+                    toast({ title: "Success", description: "Chapter added successfully" });
+                  } catch (error) {
+                    toast({ title: "Error", description: "Failed to add chapter", variant: "destructive" });
+                  }
+                }}
+              >
+                Add Chapter
+              </Button>
             </div>
           </div>
         </div>

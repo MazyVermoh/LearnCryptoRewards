@@ -8,6 +8,8 @@ import {
   sponsorChannels,
   channelSubscriptions,
   dailyChallenges,
+  courseLessons,
+  bookChapters,
   type User,
   type UpsertUser,
   type Course,
@@ -26,9 +28,13 @@ import {
   type InsertChannelSubscription,
   type DailyChallenge,
   type InsertDailyChallenge,
+  type CourseLesson,
+  type InsertCourseLesson,
+  type BookChapter,
+  type InsertBookChapter,
 } from "@shared/schema";
 import { db } from "./db";
-import { eq, desc, and, sql, like } from "drizzle-orm";
+import { eq, desc, asc, and, sql, like } from "drizzle-orm";
 
 export interface IStorage {
   // User operations
@@ -87,6 +93,17 @@ export interface IStorage {
     tokensDistributed: string;
   }>;
   getAllUsers(): Promise<User[]>;
+  
+  // Content management
+  getCourseLessons(courseId: number): Promise<CourseLesson[]>;
+  createCourseLesson(lesson: InsertCourseLesson): Promise<CourseLesson>;
+  updateCourseLesson(id: number, lesson: Partial<InsertCourseLesson>): Promise<CourseLesson>;
+  deleteCourseLesson(id: number): Promise<void>;
+  
+  getBookChapters(bookId: number): Promise<BookChapter[]>;
+  createBookChapter(chapter: InsertBookChapter): Promise<BookChapter>;
+  updateBookChapter(id: number, chapter: Partial<InsertBookChapter>): Promise<BookChapter>;
+  deleteBookChapter(id: number): Promise<void>;
 }
 
 export class DatabaseStorage implements IStorage {
@@ -349,6 +366,53 @@ export class DatabaseStorage implements IStorage {
 
   async getAllUsers(): Promise<User[]> {
     return await db.select().from(users).orderBy(desc(users.createdAt));
+  }
+
+  // Content management methods
+  async getCourseLessons(courseId: number): Promise<CourseLesson[]> {
+    return await db.select().from(courseLessons)
+      .where(eq(courseLessons.courseId, courseId))
+      .orderBy(asc(courseLessons.orderIndex));
+  }
+
+  async createCourseLesson(lesson: InsertCourseLesson): Promise<CourseLesson> {
+    const [newLesson] = await db.insert(courseLessons).values(lesson).returning();
+    return newLesson;
+  }
+
+  async updateCourseLesson(id: number, lesson: Partial<InsertCourseLesson>): Promise<CourseLesson> {
+    const [updatedLesson] = await db.update(courseLessons)
+      .set({ ...lesson, updatedAt: new Date() })
+      .where(eq(courseLessons.id, id))
+      .returning();
+    return updatedLesson;
+  }
+
+  async deleteCourseLesson(id: number): Promise<void> {
+    await db.delete(courseLessons).where(eq(courseLessons.id, id));
+  }
+
+  async getBookChapters(bookId: number): Promise<BookChapter[]> {
+    return await db.select().from(bookChapters)
+      .where(eq(bookChapters.bookId, bookId))
+      .orderBy(asc(bookChapters.orderIndex));
+  }
+
+  async createBookChapter(chapter: InsertBookChapter): Promise<BookChapter> {
+    const [newChapter] = await db.insert(bookChapters).values(chapter).returning();
+    return newChapter;
+  }
+
+  async updateBookChapter(id: number, chapter: Partial<InsertBookChapter>): Promise<BookChapter> {
+    const [updatedChapter] = await db.update(bookChapters)
+      .set({ ...chapter, updatedAt: new Date() })
+      .where(eq(bookChapters.id, id))
+      .returning();
+    return updatedChapter;
+  }
+
+  async deleteBookChapter(id: number): Promise<void> {
+    await db.delete(bookChapters).where(eq(bookChapters.id, id));
   }
 }
 

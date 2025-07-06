@@ -184,6 +184,36 @@ export const userRewards = pgTable("user_rewards", {
   actionIdx: index("user_rewards_action_idx").on(table.actionId),
 }));
 
+// Course lessons table
+export const courseLessons = pgTable("course_lessons", {
+  id: serial("id").primaryKey(),
+  courseId: integer("course_id").notNull().references(() => courses.id, { onDelete: "cascade" }),
+  title: varchar("title").notNull(),
+  titleRu: varchar("title_ru"),
+  description: text("description"),
+  descriptionRu: text("description_ru"),
+  content: text("content").notNull(),
+  contentRu: text("content_ru"),
+  videoUrl: varchar("video_url"),
+  duration: integer("duration"), // in minutes
+  orderIndex: integer("order_index").notNull(),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+// Book chapters table
+export const bookChapters = pgTable("book_chapters", {
+  id: serial("id").primaryKey(),
+  bookId: integer("book_id").notNull().references(() => books.id, { onDelete: "cascade" }),
+  title: varchar("title").notNull(),
+  titleRu: varchar("title_ru"),
+  content: text("content").notNull(),
+  contentRu: text("content_ru"),
+  orderIndex: integer("order_index").notNull(),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
 // Relations
 export const usersRelations = relations(users, ({ many, one }) => ({
   enrollments: many(enrollments),
@@ -196,6 +226,7 @@ export const usersRelations = relations(users, ({ many, one }) => ({
 
 export const coursesRelations = relations(courses, ({ many }) => ({
   enrollments: many(enrollments),
+  lessons: many(courseLessons),
 }));
 
 export const enrollmentsRelations = relations(enrollments, ({ one }) => ({
@@ -205,6 +236,7 @@ export const enrollmentsRelations = relations(enrollments, ({ one }) => ({
 
 export const booksRelations = relations(books, ({ many }) => ({
   purchases: many(bookPurchases),
+  chapters: many(bookChapters),
 }));
 
 export const bookPurchasesRelations = relations(bookPurchases, ({ one }) => ({
@@ -229,6 +261,14 @@ export const dailyChallengesRelations = relations(dailyChallenges, ({ one }) => 
   user: one(users, { fields: [dailyChallenges.userId], references: [users.id] }),
 }));
 
+export const courseLessonsRelations = relations(courseLessons, ({ one }) => ({
+  course: one(courses, { fields: [courseLessons.courseId], references: [courses.id] }),
+}));
+
+export const bookChaptersRelations = relations(bookChapters, ({ one }) => ({
+  book: one(books, { fields: [bookChapters.bookId], references: [books.id] }),
+}));
+
 // Insert schemas
 export const insertUserSchema = createInsertSchema(users);
 export const insertCourseSchema = createInsertSchema(courses);
@@ -239,6 +279,8 @@ export const insertTransactionSchema = createInsertSchema(transactions);
 export const insertSponsorChannelSchema = createInsertSchema(sponsorChannels);
 export const insertChannelSubscriptionSchema = createInsertSchema(channelSubscriptions);
 export const insertDailyChallengeSchema = createInsertSchema(dailyChallenges);
+export const insertCourseLessonSchema = createInsertSchema(courseLessons);
+export const insertBookChapterSchema = createInsertSchema(bookChapters);
 
 // Types
 export type UpsertUser = typeof users.$inferInsert;
@@ -265,3 +307,7 @@ export type UserDailyCounter = typeof userDailyCounters.$inferSelect;
 export type InsertUserDailyCounter = typeof userDailyCounters.$inferInsert;
 export type UserReward = typeof userRewards.$inferSelect;
 export type InsertUserReward = typeof userRewards.$inferInsert;
+export type CourseLesson = typeof courseLessons.$inferSelect;
+export type InsertCourseLesson = z.infer<typeof insertCourseLessonSchema>;
+export type BookChapter = typeof bookChapters.$inferSelect;
+export type InsertBookChapter = z.infer<typeof insertBookChapterSchema>;

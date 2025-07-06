@@ -403,6 +403,102 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Course content management routes
+  app.get("/api/courses/:id/lessons", async (req: Request, res: Response) => {
+    try {
+      const courseId = parseInt(req.params.id);
+      const lessons = await storage.getCourseLessons(courseId);
+      res.json(lessons);
+    } catch (error) {
+      console.error("Error fetching course lessons:", error);
+      res.status(500).json({ error: "Failed to fetch course lessons" });
+    }
+  });
+
+  app.post("/api/courses/:id/lessons", async (req: Request, res: Response) => {
+    try {
+      const courseId = parseInt(req.params.id);
+      const lesson = await storage.createCourseLesson({
+        ...req.body,
+        courseId
+      });
+      res.json(lesson);
+    } catch (error) {
+      console.error("Error creating course lesson:", error);
+      res.status(500).json({ error: "Failed to create course lesson" });
+    }
+  });
+
+  app.put("/api/course-lessons/:id", async (req: Request, res: Response) => {
+    try {
+      const id = parseInt(req.params.id);
+      const lesson = await storage.updateCourseLesson(id, req.body);
+      res.json(lesson);
+    } catch (error) {
+      console.error("Error updating course lesson:", error);
+      res.status(500).json({ error: "Failed to update course lesson" });
+    }
+  });
+
+  app.delete("/api/course-lessons/:id", async (req: Request, res: Response) => {
+    try {
+      const id = parseInt(req.params.id);
+      await storage.deleteCourseLesson(id);
+      res.json({ message: "Course lesson deleted successfully" });
+    } catch (error) {
+      console.error("Error deleting course lesson:", error);
+      res.status(500).json({ error: "Failed to delete course lesson" });
+    }
+  });
+
+  // Book content management routes
+  app.get("/api/books/:id/chapters", async (req: Request, res: Response) => {
+    try {
+      const bookId = parseInt(req.params.id);
+      const chapters = await storage.getBookChapters(bookId);
+      res.json(chapters);
+    } catch (error) {
+      console.error("Error fetching book chapters:", error);
+      res.status(500).json({ error: "Failed to fetch book chapters" });
+    }
+  });
+
+  app.post("/api/books/:id/chapters", async (req: Request, res: Response) => {
+    try {
+      const bookId = parseInt(req.params.id);
+      const chapter = await storage.createBookChapter({
+        ...req.body,
+        bookId
+      });
+      res.json(chapter);
+    } catch (error) {
+      console.error("Error creating book chapter:", error);
+      res.status(500).json({ error: "Failed to create book chapter" });
+    }
+  });
+
+  app.put("/api/book-chapters/:id", async (req: Request, res: Response) => {
+    try {
+      const id = parseInt(req.params.id);
+      const chapter = await storage.updateBookChapter(id, req.body);
+      res.json(chapter);
+    } catch (error) {
+      console.error("Error updating book chapter:", error);
+      res.status(500).json({ error: "Failed to update book chapter" });
+    }
+  });
+
+  app.delete("/api/book-chapters/:id", async (req: Request, res: Response) => {
+    try {
+      const id = parseInt(req.params.id);
+      await storage.deleteBookChapter(id);
+      res.json({ message: "Book chapter deleted successfully" });
+    } catch (error) {
+      console.error("Error deleting book chapter:", error);
+      res.status(500).json({ error: "Failed to delete book chapter" });
+    }
+  });
+
   // Register MIND Token reward system routes
   registerRewardRoutes(app);
 
