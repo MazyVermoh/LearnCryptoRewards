@@ -29,6 +29,14 @@ export default function BookReader() {
       setCurrentChapterIndex(progress.currentChapter - 1);
     }
   }, [progress]);
+
+  // Initialize progress for first time reading
+  useEffect(() => {
+    if (user?.id && id && chapters.length > 0 && progress === null && !updateProgressMutation.isPending) {
+      console.log("Initializing progress for first time reading");
+      updateProgressMutation.mutate(1);
+    }
+  }, [user?.id, id, chapters.length, progress, updateProgressMutation.isPending]);
   const [showChapterList, setShowChapterList] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
   const { t, language } = useLanguage();
@@ -56,15 +64,25 @@ export default function BookReader() {
     },
   });
 
+  // Get current user
+  const { data: user } = useQuery({
+    queryKey: ["/api/users/user123"],
+    queryFn: async () => {
+      const response = await fetch(`/api/users/user123`);
+      if (!response.ok) throw new Error("Failed to fetch user");
+      return response.json();
+    },
+  });
+
   // Get reading progress
   const { data: progress } = useQuery({
-    queryKey: ["/api/users/user123/books", id, "progress"],
+    queryKey: ["/api/users", user?.id, "books", id, "progress"],
     queryFn: async () => {
-      const response = await fetch(`/api/users/user123/books/${id}/progress`);
+      const response = await fetch(`/api/users/${user.id}/books/${id}/progress`);
       if (!response.ok) return null;
       return response.json();
     },
-    enabled: !!id,
+    enabled: !!id && !!user?.id,
   });
 
   const queryClient = useQueryClient();
@@ -73,7 +91,8 @@ export default function BookReader() {
   // Update reading progress
   const updateProgressMutation = useMutation({
     mutationFn: async (currentChapter: number) => {
-      const response = await fetch(`/api/users/user123/books/${id}/progress`, {
+      if (!user?.id) throw new Error("User not found");
+      const response = await fetch(`/api/users/${user.id}/books/${id}/progress`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ currentChapter }),
@@ -82,8 +101,8 @@ export default function BookReader() {
       return response.json();
     },
     onSuccess: (data) => {
-      queryClient.invalidateQueries({ queryKey: ["/api/users/user123/books", id, "progress"] });
-      queryClient.invalidateQueries({ queryKey: ["/api/users/user123"] });
+      queryClient.invalidateQueries({ queryKey: ["/api/users", user?.id, "books", id, "progress"] });
+      queryClient.invalidateQueries({ queryKey: ["/api/users", user?.id] });
       
       // Check if book was completed
       if (data.isCompleted && !data.rewardClaimed) {
