@@ -25,27 +25,8 @@ export default function BookReader() {
   const [showChapterList, setShowChapterList] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
   const { t, language } = useLanguage();
-
-  // Close menu when clicking outside
-  useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
-        setShowChapterList(false);
-      }
-    };
-
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
-    };
-  }, []);
-
-  // Update chapter index when progress is loaded
-  useEffect(() => {
-    if (progress && progress.currentChapter > 0) {
-      setCurrentChapterIndex(progress.currentChapter - 1);
-    }
-  }, [progress]);
+  const queryClient = useQueryClient();
+  const { toast } = useToast();
 
   const { data: book, isLoading } = useQuery<BookWithChapters>({
     queryKey: ["/api/books", id],
@@ -77,8 +58,26 @@ export default function BookReader() {
     enabled: !!id && !!user?.id,
   });
 
-  const queryClient = useQueryClient();
-  const { toast } = useToast();
+  // Close menu when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
+        setShowChapterList(false);
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, []);
+
+  // Update chapter index when progress is loaded
+  useEffect(() => {
+    if (progress && progress.currentChapter > 0) {
+      setCurrentChapterIndex(progress.currentChapter - 1);
+    }
+  }, [progress]);
 
   // Update reading progress
   const updateProgressMutation = useMutation({
@@ -129,8 +128,12 @@ export default function BookReader() {
       return response.json();
     },
     onSuccess: () => {
+      // Force refresh of progress data
+      queryClient.removeQueries({ queryKey: ["/api/users", user?.id, "books", id, "progress"] });
       queryClient.invalidateQueries({ queryKey: ["/api/users", user?.id, "books", id, "progress"] });
       queryClient.invalidateQueries({ queryKey: ["/api/users", user?.id] });
+      queryClient.invalidateQueries({ queryKey: ["/api/users", user?.id, "transactions"] });
+      
       toast({
         title: "🎉 Congratulations!",
         description: "You completed the book and earned 100 MIND tokens!",

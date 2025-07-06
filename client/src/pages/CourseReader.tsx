@@ -90,8 +90,12 @@ export default function CourseReader() {
       return response.json();
     },
     onSuccess: () => {
+      // Force refresh of progress data
+      queryClient.removeQueries({ queryKey: ["/api/users", user?.id, "courses", id, "progress"] });
       queryClient.invalidateQueries({ queryKey: ["/api/users", user?.id, "courses", id, "progress"] });
       queryClient.invalidateQueries({ queryKey: ["/api/users", user?.id] });
+      queryClient.invalidateQueries({ queryKey: ["/api/users", user?.id, "transactions"] });
+      
       toast({
         title: "🎉 Congratulations!",
         description: "You completed the course and earned 50 MIND tokens!",
