@@ -368,6 +368,8 @@ export default function Home() {
   const [editingBookContent, setEditingBookContent] = useState(null);
   const [addingLesson, setAddingLesson] = useState(null);
   const [addingChapter, setAddingChapter] = useState(null);
+  const [managingBookChapters, setManagingBookChapters] = useState(null);
+  const [numberOfChapters, setNumberOfChapters] = useState(5);
 
   // Enroll in course mutation
   const enrollMutation = useMutation({
@@ -508,6 +510,72 @@ export default function Home() {
       toast({
         title: "Error",
         description: "Failed to add book",
+        variant: "destructive",
+      });
+    },
+  });
+
+  // Delete course mutation
+  const deleteCourse = useMutation({
+    mutationFn: async (courseId: number) => {
+      await apiRequest('DELETE', `/api/courses/${courseId}/permanent`);
+    },
+    onSuccess: () => {
+      toast({
+        title: "Success",
+        description: "Course deleted successfully",
+      });
+      queryClient.invalidateQueries({ queryKey: ['/api/courses'] });
+    },
+    onError: (error) => {
+      toast({
+        title: "Error", 
+        description: error.message,
+        variant: "destructive",
+      });
+    },
+  });
+
+  // Delete book mutation
+  const deleteBook = useMutation({
+    mutationFn: async (bookId: number) => {
+      await apiRequest('DELETE', `/api/books/${bookId}/permanent`);
+    },
+    onSuccess: () => {
+      toast({
+        title: "Success",
+        description: "Book deleted successfully",
+      });
+      queryClient.invalidateQueries({ queryKey: ['/api/books'] });
+    },
+    onError: (error) => {
+      toast({
+        title: "Error",
+        description: error.message,
+        variant: "destructive",
+      });
+    },
+  });
+
+  // Generate book chapters mutation
+  const generateChapters = useMutation({
+    mutationFn: async ({ bookId, numberOfChapters }: { bookId: number; numberOfChapters: number }) => {
+      await apiRequest('POST', `/api/books/${bookId}/generate-chapters`, {
+        numberOfChapters,
+      });
+    },
+    onSuccess: () => {
+      toast({
+        title: "Success",
+        description: "Book chapters generated successfully",
+      });
+      setManagingBookChapters(null);
+      queryClient.invalidateQueries({ queryKey: [`/api/books/${managingBookChapters?.id}/chapters`] });
+    },
+    onError: (error) => {
+      toast({
+        title: "Error",
+        description: error.message,
         variant: "destructive",
       });
     },
@@ -1390,6 +1458,13 @@ export default function Home() {
                           >
                             Content
                           </Button>
+                          <Button
+                            size="sm"
+                            variant="destructive"
+                            onClick={() => deleteCourse(course.id)}
+                          >
+                            Delete
+                          </Button>
                         </div>
                       </div>
                     </CardContent>
@@ -1425,6 +1500,20 @@ export default function Home() {
                             onClick={() => setEditingBookContent(book)}
                           >
                             Content
+                          </Button>
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            onClick={() => setManagingBookChapters(book)}
+                          >
+                            Chapters
+                          </Button>
+                          <Button
+                            size="sm"
+                            variant="destructive"
+                            onClick={() => deleteBook(book.id)}
+                          >
+                            Delete
                           </Button>
                         </div>
                       </div>
@@ -2621,6 +2710,53 @@ export default function Home() {
               >
                 Add Chapter
               </Button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Manage Book Chapters Modal */}
+      {managingBookChapters && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-lg p-6 w-full max-w-md">
+            <h3 className="text-lg font-semibold mb-4">Generate Chapters for: {managingBookChapters.title}</h3>
+            <div className="space-y-4">
+              <div>
+                <label className="block text-sm font-medium mb-1">Number of Chapters</label>
+                <input
+                  type="number"
+                  value={numberOfChapters}
+                  onChange={(e) => setNumberOfChapters(Number(e.target.value) || 1)}
+                  className="w-full p-2 border rounded-md"
+                  min="1"
+                  max="50"
+                  placeholder="Enter number of chapters (1-50)"
+                />
+                <p className="text-sm text-gray-500 mt-1">
+                  This will replace all existing chapters with {numberOfChapters} new empty chapters
+                </p>
+              </div>
+              <div className="flex space-x-3 pt-4">
+                <Button 
+                  onClick={() => {
+                    generateChapters.mutate({
+                      bookId: managingBookChapters.id,
+                      numberOfChapters: numberOfChapters
+                    });
+                  }}
+                  disabled={generateChapters.isPending}
+                  className="flex-1"
+                >
+                  {generateChapters.isPending ? "Generating..." : "Generate Chapters"}
+                </Button>
+                <Button 
+                  onClick={() => setManagingBookChapters(null)}
+                  variant="outline"
+                  className="flex-1"
+                >
+                  Cancel
+                </Button>
+              </div>
             </div>
           </div>
         </div>

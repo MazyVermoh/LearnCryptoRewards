@@ -10,6 +10,8 @@ import {
   dailyChallenges,
   courseLessons,
   bookChapters,
+  courseLessons,
+  bookChapters,
   type User,
   type UpsertUser,
   type Course,
@@ -50,6 +52,7 @@ export interface IStorage {
   createCourse(course: InsertCourse): Promise<Course>;
   updateCourse(id: number, course: Partial<InsertCourse>): Promise<Course>;
   deleteCourse(id: number): Promise<void>;
+  permanentlyDeleteCourse(id: number): Promise<void>;
   
   // Enrollment operations
   enrollUser(enrollment: InsertEnrollment): Promise<Enrollment>;
@@ -62,6 +65,8 @@ export interface IStorage {
   createBook(book: InsertBook): Promise<Book>;
   updateBook(id: number, book: Partial<InsertBook>): Promise<Book>;
   deleteBook(id: number): Promise<void>;
+  permanentlyDeleteBook(id: number): Promise<void>;
+  generateBookChapters(bookId: number, numberOfChapters: number): Promise<BookChapter[]>;
   
   // Book purchase operations
   purchaseBook(purchase: InsertBookPurchase): Promise<BookPurchase>;
@@ -187,6 +192,15 @@ export class DatabaseStorage implements IStorage {
     await db.update(courses).set({ isActive: false }).where(eq(courses.id, id));
   }
 
+  async permanentlyDeleteCourse(id: number): Promise<void> {
+    // Delete related course lessons first
+    await db.delete(courseLessons).where(eq(courseLessons.courseId, id));
+    // Delete related enrollments
+    await db.delete(enrollments).where(eq(enrollments.courseId, id));
+    // Delete the course
+    await db.delete(courses).where(eq(courses.id, id));
+  }
+
   async enrollUser(enrollment: InsertEnrollment): Promise<Enrollment> {
     // Check if user is already enrolled in this course
     const existingEnrollment = await db
@@ -268,6 +282,42 @@ export class DatabaseStorage implements IStorage {
 
   async deleteBook(id: number): Promise<void> {
     await db.update(books).set({ isActive: false }).where(eq(books.id, id));
+  }
+
+  async permanentlyDeleteBook(id: number): Promise<void> {
+    // Delete related book chapters first
+    await db.delete(bookChapters).where(eq(bookChapters.bookId, id));
+    // Delete related book purchases
+    await db.delete(bookPurchases).where(eq(bookPurchases.bookId, id));
+    // Delete the book
+    await db.delete(books).where(eq(books.id, id));
+  }
+
+  async generateBookChapters(bookId: number, numberOfChapters: number): Promise<BookChapter[]> {
+    // First, delete existing chapters
+    await db.delete(bookChapters).where(eq(bookChapters.bookId, bookId));
+    
+    // Generate new chapters
+    const chapters = [];
+    for (let i = 1; i <= numberOfChapters; i++) {
+      const chapterData = {
+        bookId,
+        title: `Chapter ${i}`,
+        titleRu: `Глава ${i}`,
+        content: `Content for Chapter ${i}...`,
+        contentRu: `Содержание для главы ${i}...`,
+        order: i,
+      };
+      chapters.push(chapterData);
+    }
+    
+    // Insert all chapters at once
+    if (chapters.length > 0) {
+      const insertedChapters = await db.insert(bookChapters).values(chapters).returning();
+      return insertedChapters;
+    }
+    
+    return [];
   }
 
   async purchaseBook(purchase: InsertBookPurchase): Promise<BookPurchase> {

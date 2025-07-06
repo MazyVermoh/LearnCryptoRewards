@@ -87,6 +87,17 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  app.delete("/api/courses/:id/permanent", async (req, res) => {
+    try {
+      const id = parseInt(req.params.id);
+      await storage.permanentlyDeleteCourse(id);
+      res.status(204).send();
+    } catch (error) {
+      console.error("Error permanently deleting course:", error);
+      res.status(500).json({ message: "Failed to permanently delete course" });
+    }
+  });
+
   // Enrollment routes
   app.post("/api/enrollments", async (req, res) => {
     try {
@@ -192,6 +203,34 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error) {
       console.error("Error deleting book:", error);
       res.status(500).json({ message: "Failed to delete book" });
+    }
+  });
+
+  app.delete("/api/books/:id/permanent", async (req, res) => {
+    try {
+      const id = parseInt(req.params.id);
+      await storage.permanentlyDeleteBook(id);
+      res.status(204).send();
+    } catch (error) {
+      console.error("Error permanently deleting book:", error);
+      res.status(500).json({ message: "Failed to permanently delete book" });
+    }
+  });
+
+  app.post("/api/books/:id/generate-chapters", async (req, res) => {
+    try {
+      const id = parseInt(req.params.id);
+      const { numberOfChapters } = req.body;
+      
+      if (!numberOfChapters || numberOfChapters < 1 || numberOfChapters > 50) {
+        return res.status(400).json({ message: "Number of chapters must be between 1 and 50" });
+      }
+      
+      const chapters = await storage.generateBookChapters(id, numberOfChapters);
+      res.status(201).json(chapters);
+    } catch (error) {
+      console.error("Error generating book chapters:", error);
+      res.status(500).json({ message: "Failed to generate book chapters" });
     }
   });
 
