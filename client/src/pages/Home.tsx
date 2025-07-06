@@ -1737,7 +1737,9 @@ export default function Home() {
                 <Button 
                   onClick={async () => {
                     try {
-                      await apiRequest('PUT', `/api/courses/${editingCourse.id}`, editingCourse);
+                      // Remove timestamp fields that cause validation errors
+                      const { createdAt, updatedAt, ...courseData } = editingCourse;
+                      await apiRequest('PUT', `/api/courses/${editingCourse.id}`, courseData);
                       queryClient.invalidateQueries({ queryKey: ['/api/courses'] });
                       setEditingCourse(null);
                       toast({
@@ -1843,7 +1845,9 @@ export default function Home() {
                 <Button 
                   onClick={async () => {
                     try {
-                      await apiRequest('PUT', `/api/books/${editingBook.id}`, editingBook);
+                      // Remove timestamp fields that cause validation errors  
+                      const { createdAt, updatedAt, ...bookData } = editingBook;
+                      await apiRequest('PUT', `/api/books/${editingBook.id}`, bookData);
                       queryClient.invalidateQueries({ queryKey: ['/api/books'] });
                       setEditingBook(null);
                       toast({
