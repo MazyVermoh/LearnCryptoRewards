@@ -46,6 +46,203 @@ import {
 // Mock user data - in real app this would come from auth
 const mockUserId = "user123";
 
+// Component for displaying and managing course lessons
+function CourseLessonsDisplay({ courseId }: { courseId: number }) {
+  const [editingLesson, setEditingLesson] = useState<any>(null);
+  const { toast } = useToast();
+  const queryClient = useQueryClient();
+
+  const { data: lessons = [], isLoading } = useQuery({
+    queryKey: [`/api/courses/${courseId}/lessons`],
+    retry: false,
+  });
+
+  if (isLoading) {
+    return <div className="p-4">Loading lessons...</div>;
+  }
+
+  return (
+    <div className="space-y-3">
+      {lessons.length === 0 ? (
+        <div className="p-4 border rounded-lg">
+          <p className="text-gray-600">No lessons yet. Click "Add Lesson" to create your first lesson.</p>
+        </div>
+      ) : (
+        lessons.map((lesson: any) => (
+          <div key={lesson.id} className="p-4 border rounded-lg">
+            <div className="flex justify-between items-start">
+              <div className="flex-1">
+                <h4 className="font-medium">{lesson.title}</h4>
+                {lesson.description && (
+                  <p className="text-sm text-gray-600 mt-1">{lesson.description}</p>
+                )}
+                <div className="text-xs text-gray-500 mt-2">
+                  Duration: {lesson.duration} min • Order: {lesson.orderIndex}
+                </div>
+              </div>
+              <Button
+                size="sm"
+                variant="outline"
+                onClick={() => setEditingLesson(lesson)}
+              >
+                Edit Content
+              </Button>
+            </div>
+          </div>
+        ))
+      )}
+
+      {/* Edit Lesson Modal */}
+      {editingLesson && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-lg w-full max-w-4xl max-h-[90vh] overflow-y-auto">
+            <div className="p-6 border-b">
+              <h3 className="text-lg font-semibold">Edit Lesson: {editingLesson.title}</h3>
+            </div>
+            <div className="p-6 space-y-4">
+              <div>
+                <label className="block text-sm font-medium mb-1">Content (English) *</label>
+                <textarea
+                  value={editingLesson.content || ''}
+                  onChange={(e) => setEditingLesson({...editingLesson, content: e.target.value})}
+                  className="w-full p-2 border rounded-md"
+                  rows={15}
+                  placeholder="Add your lesson content here..."
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium mb-1">Content (Russian)</label>
+                <textarea
+                  value={editingLesson.contentRu || ''}
+                  onChange={(e) => setEditingLesson({...editingLesson, contentRu: e.target.value})}
+                  className="w-full p-2 border rounded-md"
+                  rows={15}
+                  placeholder="Добавьте содержание урока здесь..."
+                />
+              </div>
+            </div>
+            <div className="p-6 border-t flex justify-end space-x-3">
+              <Button variant="outline" onClick={() => setEditingLesson(null)}>Cancel</Button>
+              <Button
+                onClick={async () => {
+                  try {
+                    const { createdAt, updatedAt, ...lessonData } = editingLesson;
+                    await apiRequest('PUT', `/api/course-lessons/${editingLesson.id}`, lessonData);
+                    queryClient.invalidateQueries({ queryKey: [`/api/courses/${courseId}/lessons`] });
+                    setEditingLesson(null);
+                    toast({ title: "Success", description: "Lesson updated successfully" });
+                  } catch (error) {
+                    toast({ title: "Error", description: "Failed to update lesson", variant: "destructive" });
+                  }
+                }}
+              >
+                Save Changes
+              </Button>
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
+// Component for displaying and managing book chapters
+function BookChaptersDisplay({ bookId }: { bookId: number }) {
+  const [editingChapter, setEditingChapter] = useState<any>(null);
+  const { toast } = useToast();
+  const queryClient = useQueryClient();
+
+  const { data: chapters = [], isLoading } = useQuery({
+    queryKey: [`/api/books/${bookId}/chapters`],
+    retry: false,
+  });
+
+  if (isLoading) {
+    return <div className="p-4">Loading chapters...</div>;
+  }
+
+  return (
+    <div className="space-y-3">
+      {chapters.length === 0 ? (
+        <div className="p-4 border rounded-lg">
+          <p className="text-gray-600">No chapters yet. Click "Add Chapter" to create your first chapter.</p>
+        </div>
+      ) : (
+        chapters.map((chapter: any) => (
+          <div key={chapter.id} className="p-4 border rounded-lg">
+            <div className="flex justify-between items-start">
+              <div className="flex-1">
+                <h4 className="font-medium">{chapter.title}</h4>
+                <div className="text-xs text-gray-500 mt-2">
+                  Order: {chapter.orderIndex}
+                </div>
+              </div>
+              <Button
+                size="sm"
+                variant="outline"
+                onClick={() => setEditingChapter(chapter)}
+              >
+                Edit Content
+              </Button>
+            </div>
+          </div>
+        ))
+      )}
+
+      {/* Edit Chapter Modal */}
+      {editingChapter && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-lg w-full max-w-4xl max-h-[90vh] overflow-y-auto">
+            <div className="p-6 border-b">
+              <h3 className="text-lg font-semibold">Edit Chapter: {editingChapter.title}</h3>
+            </div>
+            <div className="p-6 space-y-4">
+              <div>
+                <label className="block text-sm font-medium mb-1">Content (English) *</label>
+                <textarea
+                  value={editingChapter.content || ''}
+                  onChange={(e) => setEditingChapter({...editingChapter, content: e.target.value})}
+                  className="w-full p-2 border rounded-md"
+                  rows={20}
+                  placeholder="Add your chapter content here..."
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium mb-1">Content (Russian)</label>
+                <textarea
+                  value={editingChapter.contentRu || ''}
+                  onChange={(e) => setEditingChapter({...editingChapter, contentRu: e.target.value})}
+                  className="w-full p-2 border rounded-md"
+                  rows={20}
+                  placeholder="Добавьте содержание главы здесь..."
+                />
+              </div>
+            </div>
+            <div className="p-6 border-t flex justify-end space-x-3">
+              <Button variant="outline" onClick={() => setEditingChapter(null)}>Cancel</Button>
+              <Button
+                onClick={async () => {
+                  try {
+                    const { createdAt, updatedAt, ...chapterData } = editingChapter;
+                    await apiRequest('PUT', `/api/book-chapters/${editingChapter.id}`, chapterData);
+                    queryClient.invalidateQueries({ queryKey: [`/api/books/${bookId}/chapters`] });
+                    setEditingChapter(null);
+                    toast({ title: "Success", description: "Chapter updated successfully" });
+                  } catch (error) {
+                    toast({ title: "Error", description: "Failed to update chapter", variant: "destructive" });
+                  }
+                }}
+              >
+                Save Changes
+              </Button>
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
 export default function Home() {
   const { language, changeLanguage, t } = useLanguage();
   const { toast } = useToast();
@@ -1908,11 +2105,7 @@ export default function Home() {
                 </Button>
               </div>
               
-              <div className="space-y-3">
-                <div className="p-4 border rounded-lg">
-                  <p className="text-gray-600">Lessons will be displayed here. Click "Add Lesson" to create your first lesson.</p>
-                </div>
-              </div>
+              <CourseLessonsDisplay courseId={editingCourseContent.id} />
             </div>
             <div className="p-6 border-t flex justify-end">
               <Button
@@ -1951,11 +2144,7 @@ export default function Home() {
                 </Button>
               </div>
               
-              <div className="space-y-3">
-                <div className="p-4 border rounded-lg">
-                  <p className="text-gray-600">Chapters will be displayed here. Click "Add Chapter" to create your first chapter.</p>
-                </div>
-              </div>
+              <BookChaptersDisplay bookId={editingBookContent.id} />
             </div>
             <div className="p-6 border-t flex justify-end">
               <Button
