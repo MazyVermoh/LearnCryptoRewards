@@ -1,6 +1,7 @@
 import express, { type Request, Response, NextFunction } from "express";
 import { registerRoutes } from "./routes";
 import { setupVite, serveStatic, log } from "./vite";
+import { telegramBot } from "./telegram-bot.js";
 
 const app = express();
 app.use(express.json());
@@ -34,6 +35,41 @@ app.use((req, res, next) => {
   });
 
   next();
+});
+
+// Telegram webhook endpoints
+app.post('/telegram/webhook', async (req: Request, res: Response) => {
+  try {
+    await telegramBot.processUpdate(req.body);
+    res.status(200).json({ ok: true });
+  } catch (error) {
+    console.error('Telegram webhook error:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
+app.get('/telegram/info', async (req: Request, res: Response) => {
+  try {
+    const botInfo = await telegramBot.getMe();
+    res.json(botInfo);
+  } catch (error) {
+    console.error('Error getting bot info:', error);
+    res.status(500).json({ error: 'Failed to get bot info' });
+  }
+});
+
+app.post('/telegram/set-webhook', async (req: Request, res: Response) => {
+  try {
+    const { url } = req.body;
+    if (!url) {
+      return res.status(400).json({ error: 'Webhook URL is required' });
+    }
+    const result = await telegramBot.setWebhook(url);
+    res.json(result);
+  } catch (error) {
+    console.error('Error setting webhook:', error);
+    res.status(500).json({ error: 'Failed to set webhook' });
+  }
 });
 
 (async () => {
