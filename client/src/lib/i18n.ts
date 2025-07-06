@@ -5,7 +5,6 @@ export const translations = {
     library: "Library",
     rewards: "Rewards",
     admin: "Admin",
-    admin: "Admin",
     home: "Home",
     progress: "Progress",
     wallet: "Wallet",
@@ -18,112 +17,69 @@ export const translations = {
     
     // Course Categories
     languages: "Languages",
-    "mind-thinking": "Mind & Thinking",
-    "finance-economics": "Finance & Economics",
-    "career-skills": "Career Skills",
-    "future-thinking": "Future Thinking",
-    "health-body": "Health & Body",
+    business: "Business",
+    crypto: "Crypto",
+    fitness: "Fitness",
+    selfDevelopment: "Self-Development",
     
-    // Book Categories
-    "psychology-thinking-development": "Psychology & Thinking Development",
-    "financial-literacy-economics": "Financial Literacy & Economics",
-    marketing: "Marketing",
-    "health-fitness-nutrition": "Health, Fitness & Nutrition",
-    "communication-soft-skills": "Communication & Soft Skills",
-    "entrepreneurship-career": "Entrepreneurship & Career",
-    "technology-future": "Technology & Future",
-    relationships: "Relationships",
-    "popular-personalities": "Popular Personalities",
+    // Course Actions
+    enrollNow: "Enroll Now",
+    startCourse: "Start Course",
+    continueCourse: "Continue Course",
+    completed: "Completed",
+    enrolled: "Enrolled",
     
-    // Category Descriptions - Courses
-    languagesDesc: "Master new languages and enhance communication skills",
-    mindThinkingDesc: "Develop critical thinking and cognitive abilities",
-    financeEconomicsDesc: "Master financial literacy and economic principles",
-    careerSkillsDesc: "Build professional skills for career advancement",
-    futureThinkingDesc: "Explore innovations and future concepts",
-    healthBodyDesc: "Improve physical and mental well-being",
+    // Book Actions
+    purchaseBook: "Purchase Book",
+    readBook: "Read Book",
+    continueReading: "Continue Reading",
+    purchased: "Purchased",
     
-    // Category Descriptions - Books
-    psychologyThinkingDevelopmentDesc: "Books on mental growth and self-development",
-    financialLiteracyEconomicsDesc: "Understanding money management and economics",
-    marketingDesc: "Learn marketing strategies and customer insights",
-    healthFitnessNutritionDesc: "Guides for healthy living and fitness",
-    communicationSoftSkillsDesc: "Develop interpersonal and social skills",
-    entrepreneurshipCareerDesc: "Build businesses and advance careers",
-    technologyFutureDesc: "Explore tech trends and future innovations",
-    relationshipsDesc: "Build better personal and professional relationships",
-    popularPersonalitiesDesc: "Biographies and stories of inspiring people",
-    
-    // Courses
-    browseCategories: "Browse Categories",
-    featuredCourses: "Featured Courses",
-    myCourses: "My Courses",
-    allCourses: "All Courses",
-    showAll: "Show All",
-    enroll: "Enroll",
-    courseProgress: "Course Progress",
-    
-    // Library
-    searchBooks: "Search books and materials...",
-    categories: "Categories",
-    featuredBooks: "Featured Books",
-    availableBooks: "Available Books",
-    myLibrary: "My Library",
-    pages: "pages",
-    buy: "Buy",
-    getBook: "Get Book",
-    read: "Read",
-    download: "Download",
-    noBooksFound: "No books found",
+    // Common
+    loading: "Loading...",
+    error: "Error",
+    success: "Success",
+    cancel: "Cancel",
+    confirm: "Confirm",
+    save: "Save",
+    delete: "Delete",
+    edit: "Edit",
+    create: "Create",
+    back: "Back",
+    next: "Next",
+    previous: "Previous",
+    close: "Close",
     
     // Rewards
-    dailyRewards: "Daily Rewards",
-    stepsChallenge: "Steps Challenge",
-    walkSteps: "Walk 10,000 steps daily",
-    earnTokens: "Earn 50 MIND Token when completed",
-    sponsorChannelRewards: "Sponsor Channel Rewards",
-    subscribe: "Subscribe",
-    completed: "Completed",
-    referralProgram: "Referral Program",
-    friendsReferred: "Friends Referred",
-    yourReferralCode: "Your referral code:",
-    copy: "Copy",
-    earnForFriend: "Earn 200 MIND Token for each friend you refer!",
-    shareReferralLink: "Share Referral Link",
-    recentTransactions: "Recent Transactions",
-    
-    // Wallet
-    totalBalance: "Total Balance",
-    quickActions: "Quick Actions",
-    earnRewards: "Earn Rewards",
-    referFriends: "Refer Friends",
+    dailyChallenge: "Daily Challenge",
+    stepsGoal: "Steps Goal",
+    rewardsEarned: "Rewards Earned",
+    mindTokens: "MIND Tokens",
     
     // Admin
-    adminDashboard: "Admin Dashboard",
+    dashboard: "Dashboard",
+    users: "Users",
+    stats: "Statistics",
     totalUsers: "Total Users",
     activeCourses: "Active Courses",
+    totalBooks: "Total Books",
     libraryBooks: "Library Books",
     eduDistributed: "MIND Token Distributed",
     quickActions: "Quick Actions",
     addCourse: "Add Course",
     addBook: "Add Book",
-    manageRewards: "Manage Rewards",
-    analytics: "Analytics",
-    recentActivity: "Recent Activity",
+    manageUsers: "Manage Users",
+    viewReports: "View Reports",
     userManagement: "User Management",
+    recentActivity: "Recent Activity",
     recentUsers: "Recent Users",
     viewAll: "View All",
     
-    // Common
-    all: "All",
-    steps: "steps",
-    hoursAgo: "hours ago",
-    yesterday: "Yesterday",
-    minutesAgo: "minutes ago",
-    newUserRegistered: "New user registered",
-    courseCompleted: "Course completed",
-    joined: "Joined",
-    daysAgo: "days ago",
+    // Profile
+    yourProfile: "Your Profile",
+    coursesCompleted: "Courses Completed",
+    booksRead: "Books Read",
+    totalEarned: "Total Earned",
     inProgress: "In Progress",
     noCoursesEnrolled: "No courses enrolled yet",
     totalBalance: "Total Balance",
@@ -131,28 +87,70 @@ export const translations = {
     referFriends: "Refer Friends",
     noTransactions: "No transactions yet",
     settings: "Settings",
-    language: "Language",
-    notifications: "Notifications",
-    account: "Account",
-    manage: "Manage",
-    shareApp: "Share App",
-    help: "Help & Support",
-    learningProgress: "Learning Progress",
-    coursesCompleted: "Courses Completed",
-    totalCourses: "Total Courses",
-    booksRead: "Books Read",
-    addSponsorChannel: "Add Sponsor Channel",
-    viewTransactions: "View Transactions",
+    
+    // Search
+    searchCourses: "Search courses...",
     searchBooks: "Search books...",
     backToBooks: "Back to Books",
-    loading: "Loading...",
+    
+    // Sponsor Channels
+    sponsorChannels: "Sponsor Channels",
+    subscribeToEarn: "Subscribe to Earn",
+    addSponsorChannel: "Add Sponsor Channel",
+    viewTransactions: "View Transactions",
+    
+    // Tests
+    testResults: "Test Results",
+    correctAnswers: "Correct Answers",
+    totalQuestions: "Total Questions",
+    passedTest: "Test Passed!",
+    failedTest: "Test Failed",
+    retakeTest: "Retake Test",
+    testQuestion: "Question",
+    submitTest: "Submit Test",
+    selectAnswer: "Select an answer",
+    
+    // Admin Test Manager
+    testManager: "Test Manager",
+    addTest: "Add Test",
+    editTest: "Edit Test",
+    deleteTest: "Delete Test",
+    testContent: "Test Content",
+    testType: "Test Type",
+    chapterTest: "Chapter Test",
+    lessonTest: "Lesson Test",
+    selectChapter: "Select Chapter",
+    selectLesson: "Select Lesson",
+    question: "Question",
+    answers: "Answers",
+    addAnswer: "Add Answer",
+    removeAnswer: "Remove Answer",
+    correctAnswer: "Correct Answer",
+    createTest: "Create Test",
+    updateTest: "Update Test",
+    confirmDelete: "Are you sure you want to delete this test?",
+    testCreated: "Test created successfully",
+    testUpdated: "Test updated successfully",
+    testDeleted: "Test deleted successfully",
+    errorCreatingTest: "Error creating test",
+    errorUpdatingTest: "Error updating test",
+    errorDeletingTest: "Error deleting test",
+    noTestsFound: "No tests found",
+    loadingTests: "Loading tests...",
+    selectTestType: "Select test type first",
+    selectContent: "Select content first",
+    minimumAnswers: "At least 2 answers are required",
+    maximumAnswers: "Maximum 6 answers allowed",
+    questionRequired: "Question is required",
+    answerRequired: "Answer text is required",
+    correctAnswerRequired: "Please select the correct answer"
   },
+  
   ru: {
     // Navigation
     courses: "Курсы",
-    library: "Библиотека", 
+    library: "Библиотека",
     rewards: "Награды",
-    admin: "Админ",
     admin: "Админ",
     home: "Главная",
     progress: "Прогресс",
@@ -161,119 +159,74 @@ export const translations = {
     
     // User Profile
     level: "Уровень",
-    explorer: "Исследователь образования",
+    explorer: "Исследователь знаний",
     todaysSteps: "Шаги сегодня",
     
     // Course Categories
     languages: "Языки",
-    "mind-thinking": "Разум и мышление",
-    "finance-economics": "Финансы и экономика",
-    "career-skills": "Карьерные навыки",
-    "future-thinking": "Мышление будущего",
-    "health-body": "Здоровье и тело",
+    business: "Бизнес",
+    crypto: "Криптовалюты",
+    fitness: "Фитнес",
+    selfDevelopment: "Саморазвитие",
     
-    // Book Categories
-    "psychology-thinking-development": "Психология, мышление, саморазвитие",
-    "financial-literacy-economics": "Финансовая грамотность и экономика",
-    marketing: "Маркетинг",
-    "health-fitness-nutrition": "Здоровье, фитнес, питание",
-    "communication-soft-skills": "Коммуникация и мягкие навыки",
-    "entrepreneurship-career": "Предпринимательство и карьера",
-    "technology-future": "Технологии и будущее",
-    relationships: "Отношения",
-    "popular-personalities": "Популярные личности",
+    // Course Actions
+    enrollNow: "Записаться",
+    startCourse: "Начать курс",
+    continueCourse: "Продолжить курс",
+    completed: "Завершено",
+    enrolled: "Записан",
     
-    // Category Descriptions - Courses
-    languagesDesc: "Изучение новых языков и развитие коммуникативных навыков",
-    mindThinkingDesc: "Развитие критического мышления и когнитивных способностей",
-    financeEconomicsDesc: "Овладение финансовой грамотностью и экономическими принципами",
-    careerSkillsDesc: "Развитие профессиональных навыков для карьерного роста",
-    futureThinkingDesc: "Изучение инноваций и концепций будущего",
-    healthBodyDesc: "Улучшение физического и психического благополучия",
+    // Book Actions
+    purchaseBook: "Купить книгу",
+    readBook: "Читать книгу",
+    continueReading: "Продолжить чтение",
+    purchased: "Куплено",
     
-    // Category Descriptions - Books
-    psychologyThinkingDevelopmentDesc: "Книги о психическом росте и саморазвитии",
-    financialLiteracyEconomicsDesc: "Понимание управления деньгами и экономики",
-    marketingDesc: "Изучение маркетинговых стратегий и понимания клиентов",
-    healthFitnessNutritionDesc: "Руководства по здоровому образу жизни и фитнесу",
-    communicationSoftSkillsDesc: "Развитие межличностных и социальных навыков",
-    entrepreneurshipCareerDesc: "Создание бизнеса и развитие карьеры",
-    technologyFutureDesc: "Изучение технологических трендов и будущих инноваций",
-    relationshipsDesc: "Построение лучших личных и профессиональных отношений",
-    popularPersonalitiesDesc: "Биографии и истории вдохновляющих людей",
-    
-    // Courses
-    browseCategories: "Категории",
-    featuredCourses: "Рекомендуемые курсы",
-    myCourses: "Мои курсы",
-    allCourses: "Все курсы",
-    showAll: "Показать все",
-    enroll: "Записаться",
-    courseProgress: "Прогресс",
-    
-    // Library
-    searchBooks: "Поиск книг и материалов...",
-    categories: "Категории",
-    featuredBooks: "Рекомендуемые книги",
-    availableBooks: "Доступные книги",
-    myLibrary: "Моя библиотека",
-    pages: "страниц",
-    buy: "Купить",
-    getBook: "Получить книгу",
-    read: "Читать",
-    download: "Скачать",
-    noBooksFound: "Книги не найдены",
+    // Common
+    loading: "Загрузка...",
+    error: "Ошибка",
+    success: "Успех",
+    cancel: "Отмена",
+    confirm: "Подтвердить",
+    save: "Сохранить",
+    delete: "Удалить",
+    edit: "Редактировать",
+    create: "Создать",
+    back: "Назад",
+    next: "Далее",
+    previous: "Назад",
+    close: "Закрыть",
     
     // Rewards
-    dailyRewards: "Ежедневные награды",
-    stepsChallenge: "Челлендж шагов",
-    walkSteps: "Пройти 10,000 шагов ежедневно",
-    earnTokens: "Заработать 50 MIND Token при выполнении",
-    sponsorChannelRewards: "Награды за подписки",
-    subscribe: "Подписаться",
-    completed: "Выполнено",
-    referralProgram: "Реферальная программа",
-    friendsReferred: "Друзей приглашено",
-    yourReferralCode: "Ваш реферальный код:",
-    copy: "Копировать",
-    earnForFriend: "Заработать 200 MIND Token за каждого друга!",
-    shareReferralLink: "Поделиться ссылкой",
-    recentTransactions: "Последние транзакции",
-    
-    // Wallet
-    totalBalance: "Общий баланс",
-    quickActions: "Быстрые действия",
-    earnRewards: "Заработать награды",
-    referFriends: "Пригласить друзей",
+    dailyChallenge: "Ежедневный вызов",
+    stepsGoal: "Цель по шагам",
+    rewardsEarned: "Заработанные награды",
+    mindTokens: "MIND токены",
     
     // Admin
-    adminDashboard: "Админ панель",
+    dashboard: "Панель управления",
+    users: "Пользователи",
+    stats: "Статистика",
     totalUsers: "Всего пользователей",
     activeCourses: "Активные курсы",
+    totalBooks: "Всего книг",
     libraryBooks: "Книги в библиотеке",
     eduDistributed: "MIND Token распределено",
     quickActions: "Быстрые действия",
     addCourse: "Добавить курс",
     addBook: "Добавить книгу",
-    manageRewards: "Управление наградами",
     manageUsers: "Управление пользователями",
-    analytics: "Аналитика",
+    viewReports: "Посмотреть отчеты",
     userManagement: "Управление пользователями",
     recentActivity: "Последняя активность",
-    userManagement: "Управление пользователями",
     recentUsers: "Новые пользователи",
     viewAll: "Смотреть все",
     
-    // Common
-    all: "Все",
-    steps: "шагов",
-    hoursAgo: "часов назад",
-    yesterday: "Вчера",
-    minutesAgo: "минут назад",
-    newUserRegistered: "Новый пользователь зарегистрирован",
-    courseCompleted: "Курс завершен",
-    joined: "Присоединился",
-    daysAgo: "дней назад",
+    // Profile
+    yourProfile: "Ваш профиль",
+    coursesCompleted: "Курсы завершены",
+    booksRead: "Книги прочитаны",
+    totalEarned: "Всего заработано",
     inProgress: "В процессе",
     noCoursesEnrolled: "Пока не записан на курсы",
     totalBalance: "Общий баланс",
@@ -281,22 +234,89 @@ export const translations = {
     referFriends: "Пригласить друзей",
     noTransactions: "Пока нет транзакций",
     settings: "Настройки",
-    language: "Язык",
-    notifications: "Уведомления",
-    account: "Аккаунт",
-    manage: "Управлять",
-    shareApp: "Поделиться приложением",
-    help: "Помощь и поддержка",
-    learningProgress: "Прогресс обучения",
-    coursesCompleted: "Курсы завершены",
-    totalCourses: "Всего курсов",
-    booksRead: "Книг прочитано",
-    addSponsorChannel: "Добавить спонсорский канал",
-    viewTransactions: "Просмотр транзакций",
+    
+    // Search
+    searchCourses: "Поиск курсов...",
+    searchBooks: "Поиск книг...",
     backToBooks: "Назад к книгам",
-    loading: "Загрузка...",
-  },
+    
+    // Sponsor Channels
+    sponsorChannels: "Спонсорские каналы",
+    subscribeToEarn: "Подписаться для заработка",
+    addSponsorChannel: "Добавить спонсорский канал",
+    viewTransactions: "Посмотреть транзакции",
+    
+    // Tests
+    testResults: "Результаты теста",
+    correctAnswers: "Правильные ответы",
+    totalQuestions: "Всего вопросов",
+    passedTest: "Тест пройден!",
+    failedTest: "Тест не пройден",
+    retakeTest: "Пересдать тест",
+    testQuestion: "Вопрос",
+    submitTest: "Отправить тест",
+    selectAnswer: "Выберите ответ",
+    
+    // Admin Test Manager
+    testManager: "Управление тестами",
+    addTest: "Добавить тест",
+    editTest: "Редактировать тест",
+    deleteTest: "Удалить тест",
+    testContent: "Содержание теста",
+    testType: "Тип теста",
+    chapterTest: "Тест главы",
+    lessonTest: "Тест урока",
+    selectChapter: "Выберите главу",
+    selectLesson: "Выберите урок",
+    question: "Вопрос",
+    answers: "Ответы",
+    addAnswer: "Добавить ответ",
+    removeAnswer: "Удалить ответ",
+    correctAnswer: "Правильный ответ",
+    createTest: "Создать тест",
+    updateTest: "Обновить тест",
+    confirmDelete: "Вы уверены, что хотите удалить этот тест?",
+    testCreated: "Тест успешно создан",
+    testUpdated: "Тест успешно обновлен",
+    testDeleted: "Тест успешно удален",
+    errorCreatingTest: "Ошибка создания теста",
+    errorUpdatingTest: "Ошибка обновления теста",
+    errorDeletingTest: "Ошибка удаления теста",
+    noTestsFound: "Тесты не найдены",
+    loadingTests: "Загрузка тестов...",
+    selectTestType: "Сначала выберите тип теста",
+    selectContent: "Сначала выберите содержание",
+    minimumAnswers: "Требуется минимум 2 ответа",
+    maximumAnswers: "Максимум 6 ответов",
+    questionRequired: "Вопрос обязателен",
+    answerRequired: "Текст ответа обязателен",
+    correctAnswerRequired: "Пожалуйста, выберите правильный ответ"
+  }
 };
 
-export type Language = keyof typeof translations;
-export type TranslationKey = keyof typeof translations.en;
+export const useLanguage = () => {
+  const [language, setLanguage] = useState<'en' | 'ru'>(() => {
+    const saved = localStorage.getItem('language');
+    return (saved as 'en' | 'ru') || 'en';
+  });
+
+  const changeLanguage = (lang: 'en' | 'ru') => {
+    setLanguage(lang);
+    localStorage.setItem('language', lang);
+  };
+
+  const t = (key: string) => {
+    const keys = key.split('.');
+    let value: any = translations[language];
+    
+    for (const k of keys) {
+      value = value?.[k];
+    }
+    
+    return value || key;
+  };
+
+  return { language, changeLanguage, t };
+};
+
+import { useState } from 'react';
