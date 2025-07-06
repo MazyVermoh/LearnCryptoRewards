@@ -747,6 +747,17 @@ export class DatabaseStorage implements IStorage {
           eq(courseReadingProgress.userId, userId),
           eq(courseReadingProgress.courseId, courseId)
         ));
+
+      // Update enrollment progress to 100%
+      await db.update(enrollments)
+        .set({
+          progress: 100,
+          completedAt: new Date()
+        })
+        .where(and(
+          eq(enrollments.userId, userId),
+          eq(enrollments.courseId, courseId)
+        ));
     }
   }
 }

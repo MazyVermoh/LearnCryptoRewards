@@ -664,6 +664,20 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Get all user book reading progress
+  app.get("/api/users/:userId/book-progress", async (req: Request, res: Response) => {
+    try {
+      const { userId } = req.params;
+      const progressList = await db.select().from(bookReadingProgress)
+        .leftJoin(books, eq(bookReadingProgress.bookId, books.id))
+        .where(eq(bookReadingProgress.userId, userId));
+      res.json(progressList);
+    } catch (error) {
+      console.error("Error getting book reading progress:", error);
+      res.status(500).json({ error: "Failed to get book reading progress" });
+    }
+  });
+
   // Register MIND Token reward system routes
   registerRewardRoutes(app);
 

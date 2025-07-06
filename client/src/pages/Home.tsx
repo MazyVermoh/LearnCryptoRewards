@@ -320,6 +320,12 @@ export default function Home() {
     retry: false,
   });
 
+  // Fetch book reading progress
+  const { data: bookProgress = [] } = useQuery({
+    queryKey: [`/api/users/${mockUserId}/book-progress`],
+    retry: false,
+  });
+
   // Fetch admin stats
   const { data: adminStats } = useQuery({
     queryKey: ['/api/admin/stats'],
@@ -1622,7 +1628,7 @@ export default function Home() {
                 <div className="flex items-center justify-between">
                   <span className="font-medium">{t('booksRead')}</span>
                   <span className="text-2xl font-bold text-accent">
-                    {userBooks?.length || 0}
+                    {bookProgress?.filter((bp: any) => bp.book_reading_progress?.is_completed).length || 0}
                   </span>
                 </div>
               </CardContent>
@@ -1654,6 +1660,43 @@ export default function Home() {
                 <CardContent className="p-0">
                   <BookOpen className="h-12 w-12 mx-auto mb-3 text-gray-400" />
                   <p className="text-gray-500">{t('noCoursesEnrolled')}</p>
+                </CardContent>
+              </Card>
+            )}
+          </div>
+
+          {/* Book Progress */}
+          <div className="mb-6">
+            <h3 className="text-lg font-semibold mb-3">{t('bookProgress', 'Book Progress')}</h3>
+            {bookProgress?.length > 0 ? (
+              <div className="space-y-3">
+                {bookProgress.map((progress: any) => (
+                  <Card key={progress.book_reading_progress.id} className="p-4">
+                    <CardContent className="p-0">
+                      <div className="flex items-center justify-between mb-2">
+                        <h4 className="font-medium">{language === 'ru' ? (progress.books?.titleRu || progress.books?.title) : progress.books?.title}</h4>
+                        <span className="text-sm text-gray-600">
+                          {progress.book_reading_progress.is_completed ? '100%' : 
+                           Math.round((progress.book_reading_progress.currentChapter / progress.book_reading_progress.totalChapters) * 100)}%
+                        </span>
+                      </div>
+                      <Progress 
+                        value={progress.book_reading_progress.is_completed ? 100 : 
+                               Math.round((progress.book_reading_progress.currentChapter / progress.book_reading_progress.totalChapters) * 100)} 
+                        className="mb-2" 
+                      />
+                      <p className="text-sm text-gray-500">
+                        {progress.book_reading_progress.is_completed ? t('completed') : t('inProgress')}
+                      </p>
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
+            ) : (
+              <Card className="p-6 text-center">
+                <CardContent className="p-0">
+                  <BookOpen className="h-12 w-12 mx-auto mb-3 text-gray-400" />
+                  <p className="text-gray-500">{t('noBooksStarted', 'No books started yet')}</p>
                 </CardContent>
               </Card>
             )}
