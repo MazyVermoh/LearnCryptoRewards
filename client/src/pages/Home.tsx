@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useLanguage } from '@/hooks/useLanguage';
-import { apiRequest } from '@/lib/queryClient';
+import { apiRequest, queryClient } from '@/lib/queryClient';
 import { useToast } from '@/hooks/use-toast';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -1727,20 +1727,33 @@ export default function Home() {
                 <label className="block text-sm font-medium mb-1">Duration (minutes)</label>
                 <input
                   type="number"
-                  value={editingCourse.duration}
-                  onChange={(e) => setEditingCourse({...editingCourse, duration: Number(e.target.value)})}
+                  value={editingCourse.duration || ''}
+                  onChange={(e) => setEditingCourse({...editingCourse, duration: Number(e.target.value) || 0})}
                   className="w-full p-2 border rounded-md"
+                  min="0"
                 />
               </div>
               <div className="flex space-x-3 pt-4">
                 <Button 
-                  onClick={() => {
-                    // Update course mutation would go here
-                    setEditingCourse(null);
-                    toast({
-                      title: "Success",
-                      description: "Course updated successfully",
-                    });
+                  onClick={async () => {
+                    try {
+                      await apiRequest(`/api/courses/${editingCourse.id}`, {
+                        method: 'PUT',
+                        body: JSON.stringify(editingCourse)
+                      });
+                      queryClient.invalidateQueries({ queryKey: ['/api/courses'] });
+                      setEditingCourse(null);
+                      toast({
+                        title: "Success",
+                        description: "Course updated successfully",
+                      });
+                    } catch (error) {
+                      toast({
+                        title: "Error",
+                        description: "Failed to update course",
+                        variant: "destructive"
+                      });
+                    }
                   }}
                   className="flex-1"
                 >
@@ -1823,20 +1836,33 @@ export default function Home() {
                 <label className="block text-sm font-medium mb-1">Pages</label>
                 <input
                   type="number"
-                  value={editingBook.pages}
-                  onChange={(e) => setEditingBook({...editingBook, pages: Number(e.target.value)})}
+                  value={editingBook.pages || ''}
+                  onChange={(e) => setEditingBook({...editingBook, pages: Number(e.target.value) || 0})}
                   className="w-full p-2 border rounded-md"
+                  min="0"
                 />
               </div>
               <div className="flex space-x-3 pt-4">
                 <Button 
-                  onClick={() => {
-                    // Update book mutation would go here
-                    setEditingBook(null);
-                    toast({
-                      title: "Success",
-                      description: "Book updated successfully",
-                    });
+                  onClick={async () => {
+                    try {
+                      await apiRequest(`/api/books/${editingBook.id}`, {
+                        method: 'PUT',
+                        body: JSON.stringify(editingBook)
+                      });
+                      queryClient.invalidateQueries({ queryKey: ['/api/books'] });
+                      setEditingBook(null);
+                      toast({
+                        title: "Success",
+                        description: "Book updated successfully",
+                      });
+                    } catch (error) {
+                      toast({
+                        title: "Error",
+                        description: "Failed to update book",
+                        variant: "destructive"
+                      });
+                    }
                   }}
                   className="flex-1"
                 >

@@ -41,6 +41,18 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  app.put("/api/courses/:id", async (req, res) => {
+    try {
+      const id = parseInt(req.params.id);
+      const courseData = insertCourseSchema.partial().parse(req.body);
+      const course = await storage.updateCourse(id, courseData);
+      res.json(course);
+    } catch (error) {
+      console.error("Error updating course:", error);
+      res.status(400).json({ message: "Failed to update course" });
+    }
+  });
+
   app.post("/api/courses", async (req, res) => {
     try {
       const courseData = insertCourseSchema.parse(req.body);
