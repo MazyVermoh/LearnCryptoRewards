@@ -2106,6 +2106,21 @@ export default function Home() {
               </div>
               
               <CourseLessonsDisplay courseId={editingCourseContent.id} />
+              
+              <div className="bg-blue-50 p-4 rounded-lg border border-blue-200 mt-4">
+                <div className="flex items-start space-x-2">
+                  <MessageCircle className="h-5 w-5 text-blue-600 mt-0.5" />
+                  <div>
+                    <p className="text-sm font-medium text-blue-900">Как добавить содержимое урока:</p>
+                    <ol className="text-sm text-blue-800 mt-1 space-y-1">
+                      <li>1. Нажмите "Add Lesson" чтобы создать новый урок</li>
+                      <li>2. После создания урока нажмите кнопку "Edit Content" у урока</li>
+                      <li>3. В открывшемся окне добавьте текст содержимого урока</li>
+                      <li>4. Поддерживается добавление содержимого на английском и русском языках</li>
+                    </ol>
+                  </div>
+                </div>
+              </div>
             </div>
             <div className="p-6 border-t flex justify-end">
               <Button
@@ -2145,6 +2160,21 @@ export default function Home() {
               </div>
               
               <BookChaptersDisplay bookId={editingBookContent.id} />
+              
+              <div className="bg-green-50 p-4 rounded-lg border border-green-200 mt-4">
+                <div className="flex items-start space-x-2">
+                  <MessageCircle className="h-5 w-5 text-green-600 mt-0.5" />
+                  <div>
+                    <p className="text-sm font-medium text-green-900">Как добавить содержимое главы:</p>
+                    <ol className="text-sm text-green-800 mt-1 space-y-1">
+                      <li>1. Нажмите "Add Chapter" чтобы создать новую главу</li>
+                      <li>2. После создания главы нажмите кнопку "Edit Content" у главы</li>
+                      <li>3. В открывшемся окне добавьте текст содержимого главы</li>
+                      <li>4. Поддерживается добавление содержимого на английском и русском языках</li>
+                    </ol>
+                  </div>
+                </div>
+              </div>
             </div>
             <div className="p-6 border-t flex justify-end">
               <Button
