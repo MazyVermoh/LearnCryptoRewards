@@ -29,14 +29,6 @@ export default function BookReader() {
       setCurrentChapterIndex(progress.currentChapter - 1);
     }
   }, [progress]);
-
-  // Initialize progress for first time reading
-  useEffect(() => {
-    if (user?.id && id && chapters.length > 0 && progress === null && !updateProgressMutation.isPending) {
-      console.log("Initializing progress for first time reading");
-      updateProgressMutation.mutate(1);
-    }
-  }, [user?.id, id, chapters.length, progress, updateProgressMutation.isPending]);
   const [showChapterList, setShowChapterList] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
   const { t, language } = useLanguage();
@@ -114,6 +106,14 @@ export default function BookReader() {
       }
     },
   });
+
+  // Initialize progress for first time reading
+  useEffect(() => {
+    if (user?.id && id && chapters.length > 0 && progress === null && !updateProgressMutation.isPending) {
+      console.log("Initializing progress for first time reading");
+      updateProgressMutation.mutate(1);
+    }
+  }, [user?.id, id, chapters.length, progress, updateProgressMutation.isPending]);
 
   const { data: chapters = [] } = useQuery<BookChapter[]>({
     queryKey: ["/api/books", id, "chapters"],

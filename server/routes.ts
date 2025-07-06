@@ -609,6 +609,37 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Course reading progress routes
+  app.get("/api/users/:userId/courses/:courseId/progress", async (req: Request, res: Response) => {
+    try {
+      const { userId, courseId } = req.params;
+      const progress = await storage.getCourseReadingProgress(userId, parseInt(courseId));
+      res.json(progress);
+    } catch (error) {
+      console.error("Error getting course reading progress:", error);
+      res.status(500).json({ error: "Failed to get course reading progress" });
+    }
+  });
+
+  app.put("/api/users/:userId/courses/:courseId/progress", async (req: Request, res: Response) => {
+    try {
+      const { userId, courseId } = req.params;
+      const { currentLesson } = req.body;
+      
+      const progress = await storage.updateCourseReadingProgress(userId, parseInt(courseId), currentLesson);
+      
+      // Check if course is completed (currentLesson equals totalLessons)
+      if (currentLesson >= progress.totalLessons && !progress.isCompleted) {
+        await storage.completeCourseReading(userId, parseInt(courseId));
+      }
+      
+      res.json(progress);
+    } catch (error) {
+      console.error("Error updating course reading progress:", error);
+      res.status(500).json({ error: "Failed to update course reading progress" });
+    }
+  });
+
   // Register MIND Token reward system routes
   registerRewardRoutes(app);
 

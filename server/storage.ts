@@ -11,6 +11,7 @@ import {
   courseLessons,
   bookChapters,
   bookReadingProgress,
+  courseReadingProgress,
   type User,
   type UpsertUser,
   type Course,
@@ -35,6 +36,8 @@ import {
   type InsertBookChapter,
   type BookReadingProgress,
   type InsertBookReadingProgress,
+  type CourseReadingProgress,
+  type InsertCourseReadingProgress,
 } from "@shared/schema";
 import { db } from "./db";
 import { eq, desc, asc, and, sql, like } from "drizzle-orm";
@@ -116,6 +119,11 @@ export interface IStorage {
   getBookReadingProgress(userId: string, bookId: number): Promise<BookReadingProgress | undefined>;
   updateBookReadingProgress(userId: string, bookId: number, currentChapter: number): Promise<BookReadingProgress>;
   completeBookReading(userId: string, bookId: number): Promise<void>;
+  
+  // Course reading progress operations
+  getCourseReadingProgress(userId: string, courseId: number): Promise<CourseReadingProgress | undefined>;
+  updateCourseReadingProgress(userId: string, courseId: number, currentLesson: number): Promise<CourseReadingProgress>;
+  completeCourseReading(userId: string, courseId: number): Promise<void>;
 }
 
 export class DatabaseStorage implements IStorage {
@@ -616,6 +624,94 @@ export class DatabaseStorage implements IStorage {
         .where(and(
           eq(bookReadingProgress.userId, userId),
           eq(bookReadingProgress.bookId, bookId)
+        ));
+    }
+  }
+
+  async getCourseReadingProgress(userId: string, courseId: number): Promise<CourseReadingProgress | undefined> {
+    const result = await db.select().from(courseReadingProgress)
+      .where(and(
+        eq(courseReadingProgress.userId, userId),
+        eq(courseReadingProgress.courseId, courseId)
+      ));
+    return result[0];
+  }
+
+  async updateCourseReadingProgress(userId: string, courseId: number, currentLesson: number): Promise<CourseReadingProgress> {
+    // First check if progress exists
+    const existing = await this.getCourseReadingProgress(userId, courseId);
+    
+    if (existing) {
+      // Update existing progress
+      const result = await db.update(courseReadingProgress)
+        .set({
+          currentLesson,
+          updatedAt: new Date()
+        })
+        .where(and(
+          eq(courseReadingProgress.userId, userId),
+          eq(courseReadingProgress.courseId, courseId)
+        ))
+        .returning();
+      return result[0];
+    } else {
+      // Create new progress record
+      // First get the total lessons for this course
+      const lessons = await db.select().from(courseLessons)
+        .where(eq(courseLessons.courseId, courseId));
+      
+      const result = await db.insert(courseReadingProgress)
+        .values({
+          userId,
+          courseId,
+          currentLesson,
+          totalLessons: lessons.length,
+          isCompleted: false,
+          rewardClaimed: false
+        })
+        .returning();
+      return result[0];
+    }
+  }
+
+  async completeCourseReading(userId: string, courseId: number): Promise<void> {
+    const progress = await this.getCourseReadingProgress(userId, courseId);
+    
+    if (progress && !progress.isCompleted) {
+      // Mark as completed
+      await db.update(courseReadingProgress)
+        .set({
+          isCompleted: true,
+          completedAt: new Date(),
+          updatedAt: new Date()
+        })
+        .where(and(
+          eq(courseReadingProgress.userId, userId),
+          eq(courseReadingProgress.courseId, courseId)
+        ));
+
+      // Give reward - 50 MIND tokens for completing a course
+      const rewardAmount = "50";
+      await this.updateUserTokens(userId, rewardAmount);
+      
+      // Create transaction record
+      await this.createTransaction({
+        userId,
+        amount: rewardAmount,
+        type: "reward",
+        description: "Course completion reward",
+        status: "completed"
+      });
+
+      // Mark reward as claimed
+      await db.update(courseReadingProgress)
+        .set({
+          rewardClaimed: true,
+          updatedAt: new Date()
+        })
+        .where(and(
+          eq(courseReadingProgress.userId, userId),
+          eq(courseReadingProgress.courseId, courseId)
         ));
     }
   }
