@@ -492,7 +492,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.put("/api/book-chapters/:id", async (req: Request, res: Response) => {
     try {
       const id = parseInt(req.params.id);
+      console.log("Updating chapter", id, "with data:", req.body);
       const chapter = await storage.updateBookChapter(id, req.body);
+      console.log("Updated chapter:", chapter);
       res.json(chapter);
     } catch (error) {
       console.error("Error updating book chapter:", error);
