@@ -88,6 +88,7 @@ export default function TestManager() {
   // Update test mutation
   const updateMutation = useMutation({
     mutationFn: async (data: TestForm) => {
+      if (!editingTest) throw new Error('No test selected for editing');
       return apiRequest(`/api/${selectedType === 'chapter' ? 'chapter' : 'lesson'}-tests/${editingTest.id}`, {
         method: 'PUT',
         body: JSON.stringify(data),
@@ -98,11 +99,13 @@ export default function TestManager() {
         queryKey: [`/api/${selectedType === 'chapter' ? 'chapters' : 'lessons'}/${selectedId}/tests`]
       });
       setEditingTest(null);
+      setShowForm(false);
       resetForm();
       toast({ title: "Test updated successfully" });
     },
     onError: (error) => {
-      toast({ title: "Error updating test", variant: "destructive" });
+      console.error('Update error:', error);
+      toast({ title: "Error updating test", description: "Please try again", variant: "destructive" });
     },
   });
 
@@ -180,10 +183,31 @@ export default function TestManager() {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    
+    // Filter out empty options and clean the data
+    const cleanedOptions = testForm.options.filter(option => option.trim() !== '');
+    const cleanedOptionsRu = testForm.optionsRu.filter(option => option.trim() !== '');
+    
+    // Ensure we have at least 2 options
+    if (cleanedOptions.length < 2) {
+      toast({ title: "Error", description: "Please provide at least 2 answer options", variant: "destructive" });
+      return;
+    }
+    
+    // Adjust correct answer if it's out of range
+    const adjustedCorrectAnswer = testForm.correctAnswer >= cleanedOptions.length ? 0 : testForm.correctAnswer;
+    
+    const cleanedForm = {
+      ...testForm,
+      options: cleanedOptions,
+      optionsRu: cleanedOptionsRu,
+      correctAnswer: adjustedCorrectAnswer,
+    };
+    
     if (editingTest) {
-      updateMutation.mutate(testForm);
+      updateMutation.mutate(cleanedForm);
     } else {
-      createMutation.mutate(testForm);
+      createMutation.mutate(cleanedForm);
     }
   };
 
