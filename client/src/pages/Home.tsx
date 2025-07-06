@@ -2760,16 +2760,28 @@ export default function Home() {
                 <label className="block text-sm font-medium mb-1">Number of Chapters</label>
                 <input
                   type="number"
-                  value={numberOfChapters}
-                  onChange={(e) => setNumberOfChapters(Number(e.target.value) || 0)}
+                  value={numberOfChapters === 0 ? '' : numberOfChapters}
+                  onChange={(e) => {
+                    const value = e.target.value;
+                    if (value === '') {
+                      setNumberOfChapters(0);
+                    } else {
+                      setNumberOfChapters(Number(value));
+                    }
+                  }}
                   className="w-full p-2 border rounded-md"
                   min="1"
                   max="50"
                   placeholder="Enter number of chapters (1-50)"
                 />
                 <p className="text-sm text-gray-500 mt-1">
-                  This will replace all existing chapters with {numberOfChapters} new empty chapters
+                  This will replace all existing chapters with {numberOfChapters > 0 ? numberOfChapters : '...'} new empty chapters
                 </p>
+                {(numberOfChapters < 1 || numberOfChapters > 50) && (
+                  <p className="text-sm text-red-500 mt-1">
+                    Please enter a number between 1 and 50
+                  </p>
+                )}
               </div>
               <div className="flex space-x-3 pt-4">
                 <Button 
@@ -2807,16 +2819,28 @@ export default function Home() {
                 <label className="block text-sm font-medium mb-1">Number of Lessons</label>
                 <input
                   type="number"
-                  value={numberOfChapters}
-                  onChange={(e) => setNumberOfChapters(Number(e.target.value) || 0)}
+                  value={numberOfChapters === 0 ? '' : numberOfChapters}
+                  onChange={(e) => {
+                    const value = e.target.value;
+                    if (value === '') {
+                      setNumberOfChapters(0);
+                    } else {
+                      setNumberOfChapters(Number(value));
+                    }
+                  }}
                   className="w-full p-2 border rounded-md"
                   min="1"
                   max="50"
                   placeholder="Enter number of lessons (1-50)"
                 />
                 <p className="text-sm text-gray-500 mt-1">
-                  This will replace all existing lessons with {numberOfChapters} new empty lessons
+                  This will replace all existing lessons with {numberOfChapters > 0 ? numberOfChapters : '...'} new empty lessons
                 </p>
+                {(numberOfChapters < 1 || numberOfChapters > 50) && (
+                  <p className="text-sm text-red-500 mt-1">
+                    Please enter a number between 1 and 50
+                  </p>
+                )}
               </div>
               <div className="flex space-x-3 pt-4">
                 <Button 
