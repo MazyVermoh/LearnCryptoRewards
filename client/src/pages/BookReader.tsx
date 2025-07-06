@@ -8,7 +8,7 @@ import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import { Separator } from "@/components/ui/separator";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
+// import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { cn } from "@/lib/utils";
 import { useLanguage } from "@/hooks/useLanguage";
 import type { Book, BookChapter } from "@/lib/types";
@@ -123,45 +123,9 @@ export default function BookReader() {
                 <Progress value={progress} className="w-20" />
               </div>
               
-              <Sheet open={isNavigationOpen} onOpenChange={setIsNavigationOpen}>
-                <SheetTrigger asChild>
-                  <Button variant="outline" size="sm">
-                    <Menu className="w-4 h-4" />
-                  </Button>
-                </SheetTrigger>
-                <SheetContent side="right" className="w-80">
-                  <div className="py-6">
-                    <h2 className="text-lg font-semibold mb-4">Содержание</h2>
-                    <ScrollArea className="h-[calc(100vh-200px)]">
-                      <div className="space-y-2">
-                        {chapters.map((chapter, index) => (
-                          <button
-                            key={chapter.id}
-                            onClick={() => goToChapter(index)}
-                            className={cn(
-                              "w-full text-left p-3 rounded-lg transition-colors",
-                              index === currentChapterIndex
-                                ? "bg-blue-100 dark:bg-blue-900 text-blue-900 dark:text-blue-100"
-                                : "hover:bg-gray-100 dark:hover:bg-gray-800"
-                            )}
-                          >
-                            <div className="flex items-start space-x-3">
-                              <Badge variant="outline" className="text-xs">
-                                {index + 1}
-                              </Badge>
-                              <div className="flex-1 min-w-0">
-                                <p className="text-sm font-medium truncate">
-                                  {language === "ru" ? chapter.titleRu || chapter.title : chapter.title}
-                                </p>
-                              </div>
-                            </div>
-                          </button>
-                        ))}
-                      </div>
-                    </ScrollArea>
-                  </div>
-                </SheetContent>
-              </Sheet>
+              <Button variant="outline" size="sm">
+                <Menu className="w-4 h-4" />
+              </Button>
             </div>
           </div>
         </div>
