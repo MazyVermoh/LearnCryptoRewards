@@ -421,7 +421,7 @@ export default function Home() {
           </TabsTrigger>
           <TabsTrigger value="admin" className="flex flex-col py-3 px-4 data-[state=active]:border-b-2 data-[state=active]:border-primary">
             <Settings className="h-4 w-4 mb-1" />
-            <span className="text-sm">{t('admin')}</span>
+            <span className="text-sm">Admin</span>
           </TabsTrigger>
         </TabsList>
 
