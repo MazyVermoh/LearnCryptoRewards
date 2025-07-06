@@ -214,6 +214,22 @@ export const bookChapters = pgTable("book_chapters", {
   updatedAt: timestamp("updated_at").defaultNow(),
 });
 
+// Book reading progress table
+export const bookReadingProgress = pgTable("book_reading_progress", {
+  id: serial("id").primaryKey(),
+  userId: varchar("user_id").notNull().references(() => users.id, { onDelete: "cascade" }),
+  bookId: integer("book_id").notNull().references(() => books.id, { onDelete: "cascade" }),
+  currentChapter: integer("current_chapter").default(1),
+  totalChapters: integer("total_chapters").notNull(),
+  isCompleted: boolean("is_completed").default(false),
+  completedAt: timestamp("completed_at"),
+  rewardClaimed: boolean("reward_claimed").default(false),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+}, (table) => [
+  unique().on(table.userId, table.bookId),
+]);
+
 // Relations
 export const usersRelations = relations(users, ({ many, one }) => ({
   enrollments: many(enrollments),
@@ -221,6 +237,7 @@ export const usersRelations = relations(users, ({ many, one }) => ({
   transactions: many(transactions),
   channelSubscriptions: many(channelSubscriptions),
   dailyChallenges: many(dailyChallenges),
+  bookReadingProgress: many(bookReadingProgress),
   referrer: one(users, { fields: [users.referredBy], references: [users.id] }),
 }));
 
@@ -237,6 +254,7 @@ export const enrollmentsRelations = relations(enrollments, ({ one }) => ({
 export const booksRelations = relations(books, ({ many }) => ({
   purchases: many(bookPurchases),
   chapters: many(bookChapters),
+  readingProgress: many(bookReadingProgress),
 }));
 
 export const bookPurchasesRelations = relations(bookPurchases, ({ one }) => ({
@@ -269,6 +287,11 @@ export const bookChaptersRelations = relations(bookChapters, ({ one }) => ({
   book: one(books, { fields: [bookChapters.bookId], references: [books.id] }),
 }));
 
+export const bookReadingProgressRelations = relations(bookReadingProgress, ({ one }) => ({
+  user: one(users, { fields: [bookReadingProgress.userId], references: [users.id] }),
+  book: one(books, { fields: [bookReadingProgress.bookId], references: [books.id] }),
+}));
+
 // Insert schemas
 export const insertUserSchema = createInsertSchema(users);
 export const insertCourseSchema = createInsertSchema(courses);
@@ -281,6 +304,7 @@ export const insertChannelSubscriptionSchema = createInsertSchema(channelSubscri
 export const insertDailyChallengeSchema = createInsertSchema(dailyChallenges);
 export const insertCourseLessonSchema = createInsertSchema(courseLessons);
 export const insertBookChapterSchema = createInsertSchema(bookChapters);
+export const insertBookReadingProgressSchema = createInsertSchema(bookReadingProgress);
 
 // Types
 export type UpsertUser = typeof users.$inferInsert;
@@ -311,3 +335,5 @@ export type CourseLesson = typeof courseLessons.$inferSelect;
 export type InsertCourseLesson = z.infer<typeof insertCourseLessonSchema>;
 export type BookChapter = typeof bookChapters.$inferSelect;
 export type InsertBookChapter = z.infer<typeof insertBookChapterSchema>;
+export type BookReadingProgress = typeof bookReadingProgress.$inferSelect;
+export type InsertBookReadingProgress = z.infer<typeof insertBookReadingProgressSchema>;

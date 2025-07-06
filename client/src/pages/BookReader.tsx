@@ -1,16 +1,17 @@
 import { useState, useEffect, useRef } from "react";
 import { useParams, useLocation } from "wouter";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { ArrowLeft, ArrowRight, Menu, ChevronLeft, ChevronRight, BookOpen } from "lucide-react";
+import { ArrowLeft, ArrowRight, Menu, ChevronLeft, ChevronRight, BookOpen, Gift } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import { Separator } from "@/components/ui/separator";
 import { ScrollArea } from "@/components/ui/scroll-area";
-// import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
+import { Alert, AlertDescription } from "@/components/ui/alert";
 import { cn } from "@/lib/utils";
 import { useLanguage } from "@/hooks/useLanguage";
+import { useToast } from "@/hooks/use-toast";
 import type { Book, BookChapter } from "@/lib/types";
 
 interface BookWithChapters extends Book {
@@ -21,6 +22,13 @@ export default function BookReader() {
   const { id } = useParams<{ id: string }>();
   const [, setLocation] = useLocation();
   const [currentChapterIndex, setCurrentChapterIndex] = useState(0);
+  
+  // Update chapter index when progress is loaded
+  useEffect(() => {
+    if (progress && progress.currentChapter > 0) {
+      setCurrentChapterIndex(progress.currentChapter - 1);
+    }
+  }, [progress]);
   const [showChapterList, setShowChapterList] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
   const { t, language } = useLanguage();
@@ -48,6 +56,46 @@ export default function BookReader() {
     },
   });
 
+  // Get reading progress
+  const { data: progress } = useQuery({
+    queryKey: ["/api/users/user123/books", id, "progress"],
+    queryFn: async () => {
+      const response = await fetch(`/api/users/user123/books/${id}/progress`);
+      if (!response.ok) return null;
+      return response.json();
+    },
+    enabled: !!id,
+  });
+
+  const queryClient = useQueryClient();
+  const { toast } = useToast();
+
+  // Update reading progress
+  const updateProgressMutation = useMutation({
+    mutationFn: async (currentChapter: number) => {
+      const response = await fetch(`/api/users/user123/books/${id}/progress`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ currentChapter }),
+      });
+      if (!response.ok) throw new Error("Failed to update progress");
+      return response.json();
+    },
+    onSuccess: (data) => {
+      queryClient.invalidateQueries({ queryKey: ["/api/users/user123/books", id, "progress"] });
+      queryClient.invalidateQueries({ queryKey: ["/api/users/user123"] });
+      
+      // Check if book was completed
+      if (data.isCompleted && !data.rewardClaimed) {
+        toast({
+          title: "🎉 Congratulations!",
+          description: "You completed the book and earned 100 MIND tokens!",
+          duration: 5000,
+        });
+      }
+    },
+  });
+
   const { data: chapters = [] } = useQuery<BookChapter[]>({
     queryKey: ["/api/books", id, "chapters"],
     queryFn: async () => {
@@ -59,23 +107,28 @@ export default function BookReader() {
   });
 
   const currentChapter = chapters[currentChapterIndex];
-  const progress = chapters.length > 0 ? ((currentChapterIndex + 1) / chapters.length) * 100 : 0;
+  const progressPercent = chapters.length > 0 ? ((currentChapterIndex + 1) / chapters.length) * 100 : 0;
 
   const goToNextChapter = () => {
     if (currentChapterIndex < chapters.length - 1) {
-      setCurrentChapterIndex(currentChapterIndex + 1);
+      const newIndex = currentChapterIndex + 1;
+      setCurrentChapterIndex(newIndex);
+      updateProgressMutation.mutate(newIndex + 1);
     }
   };
 
   const goToPrevChapter = () => {
     if (currentChapterIndex > 0) {
-      setCurrentChapterIndex(currentChapterIndex - 1);
+      const newIndex = currentChapterIndex - 1;
+      setCurrentChapterIndex(newIndex);
+      updateProgressMutation.mutate(newIndex + 1);
     }
   };
 
   const goToChapter = (index: number) => {
     setCurrentChapterIndex(index);
     setShowChapterList(false);
+    updateProgressMutation.mutate(index + 1);
   };
 
   if (isLoading) {
@@ -135,8 +188,20 @@ export default function BookReader() {
                 <span className="text-sm text-gray-600 dark:text-gray-400">
                   {currentChapterIndex + 1} / {chapters.length}
                 </span>
-                <Progress value={progress} className="w-20" />
+                <Progress value={progressPercent} className="w-20" />
               </div>
+              
+              {/* Reading Progress & Reward Info */}
+              {progress && (
+                <div className="flex items-center space-x-2">
+                  {progress.isCompleted && (
+                    <Badge variant="secondary" className="flex items-center space-x-1">
+                      <Gift className="w-3 h-3" />
+                      <span className="text-xs">Completed!</span>
+                    </Badge>
+                  )}
+                </div>
+              )}
               
               <div className="relative" ref={menuRef}>
                 <Button 
@@ -188,6 +253,15 @@ export default function BookReader() {
       {/* Main Content */}
       <div className="container mx-auto px-4 py-8">
         <div className="max-w-4xl mx-auto">
+          {/* Book Completion Reward Alert */}
+          {progress && progress.isCompleted && (
+            <Alert className="mb-6 bg-green-50 border-green-200 dark:bg-green-900/20 dark:border-green-800">
+              <Gift className="h-4 w-4" />
+              <AlertDescription className="text-green-800 dark:text-green-200">
+                🎉 Congratulations! You have completed this book and earned 100 MIND tokens as a reward!
+              </AlertDescription>
+            </Alert>
+          )}
           {currentChapter ? (
             <Card className="bg-white/90 dark:bg-gray-800/90 backdrop-blur-sm">
               <CardHeader>
@@ -201,7 +275,7 @@ export default function BookReader() {
                     </p>
                   </div>
                   <Badge variant="secondary">
-                    {Math.round(progress)}% завершено
+                    {Math.round(progressPercent)}% завершено
                   </Badge>
                 </div>
               </CardHeader>

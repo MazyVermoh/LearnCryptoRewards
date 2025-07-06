@@ -10,8 +10,7 @@ import {
   dailyChallenges,
   courseLessons,
   bookChapters,
-  courseLessons,
-  bookChapters,
+  bookReadingProgress,
   type User,
   type UpsertUser,
   type Course,
@@ -34,6 +33,8 @@ import {
   type InsertCourseLesson,
   type BookChapter,
   type InsertBookChapter,
+  type BookReadingProgress,
+  type InsertBookReadingProgress,
 } from "@shared/schema";
 import { db } from "./db";
 import { eq, desc, asc, and, sql, like } from "drizzle-orm";
@@ -110,6 +111,11 @@ export interface IStorage {
   createBookChapter(chapter: InsertBookChapter): Promise<BookChapter>;
   updateBookChapter(id: number, chapter: Partial<InsertBookChapter>): Promise<BookChapter>;
   deleteBookChapter(id: number): Promise<void>;
+  
+  // Book reading progress operations
+  getBookReadingProgress(userId: string, bookId: number): Promise<BookReadingProgress | undefined>;
+  updateBookReadingProgress(userId: string, bookId: number, currentChapter: number): Promise<BookReadingProgress>;
+  completeBookReading(userId: string, bookId: number): Promise<void>;
 }
 
 export class DatabaseStorage implements IStorage {
@@ -524,6 +530,94 @@ export class DatabaseStorage implements IStorage {
 
   async deleteBookChapter(id: number): Promise<void> {
     await db.delete(bookChapters).where(eq(bookChapters.id, id));
+  }
+
+  async getBookReadingProgress(userId: string, bookId: number): Promise<BookReadingProgress | undefined> {
+    const result = await db.select().from(bookReadingProgress)
+      .where(and(
+        eq(bookReadingProgress.userId, userId),
+        eq(bookReadingProgress.bookId, bookId)
+      ));
+    return result[0];
+  }
+
+  async updateBookReadingProgress(userId: string, bookId: number, currentChapter: number): Promise<BookReadingProgress> {
+    // First check if progress exists
+    const existing = await this.getBookReadingProgress(userId, bookId);
+    
+    if (existing) {
+      // Update existing progress
+      const result = await db.update(bookReadingProgress)
+        .set({
+          currentChapter,
+          updatedAt: new Date()
+        })
+        .where(and(
+          eq(bookReadingProgress.userId, userId),
+          eq(bookReadingProgress.bookId, bookId)
+        ))
+        .returning();
+      return result[0];
+    } else {
+      // Create new progress record
+      // First get the total chapters for this book
+      const chapters = await db.select().from(bookChapters)
+        .where(eq(bookChapters.bookId, bookId));
+      
+      const result = await db.insert(bookReadingProgress)
+        .values({
+          userId,
+          bookId,
+          currentChapter,
+          totalChapters: chapters.length,
+          isCompleted: false,
+          rewardClaimed: false
+        })
+        .returning();
+      return result[0];
+    }
+  }
+
+  async completeBookReading(userId: string, bookId: number): Promise<void> {
+    const progress = await this.getBookReadingProgress(userId, bookId);
+    
+    if (progress && !progress.isCompleted) {
+      // Mark as completed
+      await db.update(bookReadingProgress)
+        .set({
+          isCompleted: true,
+          completedAt: new Date(),
+          updatedAt: new Date()
+        })
+        .where(and(
+          eq(bookReadingProgress.userId, userId),
+          eq(bookReadingProgress.bookId, bookId)
+        ));
+
+      // Give reward - 100 MIND tokens for completing a book
+      const rewardAmount = "100";
+      await this.updateUserTokens(userId, rewardAmount);
+      
+      // Create transaction record
+      await this.createTransaction({
+        userId,
+        amount: rewardAmount,
+        type: "reward",
+        description: "Book completion reward",
+        status: "completed"
+      });
+
+      // Mark reward as claimed
+      await db.update(bookReadingProgress)
+        .set({
+          rewardClaimed: true,
+          updatedAt: new Date()
+        })
+        .where(and(
+          eq(bookReadingProgress.userId, userId),
+          eq(bookReadingProgress.bookId, bookId)
+        ));
+    }
   }
 }
 
