@@ -5,6 +5,7 @@ export const translations = {
     library: "Library",
     rewards: "Rewards",
     admin: "Admin",
+    admin: "Admin",
     home: "Home",
     progress: "Progress",
     wallet: "Wallet",
@@ -147,8 +148,9 @@ export const translations = {
   ru: {
     // Navigation
     courses: "Курсы",
-    library: "Библиотека",
+    library: "Библиотека", 
     rewards: "Награды",
+    admin: "Админ",
     admin: "Админ",
     home: "Главная",
     progress: "Прогресс",
