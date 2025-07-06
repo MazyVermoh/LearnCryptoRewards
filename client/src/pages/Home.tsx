@@ -903,7 +903,7 @@ export default function Home() {
             <CardContent className="p-0">
               <div className="text-center">
                 <div className="text-4xl font-bold mb-2">
-                  {user?.tokenBalance || "0"} EDU
+                  {user?.tokenBalance || "0"} MIND
                 </div>
                 <p className="text-blue-100">{t('totalBalance')}</p>
               </div>

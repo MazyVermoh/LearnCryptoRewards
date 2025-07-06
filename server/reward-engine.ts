@@ -291,7 +291,7 @@ export class RewardEngine {
   private async transferTokens(userId: string, amount: number): Promise<void> {
     // TODO: Integrate with TON blockchain for actual token transfer
     // For now, this is a placeholder
-    console.log(`[TON Transfer] ${amount} MIND tokens to user ${userId}`);
+    console.log(`[TON Transfer] ${amount} MIND Token to user ${userId}`);
     
     // In production, this would:
     // 1. Call TON smart contract

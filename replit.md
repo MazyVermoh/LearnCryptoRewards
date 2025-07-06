@@ -121,6 +121,7 @@ Changelog:
 - July 06, 2025. Cleaned database duplicates, restored correct quantities (26 courses, 45 books)
 - July 06, 2025. Successfully implemented bilingual support (English/Russian)
 - July 06, 2025. LAUNCH CANDIDATE READY - All Russian translations working correctly
+- July 06, 2025. Updated naming convention to "MIND Token" (singular) throughout application
 ```
 
 ## User Preferences
