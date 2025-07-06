@@ -239,7 +239,16 @@ export default function CourseReader() {
 
       {/* Main Content */}
       <div className="container mx-auto px-4 py-8">
-        <div className="max-w-4xl mx-auto">
+        <div className="max-w-4xl mx-auto space-y-6">
+          {/* Completion Alert */}
+          {progress && progress.isCompleted && (
+            <Alert className="bg-green-50 dark:bg-green-900/20 border-green-200 dark:border-green-800">
+              <Gift className="h-4 w-4" />
+              <AlertDescription className="text-green-800 dark:text-green-200">
+                🎉 Congratulations! You have completed this course and earned 50 MIND tokens as a reward!
+              </AlertDescription>
+            </Alert>
+          )}
           {currentLesson ? (
             <Card className="bg-white/90 dark:bg-gray-800/90 backdrop-blur-sm">
               <CardHeader>

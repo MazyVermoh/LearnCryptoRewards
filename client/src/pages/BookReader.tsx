@@ -107,6 +107,16 @@ export default function BookReader() {
     },
   });
 
+  const { data: chapters = [] } = useQuery<BookChapter[]>({
+    queryKey: ["/api/books", id, "chapters"],
+    queryFn: async () => {
+      const response = await fetch(`/api/books/${id}/chapters`);
+      if (!response.ok) throw new Error("Failed to fetch chapters");
+      return response.json();
+    },
+    enabled: !!id,
+  });
+
   // Complete book manually
   const completeBookMutation = useMutation({
     mutationFn: async () => {
@@ -136,16 +146,6 @@ export default function BookReader() {
       updateProgressMutation.mutate(1);
     }
   }, [user?.id, id, chapters.length, progress, updateProgressMutation.isPending]);
-
-  const { data: chapters = [] } = useQuery<BookChapter[]>({
-    queryKey: ["/api/books", id, "chapters"],
-    queryFn: async () => {
-      const response = await fetch(`/api/books/${id}/chapters`);
-      if (!response.ok) throw new Error("Failed to fetch chapters");
-      return response.json();
-    },
-    enabled: !!id,
-  });
 
   const currentChapter = chapters[currentChapterIndex];
   const progressPercent = chapters.length > 0 ? ((currentChapterIndex + 1) / chapters.length) * 100 : 0;

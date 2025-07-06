@@ -587,7 +587,25 @@ export class DatabaseStorage implements IStorage {
   }
 
   async completeBookReading(userId: string, bookId: number): Promise<void> {
-    const progress = await this.getBookReadingProgress(userId, bookId);
+    let progress = await this.getBookReadingProgress(userId, bookId);
+    
+    // If no progress exists, create it first
+    if (!progress) {
+      const chapters = await db.select().from(bookChapters)
+        .where(eq(bookChapters.bookId, bookId));
+      
+      const result = await db.insert(bookReadingProgress)
+        .values({
+          userId,
+          bookId,
+          currentChapter: chapters.length, // Mark as on last chapter
+          totalChapters: chapters.length,
+          isCompleted: false,
+          rewardClaimed: false
+        })
+        .returning();
+      progress = result[0];
+    }
     
     if (progress && !progress.isCompleted) {
       // Mark as completed
@@ -611,8 +629,7 @@ export class DatabaseStorage implements IStorage {
         userId,
         amount: rewardAmount,
         type: "reward",
-        description: "Book completion reward",
-        status: "completed"
+        description: "Book completion reward"
       });
 
       // Mark reward as claimed
@@ -675,7 +692,25 @@ export class DatabaseStorage implements IStorage {
   }
 
   async completeCourseReading(userId: string, courseId: number): Promise<void> {
-    const progress = await this.getCourseReadingProgress(userId, courseId);
+    let progress = await this.getCourseReadingProgress(userId, courseId);
+    
+    // If no progress exists, create it first
+    if (!progress) {
+      const lessons = await db.select().from(courseLessons)
+        .where(eq(courseLessons.courseId, courseId));
+      
+      const result = await db.insert(courseReadingProgress)
+        .values({
+          userId,
+          courseId,
+          currentLesson: lessons.length, // Mark as on last lesson
+          totalLessons: lessons.length,
+          isCompleted: false,
+          rewardClaimed: false
+        })
+        .returning();
+      progress = result[0];
+    }
     
     if (progress && !progress.isCompleted) {
       // Mark as completed
@@ -699,8 +734,7 @@ export class DatabaseStorage implements IStorage {
         userId,
         amount: rewardAmount,
         type: "reward",
-        description: "Course completion reward",
-        status: "completed"
+        description: "Course completion reward"
       });
 
       // Mark reward as claimed
