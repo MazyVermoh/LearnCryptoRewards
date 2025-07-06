@@ -253,7 +253,7 @@ export default function Home() {
             <div className="w-8 h-8 bg-primary rounded-full flex items-center justify-center">
               <GraduationCap className="text-white h-4 w-4" />
             </div>
-            <span className="font-semibold text-lg text-neutral-900">EduCrypto</span>
+            <span className="font-semibold text-lg text-neutral-900">MIND Token</span>
           </div>
           <div className="flex items-center space-x-4">
             <Select value={language} onValueChange={changeLanguage}>
@@ -287,7 +287,7 @@ export default function Home() {
             <p className="text-blue-100 text-sm">{t('level')} {user?.level || 1} {t('explorer')}</p>
             <div className="flex items-center space-x-2 mt-1">
               <Coins className="h-4 w-4 text-accent" />
-              <span className="font-medium">{user?.tokenBalance || "0"} EDU</span>
+              <span className="font-medium">{user?.tokenBalance || "0"} MIND</span>
             </div>
           </div>
           <div className="text-right">
@@ -998,7 +998,7 @@ export default function Home() {
                 </div>
                 <div>
                   <div className="text-2xl font-bold text-accent">{user?.tokenBalance || "0"}</div>
-                  <p className="text-sm text-gray-600">EDU</p>
+                  <p className="text-sm text-gray-600">MIND</p>
                 </div>
               </div>
             </CardContent>
