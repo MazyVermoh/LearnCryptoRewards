@@ -56,24 +56,31 @@ class TelegramBot {
 
   async sendMessage(chatId: number, text: string, options?: any) {
     try {
+      const payload = {
+        chat_id: chatId,
+        text,
+        parse_mode: 'HTML',
+        ...options,
+      };
+
+      console.log('Sending message payload:', JSON.stringify(payload, null, 2));
+      
       const response = await fetch(`${this.baseUrl}/sendMessage`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({
-          chat_id: chatId,
-          text,
-          parse_mode: 'HTML',
-          ...options,
-        }),
+        body: JSON.stringify(payload),
       });
 
+      const responseData = await response.json();
+      
       if (!response.ok) {
-        throw new Error(`Telegram API error: ${response.status}`);
+        console.error('Telegram API error response:', responseData);
+        throw new Error(`Telegram API error: ${response.status} - ${JSON.stringify(responseData)}`);
       }
 
-      return await response.json();
+      return responseData;
     } catch (error) {
       console.error('Error sending message:', error);
       throw error;
