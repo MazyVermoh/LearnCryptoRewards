@@ -7,7 +7,7 @@
 - **Bot URL**: https://t.me/Mind_Coin_Bot
 
 ## Features
-- Welcome message with 100 MIND token bonus
+- Welcome message with 10 MIND token bonus
 - Web App integration with educational platform
 - Profile command showing user stats and tokens
 - Help command with feature overview
@@ -67,7 +67,7 @@ POST /telegram/webhook
 
 1. User starts bot with `/start`
 2. Bot creates user account in database
-3. User gets 100 MIND token welcome bonus
+3. User gets 10 MIND token welcome bonus
 4. User clicks "Open Educational Platform" button
 5. Web app opens with user authentication
 6. User completes courses/books and earns tokens
@@ -75,10 +75,10 @@ POST /telegram/webhook
 
 ## Token Rewards
 
-- Welcome bonus: 100 MIND tokens
+- Welcome bonus: 10 MIND tokens
 - Course completion: 50 MIND tokens  
 - Book completion: 100 MIND tokens
-- Referral bonus: 25 MIND tokens per friend
+- Referral bonus: 15 MIND tokens per friend
 - Daily step tracking rewards
 
 ## Security

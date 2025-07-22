@@ -122,7 +122,7 @@ app.post('/telegram/set-webhook', async (req: Request, res: Response) => {
       telegramBot = telegramModule.telegramBot;
       console.log('✅ Telegram bot initialized successfully');
     } catch (error) {
-      console.warn('⚠️ Telegram bot not available:', error.message);
+      console.warn('⚠️ Telegram bot not available:',error.message);
       console.warn('Telegram features will be disabled');
     }
 
@@ -154,35 +154,34 @@ app.post('/telegram/set-webhook', async (req: Request, res: Response) => {
       log(`📊 API health check available at http://${host}:${port}/api/health`);
       log(`🌍 Environment: ${process.env.NODE_ENV || 'development'}`);
     });
-
     // Handle server startup errors
-    server.on('error', (err: any) => {
-      console.error('❌ Server startup error:', err);
-      if (err.code === 'EADDRINUSE') {
-        console.error(`Port ${port} is already in use`);
+        server.on('error', (err: any) => {
+          console.error('❌ Server startup error:', err);
+          if (err.code === 'EADDRINUSE') {
+            console.error(`Port ${port} is already in use`);
+          }
+          process.exit(1);
+        });
+
+        // Graceful shutdown
+        process.on('SIGTERM', () => {
+          log('🛑 SIGTERM received, shutting down gracefully');
+          server.close(() => {
+            log('✅ Server closed');
+            process.exit(0);
+          });
+        });
+
+        process.on('SIGINT', () => {
+          log('🛑 SIGINT received, shutting down gracefully');
+          server.close(() => {
+            log('✅ Server closed');
+            process.exit(0);
+          });
+        });
+
+      } catch (error) {
+        console.error('❌ Failed to start server:', error);
+        process.exit(1);
       }
-      process.exit(1);
-    });
-
-    // Graceful shutdown
-    process.on('SIGTERM', () => {
-      log('🛑 SIGTERM received, shutting down gracefully');
-      server.close(() => {
-        log('✅ Server closed');
-        process.exit(0);
-      });
-    });
-
-    process.on('SIGINT', () => {
-      log('🛑 SIGINT received, shutting down gracefully');
-      server.close(() => {
-        log('✅ Server closed');
-        process.exit(0);
-      });
-    });
-
-  } catch (error) {
-    console.error('❌ Failed to start server:', error);
-    process.exit(1);
-  }
-})();
+    })();
