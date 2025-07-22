@@ -2989,12 +2989,12 @@ export default function Home() {
       {showTableEditor && (
         <TableEditor
           onInsertTable={(tableHtml) => {
-            if (currentTextFieldType === 'content') {
+            if (currentTextFieldType === 'content' && editingCourse) {
               setEditingCourse({
                 ...editingCourse,
                 content: (editingCourse.content || '') + '\n\n' + tableHtml
               });
-            } else if (currentTextFieldType === 'contentRu') {
+            } else if (currentTextFieldType === 'contentRu' && editingCourse) {
               setEditingCourse({
                 ...editingCourse,
                 contentRu: (editingCourse.contentRu || '') + '\n\n' + tableHtml
