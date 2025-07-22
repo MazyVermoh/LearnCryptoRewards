@@ -162,6 +162,13 @@ Changelog:
   - Confirmed all bot commands and web app integration working
   - Bot @Mind_Coin_Bot now fully operational with deployed platform
   - Users can access all features through Telegram interface
+
+- July 22, 2025. DATABASE RESET FOR REDEPLOYMENT
+  - Reset all user progress data to provide fresh start for new users
+  - Cleared enrollments, transactions, book purchases, and reading progress
+  - All users reset to 100 MIND tokens and level 1
+  - Fixed server port conflicts for stable deployment
+  - Application ready for clean redeployment with fresh data state
 ```
 
 ## User Preferences

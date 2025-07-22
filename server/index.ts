@@ -192,45 +192,38 @@ app.post('/telegram/set-webhook', async (req: Request, res: Response) => {
       log(`📊 API health check available at http://${host}:${port}/api/health`);
       log(`🌍 Environment: ${process.env.NODE_ENV || 'development'}`);
     });
+    
     // Handle server startup errors
-        server.on('error', (err: any) => {
-          console.error('❌ Server startup error:', err);
-          if (err.code === 'EADDRINUSE') {
-            console.error(`Port ${port} is already in use`);
-            console.error('Attempting to restart with different port...');
-            // Try a different port instead of exiting
-            const newPort = parseInt(port.toString()) + 1;
-            server.listen(newPort, host, () => {
-              log(`🚀 MIND Token Educational Platform server running on http://${host}:${newPort}`);
-              log(`📊 Health check available at http://${host}:${newPort}/`);
-              log(`📊 API health check available at http://${host}:${newPort}/api/health`);
-              log(`🌍 Environment: ${process.env.NODE_ENV || 'development'}`);
-            });
-          } else {
-            console.error('Server will continue running despite error');
-          }
-        });
-
-        // Graceful shutdown
-        process.on('SIGTERM', () => {
-          log('🛑 SIGTERM received, shutting down gracefully');
-          server.close(() => {
-            log('✅ Server closed');
-            process.exit(0);
-          });
-        });
-
-        process.on('SIGINT', () => {
-          log('🛑 SIGINT received, shutting down gracefully');
-          server.close(() => {
-            log('✅ Server closed');
-            process.exit(0);
-          });
-        });
-
-      } catch (error) {
-        console.error('❌ Failed to start server:', error);
-        console.error('Server initialization failed, but process will continue running');
-        // Don't exit process, allow the application to continue
+    server.on('error', (err: any) => {
+      console.error('❌ Server startup error:', err);
+      if (err.code === 'EADDRINUSE') {
+        console.error(`Port ${port} is already in use`);
+        // In production, this should fail fast
+        if (process.env.NODE_ENV === 'production') {
+          console.error('❌ Production server cannot start - port conflict');
+        }
       }
-    })();
+    });
+
+    // Graceful shutdown
+    process.on('SIGTERM', () => {
+      log('🛑 SIGTERM received, shutting down gracefully');
+      server.close(() => {
+        log('✅ Server closed');
+        process.exit(0);
+      });
+    });
+
+    process.on('SIGINT', () => {
+      log('🛑 SIGINT received, shutting down gracefully');
+      server.close(() => {
+        log('✅ Server closed');
+        process.exit(0);
+      });
+    });
+
+  } catch (error) {
+    console.error('❌ Failed to start server:', error);
+    console.error('Server initialization failed, but process will continue running');
+  }
+})();
