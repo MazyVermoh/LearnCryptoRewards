@@ -160,7 +160,7 @@ export default function TelegramBotPreview() {
             <CardTitle>Bot Information</CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
-            {botInfo ? (
+            {botInfo && botInfo.result ? (
               <div className="space-y-3">
                 <div className="flex items-center gap-2">
                   <Badge variant="secondary">Bot Name</Badge>
@@ -286,7 +286,7 @@ export default function TelegramBotPreview() {
             <div>
               <h4 className="font-medium mb-2">1. Open Bot in Telegram</h4>
               <p className="text-sm text-muted-foreground">
-                Click "Open Bot in Telegram" above or search for @{botInfo?.result.username || "Mind_Coin_Bot"} in Telegram
+                Click "Open Bot in Telegram" above or search for @{botInfo?.result?.username || "Mind_Coin_Bot"} in Telegram
               </p>
             </div>
             <div>
