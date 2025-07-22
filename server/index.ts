@@ -9,8 +9,8 @@ const app = express();
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 
-// Health check endpoint for deployment (root path)
-app.get('/', (req: Request, res: Response) => {
+// Root path health check only for API requests (not interfering with frontend)
+app.get('/api', (req: Request, res: Response) => {
   res.status(200).json({ 
     status: 'ok', 
     message: 'MIND Token Educational Platform is running',
