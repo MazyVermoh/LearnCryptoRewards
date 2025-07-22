@@ -11,6 +11,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import TableEditor from '@/components/TableEditor';
 import { 
   GraduationCap, 
   BookOpen, 
@@ -42,7 +43,8 @@ import {
   Lightbulb,
   Heart,
   Megaphone,
-  MessageCircle
+  MessageCircle,
+  Table
 } from 'lucide-react';
 
 // Mock user data - in real app this would come from auth
@@ -379,6 +381,8 @@ export default function Home() {
   const [managingBookChapters, setManagingBookChapters] = useState(null);
   const [managingCourseChapters, setManagingCourseChapters] = useState(null);
   const [numberOfChapters, setNumberOfChapters] = useState(5);
+  const [showTableEditor, setShowTableEditor] = useState(false);
+  const [currentTextFieldType, setCurrentTextFieldType] = useState<'content' | 'contentRu' | null>(null);
 
   // Enroll in course mutation
   const enrollMutation = useMutation({
@@ -2335,23 +2339,55 @@ export default function Home() {
               </div>
               <div>
                 <label className="block text-sm font-medium mb-1">Добавить текст (English)</label>
-                <textarea
-                  value={editingCourse.content || ''}
-                  onChange={(e) => setEditingCourse({...editingCourse, content: e.target.value})}
-                  className="w-full p-2 border rounded-md"
-                  rows={6}
-                  placeholder="Добавить текст содержимого курса здесь..."
-                />
+                <div className="space-y-2">
+                  <div className="flex gap-2">
+                    <Button
+                      type="button"
+                      variant="outline"
+                      size="sm"
+                      onClick={() => {
+                        setCurrentTextFieldType('content');
+                        setShowTableEditor(true);
+                      }}
+                    >
+                      <Table className="h-4 w-4 mr-1" />
+                      Insert Table
+                    </Button>
+                  </div>
+                  <textarea
+                    value={editingCourse.content || ''}
+                    onChange={(e) => setEditingCourse({...editingCourse, content: e.target.value})}
+                    className="w-full p-2 border rounded-md"
+                    rows={6}
+                    placeholder="Добавить текст содержимого курса здесь..."
+                  />
+                </div>
               </div>
               <div>
                 <label className="block text-sm font-medium mb-1">Добавить текст (Russian)</label>
-                <textarea
-                  value={editingCourse.contentRu || ''}
-                  onChange={(e) => setEditingCourse({...editingCourse, contentRu: e.target.value})}
-                  className="w-full p-2 border rounded-md"
-                  rows={6}
-                  placeholder="Добавить текст содержимого курса здесь..."
-                />
+                <div className="space-y-2">
+                  <div className="flex gap-2">
+                    <Button
+                      type="button"
+                      variant="outline"
+                      size="sm"
+                      onClick={() => {
+                        setCurrentTextFieldType('contentRu');
+                        setShowTableEditor(true);
+                      }}
+                    >
+                      <Table className="h-4 w-4 mr-1" />
+                      Insert Table
+                    </Button>
+                  </div>
+                  <textarea
+                    value={editingCourse.contentRu || ''}
+                    onChange={(e) => setEditingCourse({...editingCourse, contentRu: e.target.value})}
+                    className="w-full p-2 border rounded-md"
+                    rows={6}
+                    placeholder="Добавить текст содержимого курса здесь..."
+                  />
+                </div>
               </div>
               <div className="flex space-x-3 pt-4">
                 <Button 
@@ -2948,6 +2984,32 @@ export default function Home() {
           </div>
         </div>
       )}
+
+      {/* Table Editor Modal */}
+      {showTableEditor && (
+        <TableEditor
+          onInsertTable={(tableHtml) => {
+            if (currentTextFieldType === 'content') {
+              setEditingCourse({
+                ...editingCourse,
+                content: (editingCourse.content || '') + '\n\n' + tableHtml
+              });
+            } else if (currentTextFieldType === 'contentRu') {
+              setEditingCourse({
+                ...editingCourse,
+                contentRu: (editingCourse.contentRu || '') + '\n\n' + tableHtml
+              });
+            }
+            setShowTableEditor(false);
+            setCurrentTextFieldType(null);
+          }}
+          onClose={() => {
+            setShowTableEditor(false);
+            setCurrentTextFieldType(null);
+          }}
+        />
+      )}
+
     </div>
   );
 }

@@ -296,9 +296,14 @@ export default function CourseReader() {
                 )}
                 
                 <div className="prose dark:prose-invert max-w-none">
-                  <div className="whitespace-pre-wrap text-gray-800 dark:text-gray-200 leading-relaxed">
-                    {language === "ru" ? currentLesson.contentRu || currentLesson.content : currentLesson.content}
-                  </div>
+                  <div 
+                    className="whitespace-pre-wrap text-gray-800 dark:text-gray-200 leading-relaxed"
+                    dangerouslySetInnerHTML={{
+                      __html: language === "ru" 
+                        ? currentLesson.contentRu || currentLesson.content || "Содержимое урока будет доступно в ближайшее время."
+                        : currentLesson.content || "Lesson content will be available soon."
+                    }}
+                  />
                 </div>
 
                 {/* Lesson Test */}
