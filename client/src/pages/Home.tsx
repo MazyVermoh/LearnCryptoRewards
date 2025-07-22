@@ -1345,6 +1345,13 @@ export default function Home() {
                 <FileText className="h-5 w-5 mb-1" />
                 Manage Tests
               </Button>
+              <Button 
+                className="bg-blue-600 text-white p-3 h-auto flex flex-col"
+                onClick={() => setLocation('/telegram/preview')}
+              >
+                <MessageCircle className="h-5 w-5 mb-1" />
+                Bot Preview
+              </Button>
             </div>
           </div>
 
