@@ -152,9 +152,9 @@ class TelegramBot {
       });
     }
 
-    const webAppUrl = process.env.REPLIT_DOMAIN 
-      ? `https://${process.env.REPLIT_DOMAIN}?user_id=${userId}`
-      : `http://localhost:5000?user_id=${userId}`;
+    const webAppUrl = process.env.REPLIT_DOMAINS 
+      ? `https://${process.env.REPLIT_DOMAINS}?user_id=${userId}`
+      : `https://f91aea43-f87f-4235-b012-074cc27759ce-00-1h36tiyvg9vp2.picard.replit.dev?user_id=${userId}`;
 
     const welcomeMessage = `
 🎓 <b>Welcome to MIND Token Educational Platform!</b>
@@ -195,9 +195,9 @@ Click the button below to start your learning journey!
 Share your code to earn bonus tokens!
       `;
 
-      const webAppUrl = process.env.REPLIT_DOMAIN 
-        ? `https://${process.env.REPLIT_DOMAIN}?user_id=${userId}`
-        : `http://localhost:5000?user_id=${userId}`;
+      const webAppUrl = process.env.REPLIT_DOMAINS 
+        ? `https://${process.env.REPLIT_DOMAINS}?user_id=${userId}`
+        : `https://f91aea43-f87f-4235-b012-074cc27759ce-00-1h36tiyvg9vp2.picard.replit.dev?user_id=${userId}`;
 
       await this.sendWebApp(chatId, profileMessage, webAppUrl);
     } catch (error) {
