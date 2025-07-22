@@ -49,6 +49,9 @@ class TelegramBot {
     this.token = process.env.TELEGRAM_BOT_TOKEN!;
     this.baseUrl = `https://api.telegram.org/bot${this.token}`;
     
+    console.log('Bot token (first 20 chars):', this.token?.substring(0, 20));
+    console.log('Bot URL:', this.baseUrl.substring(0, 50) + '...');
+    
     if (!this.token) {
       throw new Error('TELEGRAM_BOT_TOKEN is required');
     }
