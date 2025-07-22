@@ -56,12 +56,15 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.put("/api/courses/:id", async (req, res) => {
     try {
       const id = parseInt(req.params.id);
+      console.log('Updating course with data:', req.body);
       const courseData = insertCourseSchema.partial().parse(req.body);
+      console.log('Parsed course data:', courseData);
       const course = await storage.updateCourse(id, courseData);
+      console.log('Updated course:', course);
       res.json(course);
     } catch (error) {
       console.error("Error updating course:", error);
-      res.status(400).json({ message: "Failed to update course" });
+      res.status(400).json({ message: "Failed to update course", error: error.message });
     }
   });
 
@@ -73,18 +76,6 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error) {
       console.error("Error creating course:", error);
       res.status(400).json({ message: "Failed to create course" });
-    }
-  });
-
-  app.put("/api/courses/:id", async (req, res) => {
-    try {
-      const id = parseInt(req.params.id);
-      const courseData = insertCourseSchema.partial().parse(req.body);
-      const course = await storage.updateCourse(id, courseData);
-      res.json(course);
-    } catch (error) {
-      console.error("Error updating course:", error);
-      res.status(400).json({ message: "Failed to update course" });
     }
   });
 

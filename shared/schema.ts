@@ -54,6 +54,8 @@ export const courses = pgTable("courses", {
   titleRu: varchar("title_ru"),
   description: text("description"),
   descriptionRu: text("description_ru"),
+  content: text("content"),
+  contentRu: text("content_ru"),
   instructor: varchar("instructor").notNull(),
   instructorRu: varchar("instructor_ru"),
   category: courseCategoryEnum("category").notNull(),
