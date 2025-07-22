@@ -151,6 +151,12 @@ export interface IStorage {
   submitTestAnswer(attempt: InsertTestAttempt): Promise<TestAttempt>;
   getUserTestAttempts(userId: string, testType: 'chapter' | 'lesson', testId: number): Promise<TestAttempt[]>;
   hasUserPassedTest(userId: string, testType: 'chapter' | 'lesson', testId: number): Promise<boolean>;
+
+  // Admin content visibility operations
+  getAllCoursesForAdmin(): Promise<Course[]>;
+  getAllBooksForAdmin(): Promise<Book[]>;
+  updateCourseVisibility(courseId: number, isVisible: boolean): Promise<void>;
+  updateBookVisibility(bookId: number, isVisible: boolean): Promise<void>;
 }
 
 export class DatabaseStorage implements IStorage {
@@ -204,7 +210,7 @@ export class DatabaseStorage implements IStorage {
   }
 
   async getCourses(category?: string): Promise<Course[]> {
-    const query = db.select().from(courses).where(eq(courses.isActive, true));
+    const query = db.select().from(courses).where(and(eq(courses.isActive, true), eq(courses.isVisible, true)));
     if (category && category !== "all") {
       return await query.where(eq(courses.category, category as any));
     }
@@ -290,7 +296,7 @@ export class DatabaseStorage implements IStorage {
   }
 
   async getBooks(category?: string, search?: string): Promise<Book[]> {
-    let query = db.select().from(books).where(eq(books.isActive, true));
+    let query = db.select().from(books).where(and(eq(books.isActive, true), eq(books.isVisible, true)));
     
     if (category && category !== "all") {
       query = query.where(eq(books.category, category as any));
@@ -885,6 +891,29 @@ export class DatabaseStorage implements IStorage {
   async hasUserPassedTest(userId: string, testType: 'chapter' | 'lesson', testId: number): Promise<boolean> {
     const attempts = await this.getUserTestAttempts(userId, testType, testId);
     return attempts.length > 0 && attempts[0].isCorrect;
+  }
+
+  // Admin content visibility operations
+  async getAllCoursesForAdmin(): Promise<Course[]> {
+    return await db.select().from(courses).orderBy(asc(courses.id));
+  }
+
+  async getAllBooksForAdmin(): Promise<Book[]> {
+    return await db.select().from(books).orderBy(asc(books.id));
+  }
+
+  async updateCourseVisibility(courseId: number, isVisible: boolean): Promise<void> {
+    await db
+      .update(courses)
+      .set({ isVisible, updatedAt: new Date() })
+      .where(eq(courses.id, courseId));
+  }
+
+  async updateBookVisibility(bookId: number, isVisible: boolean): Promise<void> {
+    await db
+      .update(books)
+      .set({ isVisible, updatedAt: new Date() })
+      .where(eq(books.id, bookId));
   }
 }
 

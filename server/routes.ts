@@ -483,6 +483,50 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  app.get("/api/admin/courses", async (req, res) => {
+    try {
+      const courses = await storage.getAllCoursesForAdmin();
+      res.json(courses);
+    } catch (error) {
+      console.error("Error fetching admin courses:", error);
+      res.status(500).json({ message: "Failed to fetch admin courses" });
+    }
+  });
+
+  app.patch("/api/admin/courses/:id/visibility", async (req, res) => {
+    try {
+      const courseId = parseInt(req.params.id);
+      const { isVisible } = req.body;
+      await storage.updateCourseVisibility(courseId, isVisible);
+      res.status(204).send();
+    } catch (error) {
+      console.error("Error updating course visibility:", error);
+      res.status(500).json({ message: "Failed to update course visibility" });
+    }
+  });
+
+  app.get("/api/admin/books", async (req, res) => {
+    try {
+      const books = await storage.getAllBooksForAdmin();
+      res.json(books);
+    } catch (error) {
+      console.error("Error fetching admin books:", error);
+      res.status(500).json({ message: "Failed to fetch admin books" });
+    }
+  });
+
+  app.patch("/api/admin/books/:id/visibility", async (req, res) => {
+    try {
+      const bookId = parseInt(req.params.id);
+      const { isVisible } = req.body;
+      await storage.updateBookVisibility(bookId, isVisible);
+      res.status(204).send();
+    } catch (error) {
+      console.error("Error updating book visibility:", error);
+      res.status(500).json({ message: "Failed to update book visibility" });
+    }
+  });
+
   // Course content management routes
   app.get("/api/courses/:id/lessons", async (req: Request, res: Response) => {
     try {

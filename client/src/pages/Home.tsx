@@ -6,6 +6,7 @@ import { apiRequest } from '@/lib/queryClient';
 import { useToast } from '@/hooks/use-toast';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
+import { ContentVisibilityManager } from '@/components/admin/ContentVisibilityManager';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Badge } from '@/components/ui/badge';
@@ -369,7 +370,7 @@ export default function Home() {
   });
   
   // Admin view states
-  const [adminView, setAdminView] = useState('overview');
+  const [adminView, setAdminView] = useState<'overview' | 'analytics' | 'users' | 'courses' | 'books' | 'visibility'>('overview');
   const [editingCourse, setEditingCourse] = useState(null);
   const [editingBook, setEditingBook] = useState(null);
   const [showUserDetails, setShowUserDetails] = useState(false);
@@ -1356,6 +1357,13 @@ export default function Home() {
                 <MessageCircle className="h-5 w-5 mb-1" />
                 Bot Preview
               </Button>
+              <Button 
+                className="bg-gray-600 text-white p-3 h-auto flex flex-col"
+                onClick={() => setAdminView('visibility')}
+              >
+                <Settings className="h-5 w-5 mb-1" />
+                Manage Visibility
+              </Button>
             </div>
           </div>
 
@@ -1396,6 +1404,13 @@ export default function Home() {
                 onClick={() => setAdminView('books')}
               >
                 Books
+              </Button>
+              <Button
+                variant={adminView === 'visibility' ? "default" : "outline"}
+                size="sm"
+                onClick={() => setAdminView('visibility')}
+              >
+                Visibility
               </Button>
             </div>
           </div>
@@ -1469,6 +1484,10 @@ export default function Home() {
                 </Card>
               </div>
             </div>
+          )}
+
+          {adminView === 'visibility' && (
+            <ContentVisibilityManager />
           )}
 
           {adminView === 'users' && (

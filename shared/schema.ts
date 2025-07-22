@@ -65,6 +65,7 @@ export const courses = pgTable("courses", {
   imageUrl: varchar("image_url"),
   duration: integer("duration_minutes"),
   isActive: boolean("is_active").default(true),
+  isVisible: boolean("is_visible").default(true),
   createdAt: timestamp("created_at").defaultNow(),
   updatedAt: timestamp("updated_at").defaultNow(),
 });
@@ -97,6 +98,7 @@ export const books = pgTable("books", {
   fileUrl: varchar("file_url"),
   pageCount: integer("page_count"),
   isActive: boolean("is_active").default(true),
+  isVisible: boolean("is_visible").default(true),
   createdAt: timestamp("created_at").defaultNow(),
   updatedAt: timestamp("updated_at").defaultNow(),
 });
