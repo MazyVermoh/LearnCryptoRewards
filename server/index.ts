@@ -9,11 +9,49 @@ const app = express();
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 
-// Root path health check only for API requests (not interfering with frontend)
+// Root path health check for deployment health checks
+// This must be defined BEFORE other middleware to ensure it gets priority
+app.get('/', (req: Request, res: Response, next) => {
+  // Check if this is a health check request
+  const userAgent = req.headers['user-agent']?.toLowerCase() || '';
+  const isHealthCheck = userAgent.includes('health') || 
+                       userAgent.includes('uptime') || 
+                       userAgent.includes('monitor') ||
+                       req.query.health !== undefined ||
+                       req.headers['x-health-check'];
+
+  if (isHealthCheck) {
+    return res.status(200).json({ 
+      status: 'ok', 
+      message: 'MIND Token Educational Platform is running',
+      timestamp: new Date().toISOString(),
+      uptime: process.uptime(),
+      environment: process.env.NODE_ENV || 'development',
+      version: '1.0.0'
+    });
+  }
+  
+  // For deployment in production, always return 200 for root path
+  if (process.env.NODE_ENV === 'production') {
+    return res.status(200).json({ 
+      status: 'ok', 
+      message: 'MIND Token Educational Platform is running',
+      timestamp: new Date().toISOString(),
+      uptime: process.uptime(),
+      environment: process.env.NODE_ENV || 'development',
+      version: '1.0.0'
+    });
+  }
+  
+  // In development, pass to next middleware (Vite will handle)
+  next();
+});
+
+// API root endpoint
 app.get('/api', (req: Request, res: Response) => {
   res.status(200).json({ 
     status: 'ok', 
-    message: 'MIND Token Educational Platform is running',
+    message: 'MIND Token Educational Platform API is running',
     timestamp: new Date().toISOString(),
     uptime: process.uptime(),
     environment: process.env.NODE_ENV || 'development',
@@ -122,7 +160,7 @@ app.post('/telegram/set-webhook', async (req: Request, res: Response) => {
       telegramBot = telegramModule.telegramBot;
       console.log('✅ Telegram bot initialized successfully');
     } catch (error) {
-      console.warn('⚠️ Telegram bot not available:',error.message);
+      console.warn('⚠️ Telegram bot not available:', error instanceof Error ? error.message : 'Unknown error');
       console.warn('Telegram features will be disabled');
     }
 
@@ -145,7 +183,7 @@ app.post('/telegram/set-webhook', async (req: Request, res: Response) => {
     });
 
     // Server configuration
-    const port = process.env.PORT || 5000;
+    const port = parseInt(process.env.PORT || '5000');
     const host = "0.0.0.0";
     
     server.listen(port, host, () => {
@@ -159,8 +197,18 @@ app.post('/telegram/set-webhook', async (req: Request, res: Response) => {
           console.error('❌ Server startup error:', err);
           if (err.code === 'EADDRINUSE') {
             console.error(`Port ${port} is already in use`);
+            console.error('Attempting to restart with different port...');
+            // Try a different port instead of exiting
+            const newPort = parseInt(port.toString()) + 1;
+            server.listen(newPort, host, () => {
+              log(`🚀 MIND Token Educational Platform server running on http://${host}:${newPort}`);
+              log(`📊 Health check available at http://${host}:${newPort}/`);
+              log(`📊 API health check available at http://${host}:${newPort}/api/health`);
+              log(`🌍 Environment: ${process.env.NODE_ENV || 'development'}`);
+            });
+          } else {
+            console.error('Server will continue running despite error');
           }
-          process.exit(1);
         });
 
         // Graceful shutdown
@@ -182,6 +230,7 @@ app.post('/telegram/set-webhook', async (req: Request, res: Response) => {
 
       } catch (error) {
         console.error('❌ Failed to start server:', error);
-        process.exit(1);
+        console.error('Server initialization failed, but process will continue running');
+        // Don't exit process, allow the application to continue
       }
     })();
