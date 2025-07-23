@@ -544,6 +544,7 @@ export default function Home() {
         price: '0'
       });
       queryClient.invalidateQueries({ queryKey: ['/api/books'] });
+      queryClient.invalidateQueries({ queryKey: [`/api/users/${mockUserId}/books`] });
       queryClient.invalidateQueries({ queryKey: ['/api/admin/stats'] });
     },
     onError: (error) => {
@@ -3039,6 +3040,7 @@ export default function Home() {
                       const { createdAt, updatedAt, ...bookData } = editingBook;
                       await apiRequest('PUT', `/api/books/${editingBook.id}`, bookData);
                       queryClient.invalidateQueries({ queryKey: ['/api/books'] });
+                      queryClient.invalidateQueries({ queryKey: [`/api/users/${mockUserId}/books`] });
                       setEditingBook(null);
                       toast({
                         title: "Success",
