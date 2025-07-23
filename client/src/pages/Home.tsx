@@ -2083,23 +2083,149 @@ export default function Home() {
               </div>
               <div>
                 <label className="block text-sm font-medium mb-1">Добавить текст (English)</label>
-                <textarea
-                  value={newCourse.content || ''}
-                  onChange={(e) => setNewCourse({...newCourse, content: e.target.value})}
-                  className="w-full p-2 border rounded-md"
-                  rows={6}
-                  placeholder="Добавить текст содержимого курса здесь..."
-                />
+                <div className="space-y-2">
+                  <div className="flex space-x-2">
+                    <Button
+                      type="button"
+                      size="sm"
+                      variant="outline"
+                      onClick={() => {
+                        const tableHtml = `
+<table style="border-collapse: collapse; width: 100%; margin: 16px 0;">
+  <thead>
+    <tr style="background-color: #f3f4f6;">
+      <th style="border: 1px solid #d1d5db; padding: 8px; text-align: left;">Header 1</th>
+      <th style="border: 1px solid #d1d5db; padding: 8px; text-align: left;">Header 2</th>
+      <th style="border: 1px solid #d1d5db; padding: 8px; text-align: left;">Header 3</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td style="border: 1px solid #d1d5db; padding: 8px;">Cell 1</td>
+      <td style="border: 1px solid #d1d5db; padding: 8px;">Cell 2</td>
+      <td style="border: 1px solid #d1d5db; padding: 8px;">Cell 3</td>
+    </tr>
+    <tr>
+      <td style="border: 1px solid #d1d5db; padding: 8px;">Cell 4</td>
+      <td style="border: 1px solid #d1d5db; padding: 8px;">Cell 5</td>
+      <td style="border: 1px solid #d1d5db; padding: 8px;">Cell 6</td>
+    </tr>
+  </tbody>
+</table>`;
+                        setNewCourse({...newCourse, content: (newCourse.content || '') + tableHtml});
+                      }}
+                    >
+                      + Table
+                    </Button>
+                    <Button
+                      type="button"
+                      size="sm"
+                      variant="outline"
+                      onClick={() => {
+                        const listHtml = `
+<ul style="margin: 16px 0; padding-left: 20px;">
+  <li>List item 1</li>
+  <li>List item 2</li>
+  <li>List item 3</li>
+</ul>`;
+                        setNewCourse({...newCourse, content: (newCourse.content || '') + listHtml});
+                      }}
+                    >
+                      + List
+                    </Button>
+                    <Button
+                      type="button"
+                      size="sm"
+                      variant="outline"
+                      onClick={() => {
+                        const headerHtml = `<h3 style="font-size: 18px; font-weight: bold; margin: 16px 0 8px 0;">Section Header</h3>`;
+                        setNewCourse({...newCourse, content: (newCourse.content || '') + headerHtml});
+                      }}
+                    >
+                      + Header
+                    </Button>
+                  </div>
+                  <textarea
+                    value={newCourse.content || ''}
+                    onChange={(e) => setNewCourse({...newCourse, content: e.target.value})}
+                    className="w-full p-2 border rounded-md font-mono text-sm"
+                    rows={8}
+                    placeholder="Добавить текст содержимого курса здесь... Используйте кнопки выше для добавления таблиц, списков и заголовков."
+                  />
+                </div>
               </div>
               <div>
                 <label className="block text-sm font-medium mb-1">Добавить текст (Russian)</label>
-                <textarea
-                  value={newCourse.contentRu || ''}
-                  onChange={(e) => setNewCourse({...newCourse, contentRu: e.target.value})}
-                  className="w-full p-2 border rounded-md"
-                  rows={6}
-                  placeholder="Добавить текст содержимого курса здесь..."
-                />
+                <div className="space-y-2">
+                  <div className="flex space-x-2">
+                    <Button
+                      type="button"
+                      size="sm"
+                      variant="outline"
+                      onClick={() => {
+                        const tableHtml = `
+<table style="border-collapse: collapse; width: 100%; margin: 16px 0;">
+  <thead>
+    <tr style="background-color: #f3f4f6;">
+      <th style="border: 1px solid #d1d5db; padding: 8px; text-align: left;">Заголовок 1</th>
+      <th style="border: 1px solid #d1d5db; padding: 8px; text-align: left;">Заголовок 2</th>
+      <th style="border: 1px solid #d1d5db; padding: 8px; text-align: left;">Заголовок 3</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td style="border: 1px solid #d1d5db; padding: 8px;">Ячейка 1</td>
+      <td style="border: 1px solid #d1d5db; padding: 8px;">Ячейка 2</td>
+      <td style="border: 1px solid #d1d5db; padding: 8px;">Ячейка 3</td>
+    </tr>
+    <tr>
+      <td style="border: 1px solid #d1d5db; padding: 8px;">Ячейка 4</td>
+      <td style="border: 1px solid #d1d5db; padding: 8px;">Ячейка 5</td>
+      <td style="border: 1px solid #d1d5db; padding: 8px;">Ячейка 6</td>
+    </tr>
+  </tbody>
+</table>`;
+                        setNewCourse({...newCourse, contentRu: (newCourse.contentRu || '') + tableHtml});
+                      }}
+                    >
+                      + Таблица
+                    </Button>
+                    <Button
+                      type="button"
+                      size="sm"
+                      variant="outline"
+                      onClick={() => {
+                        const listHtml = `
+<ul style="margin: 16px 0; padding-left: 20px;">
+  <li>Пункт списка 1</li>
+  <li>Пункт списка 2</li>
+  <li>Пункт списка 3</li>
+</ul>`;
+                        setNewCourse({...newCourse, contentRu: (newCourse.contentRu || '') + listHtml});
+                      }}
+                    >
+                      + Список
+                    </Button>
+                    <Button
+                      type="button"
+                      size="sm"
+                      variant="outline"
+                      onClick={() => {
+                        const headerHtml = `<h3 style="font-size: 18px; font-weight: bold; margin: 16px 0 8px 0;">Заголовок раздела</h3>`;
+                        setNewCourse({...newCourse, contentRu: (newCourse.contentRu || '') + headerHtml});
+                      }}
+                    >
+                      + Заголовок
+                    </Button>
+                  </div>
+                  <textarea
+                    value={newCourse.contentRu || ''}
+                    onChange={(e) => setNewCourse({...newCourse, contentRu: e.target.value})}
+                    className="w-full p-2 border rounded-md font-mono text-sm"
+                    rows={8}
+                    placeholder="Добавить текст содержимого курса здесь... Используйте кнопки выше для добавления таблиц, списков и заголовков."
+                  />
+                </div>
               </div>
               <div className="flex space-x-3 pt-4">
                 <Button 
@@ -2359,55 +2485,150 @@ export default function Home() {
               <div>
                 <label className="block text-sm font-medium mb-1">Добавить текст (English)</label>
                 <div className="space-y-2">
-                  <div className="flex gap-2">
+                  <div className="flex space-x-2">
                     <Button
                       type="button"
-                      variant="outline"
                       size="sm"
+                      variant="outline"
                       onClick={() => {
-                        setCurrentTextFieldType('content');
-                        setShowTableEditor(true);
+                        const tableHtml = `
+<table style="border-collapse: collapse; width: 100%; margin: 16px 0;">
+  <thead>
+    <tr style="background-color: #f3f4f6;">
+      <th style="border: 1px solid #d1d5db; padding: 8px; text-align: left;">Header 1</th>
+      <th style="border: 1px solid #d1d5db; padding: 8px; text-align: left;">Header 2</th>
+      <th style="border: 1px solid #d1d5db; padding: 8px; text-align: left;">Header 3</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td style="border: 1px solid #d1d5db; padding: 8px;">Cell 1</td>
+      <td style="border: 1px solid #d1d5db; padding: 8px;">Cell 2</td>
+      <td style="border: 1px solid #d1d5db; padding: 8px;">Cell 3</td>
+    </tr>
+    <tr>
+      <td style="border: 1px solid #d1d5db; padding: 8px;">Cell 4</td>
+      <td style="border: 1px solid #d1d5db; padding: 8px;">Cell 5</td>
+      <td style="border: 1px solid #d1d5db; padding: 8px;">Cell 6</td>
+    </tr>
+  </tbody>
+</table>`;
+                        setEditingCourse({...editingCourse, content: (editingCourse.content || '') + tableHtml});
                       }}
                     >
-                      <Table className="h-4 w-4 mr-1" />
-                      Insert Table
+                      + Table
+                    </Button>
+                    <Button
+                      type="button"
+                      size="sm"
+                      variant="outline"
+                      onClick={() => {
+                        const listHtml = `
+<ul style="margin: 16px 0; padding-left: 20px;">
+  <li>List item 1</li>
+  <li>List item 2</li>
+  <li>List item 3</li>
+</ul>`;
+                        setEditingCourse({...editingCourse, content: (editingCourse.content || '') + listHtml});
+                      }}
+                    >
+                      + List
+                    </Button>
+                    <Button
+                      type="button"
+                      size="sm"
+                      variant="outline"
+                      onClick={() => {
+                        const headerHtml = `<h3 style="font-size: 18px; font-weight: bold; margin: 16px 0 8px 0;">Section Header</h3>`;
+                        setEditingCourse({...editingCourse, content: (editingCourse.content || '') + headerHtml});
+                      }}
+                    >
+                      + Header
                     </Button>
                   </div>
                   <textarea
                     value={editingCourse.content || ''}
                     onChange={(e) => setEditingCourse({...editingCourse, content: e.target.value})}
-                    className="w-full p-2 border rounded-md"
-                    rows={6}
-                    placeholder="Добавить текст содержимого курса здесь..."
+                    className="w-full p-2 border rounded-md font-mono text-sm"
+                    rows={8}
+                    placeholder="Добавить текст содержимого курса здесь... Используйте кнопки выше для добавления таблиц, списков и заголовков."
                   />
                 </div>
               </div>
               <div>
                 <label className="block text-sm font-medium mb-1">Добавить текст (Russian)</label>
                 <div className="space-y-2">
-                  <div className="flex gap-2">
+                  <div className="flex space-x-2">
                     <Button
                       type="button"
-                      variant="outline"
                       size="sm"
+                      variant="outline"
                       onClick={() => {
-                        setCurrentTextFieldType('contentRu');
-                        setShowTableEditor(true);
+                        const tableHtml = `
+<table style="border-collapse: collapse; width: 100%; margin: 16px 0;">
+  <thead>
+    <tr style="background-color: #f3f4f6;">
+      <th style="border: 1px solid #d1d5db; padding: 8px; text-align: left;">Заголовок 1</th>
+      <th style="border: 1px solid #d1d5db; padding: 8px; text-align: left;">Заголовок 2</th>
+      <th style="border: 1px solid #d1d5db; padding: 8px; text-align: left;">Заголовок 3</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td style="border: 1px solid #d1d5db; padding: 8px;">Ячейка 1</td>
+      <td style="border: 1px solid #d1d5db; padding: 8px;">Ячейка 2</td>
+      <td style="border: 1px solid #d1d5db; padding: 8px;">Ячейка 3</td>
+    </tr>
+    <tr>
+      <td style="border: 1px solid #d1d5db; padding: 8px;">Ячейка 4</td>
+      <td style="border: 1px solid #d1d5db; padding: 8px;">Ячейка 5</td>
+      <td style="border: 1px solid #d1d5db; padding: 8px;">Ячейка 6</td>
+    </tr>
+  </tbody>
+</table>`;
+                        setEditingCourse({...editingCourse, contentRu: (editingCourse.contentRu || '') + tableHtml});
                       }}
                     >
-                      <Table className="h-4 w-4 mr-1" />
-                      Insert Table
+                      + Таблица
+                    </Button>
+                    <Button
+                      type="button"
+                      size="sm"
+                      variant="outline"
+                      onClick={() => {
+                        const listHtml = `
+<ul style="margin: 16px 0; padding-left: 20px;">
+  <li>Пункт списка 1</li>
+  <li>Пункт списка 2</li>
+  <li>Пункт списка 3</li>
+</ul>`;
+                        setEditingCourse({...editingCourse, contentRu: (editingCourse.contentRu || '') + listHtml});
+                      }}
+                    >
+                      + Список
+                    </Button>
+                    <Button
+                      type="button"
+                      size="sm"
+                      variant="outline"
+                      onClick={() => {
+                        const headerHtml = `<h3 style="font-size: 18px; font-weight: bold; margin: 16px 0 8px 0;">Заголовок раздела</h3>`;
+                        setEditingCourse({...editingCourse, contentRu: (editingCourse.contentRu || '') + headerHtml});
+                      }}
+                    >
+                      + Заголовок
                     </Button>
                   </div>
                   <textarea
                     value={editingCourse.contentRu || ''}
                     onChange={(e) => setEditingCourse({...editingCourse, contentRu: e.target.value})}
-                    className="w-full p-2 border rounded-md"
-                    rows={6}
-                    placeholder="Добавить текст содержимого курса здесь..."
+                    className="w-full p-2 border rounded-md font-mono text-sm"
+                    rows={8}
+                    placeholder="Добавить текст содержимого курса здесь... Используйте кнопки выше для добавления таблиц, списков и заголовков."
                   />
                 </div>
               </div>
+
               <div className="flex space-x-3 pt-4">
                 <Button 
                   onClick={async () => {
@@ -2518,23 +2739,149 @@ export default function Home() {
               </div>
               <div>
                 <label className="block text-sm font-medium mb-1">Добавить текст (English)</label>
-                <textarea
-                  value={editingBook.content || ''}
-                  onChange={(e) => setEditingBook({...editingBook, content: e.target.value})}
-                  className="w-full p-2 border rounded-md"
-                  rows={6}
-                  placeholder="Добавить текст содержимого книги здесь..."
-                />
+                <div className="space-y-2">
+                  <div className="flex space-x-2">
+                    <Button
+                      type="button"
+                      size="sm"
+                      variant="outline"
+                      onClick={() => {
+                        const tableHtml = `
+<table style="border-collapse: collapse; width: 100%; margin: 16px 0;">
+  <thead>
+    <tr style="background-color: #f3f4f6;">
+      <th style="border: 1px solid #d1d5db; padding: 8px; text-align: left;">Header 1</th>
+      <th style="border: 1px solid #d1d5db; padding: 8px; text-align: left;">Header 2</th>
+      <th style="border: 1px solid #d1d5db; padding: 8px; text-align: left;">Header 3</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td style="border: 1px solid #d1d5db; padding: 8px;">Cell 1</td>
+      <td style="border: 1px solid #d1d5db; padding: 8px;">Cell 2</td>
+      <td style="border: 1px solid #d1d5db; padding: 8px;">Cell 3</td>
+    </tr>
+    <tr>
+      <td style="border: 1px solid #d1d5db; padding: 8px;">Cell 4</td>
+      <td style="border: 1px solid #d1d5db; padding: 8px;">Cell 5</td>
+      <td style="border: 1px solid #d1d5db; padding: 8px;">Cell 6</td>
+    </tr>
+  </tbody>
+</table>`;
+                        setEditingBook({...editingBook, content: (editingBook.content || '') + tableHtml});
+                      }}
+                    >
+                      + Table
+                    </Button>
+                    <Button
+                      type="button"
+                      size="sm"
+                      variant="outline"
+                      onClick={() => {
+                        const listHtml = `
+<ul style="margin: 16px 0; padding-left: 20px;">
+  <li>List item 1</li>
+  <li>List item 2</li>
+  <li>List item 3</li>
+</ul>`;
+                        setEditingBook({...editingBook, content: (editingBook.content || '') + listHtml});
+                      }}
+                    >
+                      + List
+                    </Button>
+                    <Button
+                      type="button"
+                      size="sm"
+                      variant="outline"
+                      onClick={() => {
+                        const headerHtml = `<h3 style="font-size: 18px; font-weight: bold; margin: 16px 0 8px 0;">Section Header</h3>`;
+                        setEditingBook({...editingBook, content: (editingBook.content || '') + headerHtml});
+                      }}
+                    >
+                      + Header
+                    </Button>
+                  </div>
+                  <textarea
+                    value={editingBook.content || ''}
+                    onChange={(e) => setEditingBook({...editingBook, content: e.target.value})}
+                    className="w-full p-2 border rounded-md font-mono text-sm"
+                    rows={8}
+                    placeholder="Добавить текст содержимого книги здесь... Используйте кнопки выше для добавления таблиц, списков и заголовков."
+                  />
+                </div>
               </div>
               <div>
                 <label className="block text-sm font-medium mb-1">Добавить текст (Russian)</label>
-                <textarea
-                  value={editingBook.contentRu || ''}
-                  onChange={(e) => setEditingBook({...editingBook, contentRu: e.target.value})}
-                  className="w-full p-2 border rounded-md"
-                  rows={6}
-                  placeholder="Добавить текст содержимого книги здесь..."
-                />
+                <div className="space-y-2">
+                  <div className="flex space-x-2">
+                    <Button
+                      type="button"
+                      size="sm"
+                      variant="outline"
+                      onClick={() => {
+                        const tableHtml = `
+<table style="border-collapse: collapse; width: 100%; margin: 16px 0;">
+  <thead>
+    <tr style="background-color: #f3f4f6;">
+      <th style="border: 1px solid #d1d5db; padding: 8px; text-align: left;">Заголовок 1</th>
+      <th style="border: 1px solid #d1d5db; padding: 8px; text-align: left;">Заголовок 2</th>
+      <th style="border: 1px solid #d1d5db; padding: 8px; text-align: left;">Заголовок 3</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td style="border: 1px solid #d1d5db; padding: 8px;">Ячейка 1</td>
+      <td style="border: 1px solid #d1d5db; padding: 8px;">Ячейка 2</td>
+      <td style="border: 1px solid #d1d5db; padding: 8px;">Ячейка 3</td>
+    </tr>
+    <tr>
+      <td style="border: 1px solid #d1d5db; padding: 8px;">Ячейка 4</td>
+      <td style="border: 1px solid #d1d5db; padding: 8px;">Ячейка 5</td>
+      <td style="border: 1px solid #d1d5db; padding: 8px;">Ячейка 6</td>
+    </tr>
+  </tbody>
+</table>`;
+                        setEditingBook({...editingBook, contentRu: (editingBook.contentRu || '') + tableHtml});
+                      }}
+                    >
+                      + Таблица
+                    </Button>
+                    <Button
+                      type="button"
+                      size="sm"
+                      variant="outline"
+                      onClick={() => {
+                        const listHtml = `
+<ul style="margin: 16px 0; padding-left: 20px;">
+  <li>Пункт списка 1</li>
+  <li>Пункт списка 2</li>
+  <li>Пункт списка 3</li>
+</ul>`;
+                        setEditingBook({...editingBook, contentRu: (editingBook.contentRu || '') + listHtml});
+                      }}
+                    >
+                      + Список
+                    </Button>
+                    <Button
+                      type="button"
+                      size="sm"
+                      variant="outline"
+                      onClick={() => {
+                        const headerHtml = `<h3 style="font-size: 18px; font-weight: bold; margin: 16px 0 8px 0;">Заголовок раздела</h3>`;
+                        setEditingBook({...editingBook, contentRu: (editingBook.contentRu || '') + headerHtml});
+                      }}
+                    >
+                      + Заголовок
+                    </Button>
+                  </div>
+                  <textarea
+                    value={editingBook.contentRu || ''}
+                    onChange={(e) => setEditingBook({...editingBook, contentRu: e.target.value})}
+                    className="w-full p-2 border rounded-md font-mono text-sm"
+                    rows={8}
+                    placeholder="Добавить текст содержимого книги здесь... Используйте кнопки выше для добавления таблиц, списков и заголовков."
+                  />
+                </div>
               </div>
               <div className="flex space-x-3 pt-4">
                 <Button 
