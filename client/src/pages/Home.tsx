@@ -894,8 +894,16 @@ export default function Home() {
                   <Card key={course.id} className="p-4 cursor-pointer hover:shadow-md transition-shadow">
                     <CardContent className="p-0">
                       <div className="flex items-center space-x-3">
-                        <div className="w-16 h-16 bg-gradient-to-br from-blue-500 to-purple-600 rounded-lg flex items-center justify-center">
-                          {courseCategoryIcons[course.category as keyof typeof courseCategoryIcons]}
+                        <div className="w-16 h-16 bg-gradient-to-br from-blue-500 to-purple-600 rounded-lg flex items-center justify-center overflow-hidden">
+                          {course.imageUrl ? (
+                            <img 
+                              src={course.imageUrl} 
+                              alt={course.title}
+                              className="w-full h-full object-cover"
+                            />
+                          ) : (
+                            courseCategoryIcons[course.category as keyof typeof courseCategoryIcons]
+                          )}
                         </div>
                         <div className="flex-1">
                           <h4 className="font-semibold text-gray-900">
@@ -961,8 +969,16 @@ export default function Home() {
                   <Card key={purchase.id} className="p-4">
                     <CardContent className="p-0">
                       <div className="flex items-start space-x-3">
-                        <div className="w-12 h-16 bg-gray-200 rounded-lg flex items-center justify-center">
-                          <BookOpen className="h-6 w-6 text-gray-400" />
+                        <div className="w-12 h-16 bg-gray-200 rounded-lg flex items-center justify-center overflow-hidden">
+                          {purchase.book.coverImageUrl ? (
+                            <img 
+                              src={purchase.book.coverImageUrl} 
+                              alt={purchase.book.title}
+                              className="w-full h-full object-cover"
+                            />
+                          ) : (
+                            <BookOpen className="h-6 w-6 text-gray-400" />
+                          )}
                         </div>
                         <div className="flex-1">
                           <div className="flex items-center justify-between mb-1">
@@ -1044,8 +1060,16 @@ export default function Home() {
                 <Card key={book.id} className="p-4">
                   <CardContent className="p-0">
                     <div className="flex items-start space-x-3">
-                      <div className="w-16 h-20 bg-gray-200 rounded-lg flex items-center justify-center">
-                        <BookOpen className="h-8 w-8 text-gray-400" />
+                      <div className="w-16 h-20 bg-gray-200 rounded-lg flex items-center justify-center overflow-hidden">
+                        {book.coverImageUrl ? (
+                          <img 
+                            src={book.coverImageUrl} 
+                            alt={book.title}
+                            className="w-full h-full object-cover"
+                          />
+                        ) : (
+                          <BookOpen className="h-8 w-8 text-gray-400" />
+                        )}
                       </div>
                       <div className="flex-1">
                         <h4 className="font-medium text-gray-900">
@@ -1111,8 +1135,16 @@ export default function Home() {
                   <Card key={userBook.id} className="p-4">
                     <CardContent className="p-0">
                       <div className="flex items-center space-x-3">
-                        <div className="w-12 h-16 bg-gray-200 rounded flex items-center justify-center">
-                          <BookOpen className="h-6 w-6 text-gray-400" />
+                        <div className="w-12 h-16 bg-gray-200 rounded flex items-center justify-center overflow-hidden">
+                          {userBook.book.coverImageUrl ? (
+                            <img 
+                              src={userBook.book.coverImageUrl} 
+                              alt={userBook.book.title}
+                              className="w-full h-full object-cover"
+                            />
+                          ) : (
+                            <BookOpen className="h-6 w-6 text-gray-400" />
+                          )}
                         </div>
                         <div className="flex-1">
                           <div className="flex items-center justify-between mb-1">
