@@ -11,6 +11,7 @@ import { Alert, AlertDescription } from "@/components/ui/alert";
 import { cn } from "@/lib/utils";
 import { useLanguage } from "@/hooks/useLanguage";
 import { useToast } from "@/hooks/use-toast";
+import { ThemeToggle } from "@/components/ThemeToggle";
 import Test from "@/components/Test";
 import type { Course, CourseLesson } from "@/lib/types";
 
@@ -199,6 +200,8 @@ export default function CourseReader() {
                 </span>
                 <Progress value={progressPercent} className="w-20" />
               </div>
+              
+              <ThemeToggle />
               
               <div className="relative" ref={menuRef}>
                 <Button 

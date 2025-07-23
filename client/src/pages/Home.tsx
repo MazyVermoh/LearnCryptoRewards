@@ -48,6 +48,7 @@ import {
   MessageCircle,
   Table
 } from 'lucide-react';
+import { ThemeToggle } from '@/components/ThemeToggle';
 
 // Mock user data - in real app this would come from auth
 const mockUserId = "user123";
@@ -738,17 +739,18 @@ export default function Home() {
   };
 
   return (
-    <div className="max-w-sm mx-auto bg-white min-h-screen relative">
+    <div className="max-w-sm mx-auto bg-background min-h-screen relative">
       {/* Header */}
-      <header className="bg-white border-b border-gray-200 px-4 py-3 sticky top-0 z-50">
+      <header className="bg-background border-b border-border px-4 py-3 sticky top-0 z-50">
         <div className="flex items-center justify-between">
           <div className="flex items-center space-x-3">
             <div className="w-8 h-8 bg-primary rounded-full flex items-center justify-center">
               <GraduationCap className="text-white h-4 w-4" />
             </div>
-            <span className="font-semibold text-lg text-neutral-900">MIND Token</span>
+            <span className="font-semibold text-lg text-foreground">MIND Token</span>
           </div>
-          <div className="flex items-center space-x-4">
+          <div className="flex items-center space-x-3">
+            <ThemeToggle />
             <Select value={language} onValueChange={changeLanguage}>
               <SelectTrigger className="w-16 h-8 text-sm">
                 <SelectValue />
@@ -2017,32 +2019,32 @@ export default function Home() {
       )}
 
       {/* Bottom Navigation */}
-      <nav className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 max-w-sm mx-auto">
+      <nav className="fixed bottom-0 left-0 right-0 bg-background border-t border-border max-w-sm mx-auto">
         <div className="flex">
           <button 
             onClick={() => setActiveView('home')}
-            className={`flex-1 py-3 px-4 text-center ${activeView === 'home' ? 'text-primary' : 'text-neutral-500'}`}
+            className={`flex-1 py-3 px-4 text-center ${activeView === 'home' ? 'text-primary' : 'text-muted-foreground'}`}
           >
             <HomeIcon className="h-5 w-5 mx-auto mb-1" />
             <span className="text-xs">{t('home')}</span>
           </button>
           <button 
             onClick={() => setActiveView('progress')}
-            className={`flex-1 py-3 px-4 text-center ${activeView === 'progress' ? 'text-primary' : 'text-neutral-500'}`}
+            className={`flex-1 py-3 px-4 text-center ${activeView === 'progress' ? 'text-primary' : 'text-muted-foreground'}`}
           >
             <TrendingUp className="h-5 w-5 mx-auto mb-1" />
             <span className="text-xs">{t('progress')}</span>
           </button>
           <button 
             onClick={() => setActiveView('wallet')}
-            className={`flex-1 py-3 px-4 text-center ${activeView === 'wallet' ? 'text-primary' : 'text-neutral-500'}`}
+            className={`flex-1 py-3 px-4 text-center ${activeView === 'wallet' ? 'text-primary' : 'text-muted-foreground'}`}
           >
             <Wallet className="h-5 w-5 mx-auto mb-1" />
             <span className="text-xs">{t('wallet')}</span>
           </button>
           <button 
             onClick={() => setActiveView('profile')}
-            className={`flex-1 py-3 px-4 text-center ${activeView === 'profile' ? 'text-primary' : 'text-neutral-500'}`}
+            className={`flex-1 py-3 px-4 text-center ${activeView === 'profile' ? 'text-primary' : 'text-muted-foreground'}`}
           >
             <User className="h-5 w-5 mx-auto mb-1" />
             <span className="text-xs">{t('profile')}</span>
