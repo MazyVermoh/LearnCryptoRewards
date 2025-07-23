@@ -72,7 +72,7 @@ function CourseLessonsDisplay({ courseId }: { courseId: number }) {
     <div className="space-y-3">
       {lessons.length === 0 ? (
         <div className="p-4 border rounded-lg">
-          <p className="text-gray-600">No lessons yet. Click "Add Lesson" to create your first lesson.</p>
+          <p className="text-muted-foreground">No lessons yet. Click "Add Lesson" to create your first lesson.</p>
         </div>
       ) : (
         lessons.map((lesson: any) => (
@@ -81,9 +81,9 @@ function CourseLessonsDisplay({ courseId }: { courseId: number }) {
               <div className="flex-1">
                 <h4 className="font-medium">{lesson.title}</h4>
                 {lesson.description && (
-                  <p className="text-sm text-gray-600 mt-1">{lesson.description}</p>
+                  <p className="text-sm text-muted-foreground mt-1">{lesson.description}</p>
                 )}
-                <div className="text-xs text-gray-500 mt-2">
+                <div className="text-xs text-muted-foreground mt-2">
                   Duration: {lesson.duration} min • Order: {lesson.orderIndex}
                 </div>
               </div>
@@ -102,7 +102,7 @@ function CourseLessonsDisplay({ courseId }: { courseId: number }) {
       {/* Edit Lesson Modal */}
       {editingLesson && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-lg w-full max-w-4xl max-h-[90vh] overflow-y-auto">
+          <div className="bg-background rounded-lg w-full max-w-4xl max-h-[90vh] overflow-y-auto">
             <div className="p-6 border-b">
               <h3 className="text-lg font-semibold">Edit Lesson: {editingLesson.title}</h3>
             </div>
@@ -172,7 +172,7 @@ function BookChaptersDisplay({ bookId }: { bookId: number }) {
     <div className="space-y-3">
       {chapters.length === 0 ? (
         <div className="p-4 border rounded-lg">
-          <p className="text-gray-600">No chapters yet. Click "Add Chapter" to create your first chapter.</p>
+          <p className="text-muted-foreground">No chapters yet. Click "Add Chapter" to create your first chapter.</p>
         </div>
       ) : (
         chapters.map((chapter: any) => (
@@ -180,10 +180,10 @@ function BookChaptersDisplay({ bookId }: { bookId: number }) {
             <div className="flex justify-between items-start">
               <div className="flex-1">
                 <h4 className="font-medium">{chapter.title}</h4>
-                <div className="text-xs text-gray-500 mt-2">
+                <div className="text-xs text-muted-foreground mt-2">
                   Order: {chapter.orderIndex}
                 </div>
-                <div className="text-sm text-gray-600 mt-2">
+                <div className="text-sm text-muted-foreground mt-2">
                   {chapter.content ? (
                     <div>
                       <strong>Содержимое:</strong> {chapter.content.substring(0, 100)}
@@ -209,7 +209,7 @@ function BookChaptersDisplay({ bookId }: { bookId: number }) {
       {/* Edit Chapter Modal */}
       {editingChapter && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-lg w-full max-w-4xl max-h-[90vh] overflow-y-auto">
+          <div className="bg-background rounded-lg w-full max-w-4xl max-h-[90vh] overflow-y-auto">
             <div className="p-6 border-b">
               <h3 className="text-lg font-semibold">Edit Chapter: {editingChapter.title}</h3>
             </div>
@@ -761,7 +761,7 @@ export default function Home() {
               </SelectContent>
             </Select>
             <div className="relative">
-              <Bell className="h-5 w-5 text-neutral-500" />
+              <Bell className="h-5 w-5 text-muted-foreground" />
               <Badge className="absolute -top-2 -right-2 h-5 w-5 p-0 text-xs">3</Badge>
             </div>
           </div>
@@ -774,7 +774,7 @@ export default function Home() {
           {/* User Profile */}
           <div className="bg-gradient-to-r from-primary to-blue-600 text-white p-4">
             <div className="flex items-center space-x-4">
-          <div className="w-16 h-16 bg-white rounded-full flex items-center justify-center">
+          <div className="w-16 h-16 bg-white dark:bg-gray-800 rounded-full flex items-center justify-center">
             <User className="h-8 w-8 text-primary" />
           </div>
           <div className="flex-1">
@@ -794,7 +794,7 @@ export default function Home() {
 
       {/* Navigation Tabs */}
       <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-        <TabsList className="grid w-full grid-cols-4 bg-white border-b border-gray-200 rounded-none h-auto">
+        <TabsList className="grid w-full grid-cols-4 bg-background border-b border-border rounded-none h-auto">
           <TabsTrigger value="courses" className="flex flex-col py-3 px-4 data-[state=active]:border-b-2 data-[state=active]:border-primary">
             <BookOpen className="h-4 w-4 mb-1" />
             <span className="text-sm">{t('courses')}</span>
@@ -807,7 +807,7 @@ export default function Home() {
             <Gift className="h-4 w-4 mb-1" />
             <span className="text-sm">{t('rewards')}</span>
           </TabsTrigger>
-          <TabsTrigger value="admin" className="flex flex-col py-3 px-4 data-[state=active]:border-b-2 data-[state=active]:border-primary bg-red-100">
+          <TabsTrigger value="admin" className="flex flex-col py-3 px-4 data-[state=active]:border-b-2 data-[state=active]:border-primary bg-red-100 dark:bg-red-900/30">
             <Settings className="h-4 w-4 mb-1" />
             <span className="text-sm font-bold">ADMIN</span>
           </TabsTrigger>
@@ -824,14 +824,14 @@ export default function Home() {
                   <Card key={enrollment.id} className="p-4">
                     <CardContent className="p-0">
                       <div className="flex items-center space-x-3">
-                        <div className="w-12 h-12 bg-gray-200 rounded-lg flex items-center justify-center">
+                        <div className="w-12 h-12 bg-muted rounded-lg flex items-center justify-center">
                           {courseCategoryIcons[enrollment.course.category as keyof typeof courseCategoryIcons]}
                         </div>
                         <div className="flex-1">
-                          <h4 className="font-medium text-gray-900">
+                          <h4 className="font-medium text-foreground">
                             {language === 'ru' && enrollment.course.titleRu ? enrollment.course.titleRu : enrollment.course.title}
                           </h4>
-                          <p className="text-gray-600 text-sm">{t('courseProgress')}: {enrollment.progress}%</p>
+                          <p className="text-muted-foreground text-sm">{t('courseProgress')}: {enrollment.progress}%</p>
                           <Progress value={enrollment.progress} className="mt-2" />
                           <div className="flex items-center space-x-2 mt-2">
                             <Button 
@@ -909,18 +909,18 @@ export default function Home() {
                           )}
                         </div>
                         <div className="flex-1">
-                          <h4 className="font-semibold text-gray-900">
+                          <h4 className="font-semibold text-foreground">
                             {language === 'ru' && course.titleRu ? course.titleRu : course.title}
                           </h4>
-                          <p className="text-sm text-gray-600 mt-1">
+                          <p className="text-sm text-muted-foreground mt-1">
                             {language === 'ru' && course.descriptionRu ? course.descriptionRu : course.description}
                           </p>
                           <div className="flex items-center mt-2 space-x-4">
-                            <span className="text-sm text-gray-500">👨‍🏫 {language === 'ru' && course.instructorRu ? course.instructorRu : course.instructor}</span>
-                            <span className="text-sm text-gray-500">⏱️ {course.duration} min</span>
+                            <span className="text-sm text-muted-foreground">👨‍🏫 {language === 'ru' && course.instructorRu ? course.instructorRu : course.instructor}</span>
+                            <span className="text-sm text-muted-foreground">⏱️ {course.duration} min</span>
                             <div className="flex items-center space-x-1">
                               <Star className="h-4 w-4 text-yellow-400 fill-current" />
-                              <span className="text-sm text-gray-600">{course.rating}</span>
+                              <span className="text-sm text-muted-foreground">{course.rating}</span>
                             </div>
                           </div>
                           <div className="mt-3">
@@ -972,7 +972,7 @@ export default function Home() {
                   <Card key={purchase.id} className="p-4">
                     <CardContent className="p-0">
                       <div className="flex items-start space-x-3">
-                        <div className="w-12 h-16 bg-gray-200 rounded-lg flex items-center justify-center overflow-hidden">
+                        <div className="w-12 h-16 bg-muted rounded-lg flex items-center justify-center overflow-hidden">
                           {purchase.book.coverImageUrl ? (
                             <img 
                               src={purchase.book.coverImageUrl} 
@@ -980,26 +980,26 @@ export default function Home() {
                               className="w-full h-full object-cover"
                             />
                           ) : (
-                            <BookOpen className="h-6 w-6 text-gray-400" />
+                            <BookOpen className="h-6 w-6 text-muted-foreground" />
                           )}
                         </div>
                         <div className="flex-1">
                           <div className="flex items-center justify-between mb-1">
-                            <h4 className="font-medium text-gray-900">
+                            <h4 className="font-medium text-foreground">
                               {language === 'ru' && purchase.book.titleRu ? purchase.book.titleRu : purchase.book.title}
                             </h4>
-                            <span className="text-sm text-gray-600">
+                            <span className="text-sm text-muted-foreground">
                               {purchase.is_completed ? `${t('completed')} 100%` : `${t('completed')} ${purchase.progress || 0}%`}
                             </span>
                           </div>
-                          <p className="text-gray-600 text-sm mb-2">
+                          <p className="text-muted-foreground text-sm mb-2">
                             {language === 'ru' && purchase.book.authorRu ? purchase.book.authorRu : purchase.book.author}
                           </p>
                           <Progress 
                             value={purchase.is_completed ? 100 : (purchase.progress || 0)} 
                             className="mb-2" 
                           />
-                          <p className="text-sm text-gray-500 mb-2">
+                          <p className="text-sm text-muted-foreground mb-2">
                             {purchase.is_completed ? t('completed') : t('inProgress')}
                           </p>
                           <div className="flex items-center space-x-2">
@@ -1022,7 +1022,7 @@ export default function Home() {
           {/* Search Bar */}
           <div className="mb-6">
             <div className="relative">
-              <Search className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
+              <Search className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
               <Input
                 placeholder={t('searchBooks')}
                 value={searchQuery}
@@ -1121,7 +1121,7 @@ export default function Home() {
               return matchesCategory && matchesSearch;
             }).length === 0 && (
               <Card className="p-4">
-                <CardContent className="p-0 text-center text-gray-500">
+                <CardContent className="p-0 text-center text-muted-foreground">
                   <BookOpen className="h-12 w-12 mx-auto mb-2 opacity-50" />
                   <p>{t('noBooksFound')}</p>
                 </CardContent>
@@ -1138,7 +1138,7 @@ export default function Home() {
                   <Card key={userBook.id} className="p-4">
                     <CardContent className="p-0">
                       <div className="flex items-center space-x-3">
-                        <div className="w-12 h-16 bg-gray-200 rounded flex items-center justify-center overflow-hidden">
+                        <div className="w-12 h-16 bg-muted rounded flex items-center justify-center overflow-hidden">
                           {userBook.book.coverImageUrl ? (
                             <img 
                               src={userBook.book.coverImageUrl} 
@@ -1146,26 +1146,26 @@ export default function Home() {
                               className="w-full h-full object-cover"
                             />
                           ) : (
-                            <BookOpen className="h-6 w-6 text-gray-400" />
+                            <BookOpen className="h-6 w-6 text-muted-foreground" />
                           )}
                         </div>
                         <div className="flex-1">
                           <div className="flex items-center justify-between mb-1">
-                            <h4 className="font-medium text-gray-900">
+                            <h4 className="font-medium text-foreground">
                               {language === 'ru' && userBook.book.titleRu ? userBook.book.titleRu : userBook.book.title}
                             </h4>
-                            <span className="text-sm text-gray-600">
+                            <span className="text-sm text-muted-foreground">
                               {userBook.is_completed ? `${t('completed')} 100%` : `${t('completed')} ${userBook.progress || 0}%`}
                             </span>
                           </div>
-                          <p className="text-gray-600 text-sm mb-2">
+                          <p className="text-muted-foreground text-sm mb-2">
                             {language === 'ru' && userBook.book.authorRu ? userBook.book.authorRu : userBook.book.author}
                           </p>
                           <Progress 
                             value={userBook.is_completed ? 100 : (userBook.progress || 0)} 
                             className="mb-2" 
                           />
-                          <p className="text-sm text-gray-500 mb-2">
+                          <p className="text-sm text-muted-foreground mb-2">
                             {userBook.is_completed ? t('completed') : t('inProgress')}
                           </p>
                           <div className="flex items-center space-x-2">
@@ -1185,7 +1185,7 @@ export default function Home() {
               </div>
             ) : (
               <Card className="p-4">
-                <CardContent className="p-0 text-center text-gray-500">
+                <CardContent className="p-0 text-center text-muted-foreground">
                   <BookMarked className="h-12 w-12 mx-auto mb-2 opacity-50" />
                   <p>No books purchased yet</p>
                 </CardContent>
@@ -2055,7 +2055,7 @@ export default function Home() {
       {/* Add Course Dialog */}
       {showAddCourse && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-lg p-6 w-full max-w-md max-h-[90vh] overflow-y-auto">
+          <div className="bg-background rounded-lg p-6 w-full max-w-md max-h-[90vh] overflow-y-auto">
             <h3 className="text-lg font-semibold mb-4">Add New Course</h3>
             <div className="space-y-4">
               <div>
@@ -2287,7 +2287,7 @@ export default function Home() {
       {/* Add Book Dialog */}
       {showAddBook && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-lg p-6 w-full max-w-md max-h-[90vh] overflow-y-auto">
+          <div className="bg-background rounded-lg p-6 w-full max-w-md max-h-[90vh] overflow-y-auto">
             <h3 className="text-lg font-semibold mb-4">Add New Book</h3>
             <div className="space-y-4">
               <div>
@@ -2523,7 +2523,7 @@ export default function Home() {
       {/* User Details Dialog */}
       {showUserDetails && selectedUser && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-lg p-6 w-full max-w-md">
+          <div className="bg-background rounded-lg p-6 w-full max-w-md">
             <h3 className="text-lg font-semibold mb-4">User Details</h3>
             <div className="space-y-3">
               <div>
@@ -2552,7 +2552,7 @@ export default function Home() {
       {/* Edit Course Dialog */}
       {editingCourse && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-lg p-6 w-full max-w-md max-h-[90vh] overflow-y-auto">
+          <div className="bg-background rounded-lg p-6 w-full max-w-md max-h-[90vh] overflow-y-auto">
             <h3 className="text-lg font-semibold mb-4">Edit Course</h3>
             <div className="space-y-4">
               <div>
@@ -2814,7 +2814,7 @@ export default function Home() {
       {/* Edit Book Dialog */}
       {editingBook && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-lg p-6 w-full max-w-md max-h-[90vh] overflow-y-auto">
+          <div className="bg-background rounded-lg p-6 w-full max-w-md max-h-[90vh] overflow-y-auto">
             <h3 className="text-lg font-semibold mb-4">Edit Book</h3>
             <div className="space-y-4">
               <div>
@@ -3076,7 +3076,7 @@ export default function Home() {
       {/* Course Content Management Modal */}
       {editingCourseContent && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-lg w-full max-w-4xl max-h-[90vh] overflow-y-auto">
+          <div className="bg-background rounded-lg w-full max-w-4xl max-h-[90vh] overflow-y-auto">
             <div className="p-6 border-b">
               <h3 className="text-lg font-semibold">Manage Course Content: {editingCourseContent.title}</h3>
             </div>
@@ -3134,7 +3134,7 @@ export default function Home() {
       {/* Book Content Management Modal */}
       {editingBookContent && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-lg w-full max-w-4xl max-h-[90vh] overflow-y-auto">
+          <div className="bg-background rounded-lg w-full max-w-4xl max-h-[90vh] overflow-y-auto">
             <div className="p-6 border-b">
               <h3 className="text-lg font-semibold">Manage Book Content: {editingBookContent.title}</h3>
             </div>
@@ -3188,7 +3188,7 @@ export default function Home() {
       {/* Add Lesson Modal */}
       {addingLesson && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-lg w-full max-w-2xl max-h-[90vh] overflow-y-auto">
+          <div className="bg-background rounded-lg w-full max-w-2xl max-h-[90vh] overflow-y-auto">
             <div className="p-6 border-b">
               <h3 className="text-lg font-semibold">Add New Lesson</h3>
             </div>
@@ -3307,7 +3307,7 @@ export default function Home() {
       {/* Add Chapter Modal */}
       {addingChapter && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-lg w-full max-w-2xl max-h-[90vh] overflow-y-auto">
+          <div className="bg-background rounded-lg w-full max-w-2xl max-h-[90vh] overflow-y-auto">
             <div className="p-6 border-b">
               <h3 className="text-lg font-semibold">Add New Chapter</h3>
             </div>
@@ -3388,7 +3388,7 @@ export default function Home() {
       {/* Manage Book Chapters Modal */}
       {managingBookChapters && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-lg p-6 w-full max-w-md">
+          <div className="bg-background rounded-lg p-6 w-full max-w-md">
             <h3 className="text-lg font-semibold mb-4">Generate Chapters for: {managingBookChapters.title}</h3>
             <div className="space-y-4">
               <div>
@@ -3447,7 +3447,7 @@ export default function Home() {
       {/* Manage Course Chapters Modal */}
       {managingCourseChapters && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-lg p-6 w-full max-w-md">
+          <div className="bg-background rounded-lg p-6 w-full max-w-md">
             <h3 className="text-lg font-semibold mb-4">Generate Lessons for: {managingCourseChapters.title}</h3>
             <div className="space-y-4">
               <div>
