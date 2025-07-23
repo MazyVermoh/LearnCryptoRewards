@@ -45,10 +45,7 @@ export function ContentVisibilityManager() {
 
   const updateCourseMutation = useMutation({
     mutationFn: async ({ id, isVisible }: { id: number; isVisible: boolean }) => {
-      return apiRequest(`/api/admin/courses/${id}/visibility`, {
-        method: 'PATCH',
-        body: JSON.stringify({ isVisible })
-      });
+      return apiRequest('PATCH', `/api/admin/courses/${id}/visibility`, { isVisible });
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['/api/admin/courses'] });
@@ -69,10 +66,7 @@ export function ContentVisibilityManager() {
 
   const updateBookMutation = useMutation({
     mutationFn: async ({ id, isVisible }: { id: number; isVisible: boolean }) => {
-      return apiRequest(`/api/admin/books/${id}/visibility`, {
-        method: 'PATCH',
-        body: JSON.stringify({ isVisible })
-      });
+      return apiRequest('PATCH', `/api/admin/books/${id}/visibility`, { isVisible });
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['/api/admin/books'] });
