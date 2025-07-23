@@ -12,7 +12,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import TableEditor from '@/components/TableEditor';
+import { TableEditor } from '@/components/admin/TableEditor';
 import { 
   GraduationCap, 
   BookOpen, 
@@ -383,7 +383,30 @@ export default function Home() {
   const [managingCourseChapters, setManagingCourseChapters] = useState(null);
   const [numberOfChapters, setNumberOfChapters] = useState(5);
   const [showTableEditor, setShowTableEditor] = useState(false);
-  const [currentTextFieldType, setCurrentTextFieldType] = useState<'content' | 'contentRu' | null>(null);
+  const [currentEditingField, setCurrentEditingField] = useState<{
+    type: 'course' | 'book';
+    field: 'content' | 'contentRu';
+    target: 'new' | 'edit';
+  } | null>(null);
+
+  // Handle table insertion from TableEditor
+  const handleTableInsert = (tableHtml: string) => {
+    if (!currentEditingField) return;
+
+    const { type, field, target } = currentEditingField;
+    
+    if (type === 'course' && target === 'new') {
+      const currentContent = newCourse[field] || '';
+      setNewCourse({...newCourse, [field]: currentContent + tableHtml});
+    } else if (type === 'book' && target === 'new') {
+      const currentContent = newBook[field] || '';
+      setNewBook({...newBook, [field]: currentContent + tableHtml});
+    }
+    // Add handling for edit mode if needed
+    
+    setShowTableEditor(false);
+    setCurrentEditingField(null);
+  };
 
   // Enroll in course mutation
   const enrollMutation = useMutation({
@@ -2090,31 +2113,15 @@ export default function Home() {
                       size="sm"
                       variant="outline"
                       onClick={() => {
-                        const tableHtml = `
-<table style="border-collapse: collapse; width: 100%; margin: 16px 0;">
-  <thead>
-    <tr style="background-color: #f3f4f6;">
-      <th style="border: 1px solid #d1d5db; padding: 8px; text-align: left;">Header 1</th>
-      <th style="border: 1px solid #d1d5db; padding: 8px; text-align: left;">Header 2</th>
-      <th style="border: 1px solid #d1d5db; padding: 8px; text-align: left;">Header 3</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td style="border: 1px solid #d1d5db; padding: 8px;">Cell 1</td>
-      <td style="border: 1px solid #d1d5db; padding: 8px;">Cell 2</td>
-      <td style="border: 1px solid #d1d5db; padding: 8px;">Cell 3</td>
-    </tr>
-    <tr>
-      <td style="border: 1px solid #d1d5db; padding: 8px;">Cell 4</td>
-      <td style="border: 1px solid #d1d5db; padding: 8px;">Cell 5</td>
-      <td style="border: 1px solid #d1d5db; padding: 8px;">Cell 6</td>
-    </tr>
-  </tbody>
-</table>`;
-                        setNewCourse({...newCourse, content: (newCourse.content || '') + tableHtml});
+                        setCurrentEditingField({
+                          type: 'course',
+                          field: 'content',
+                          target: 'new'
+                        });
+                        setShowTableEditor(true);
                       }}
                     >
+                      <Table className="h-3 w-3 mr-1" />
                       + Table
                     </Button>
                     <Button
@@ -2163,31 +2170,15 @@ export default function Home() {
                       size="sm"
                       variant="outline"
                       onClick={() => {
-                        const tableHtml = `
-<table style="border-collapse: collapse; width: 100%; margin: 16px 0;">
-  <thead>
-    <tr style="background-color: #f3f4f6;">
-      <th style="border: 1px solid #d1d5db; padding: 8px; text-align: left;">Заголовок 1</th>
-      <th style="border: 1px solid #d1d5db; padding: 8px; text-align: left;">Заголовок 2</th>
-      <th style="border: 1px solid #d1d5db; padding: 8px; text-align: left;">Заголовок 3</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td style="border: 1px solid #d1d5db; padding: 8px;">Ячейка 1</td>
-      <td style="border: 1px solid #d1d5db; padding: 8px;">Ячейка 2</td>
-      <td style="border: 1px solid #d1d5db; padding: 8px;">Ячейка 3</td>
-    </tr>
-    <tr>
-      <td style="border: 1px solid #d1d5db; padding: 8px;">Ячейка 4</td>
-      <td style="border: 1px solid #d1d5db; padding: 8px;">Ячейка 5</td>
-      <td style="border: 1px solid #d1d5db; padding: 8px;">Ячейка 6</td>
-    </tr>
-  </tbody>
-</table>`;
-                        setNewCourse({...newCourse, contentRu: (newCourse.contentRu || '') + tableHtml});
+                        setCurrentEditingField({
+                          type: 'course',
+                          field: 'contentRu',
+                          target: 'new'
+                        });
+                        setShowTableEditor(true);
                       }}
                     >
+                      <Table className="h-3 w-3 mr-1" />
                       + Таблица
                     </Button>
                     <Button
@@ -2344,23 +2335,117 @@ export default function Home() {
               </div>
               <div>
                 <label className="block text-sm font-medium mb-1">Добавить текст (English)</label>
-                <textarea
-                  value={newBook.content || ''}
-                  onChange={(e) => setNewBook({...newBook, content: e.target.value})}
-                  className="w-full p-2 border rounded-md"
-                  rows={6}
-                  placeholder="Добавить текст содержимого книги здесь..."
-                />
+                <div className="space-y-2">
+                  <div className="flex space-x-2">
+                    <Button
+                      type="button"
+                      size="sm"
+                      variant="outline"
+                      onClick={() => {
+                        setCurrentEditingField({
+                          type: 'book',
+                          field: 'content',
+                          target: 'new'
+                        });
+                        setShowTableEditor(true);
+                      }}
+                    >
+                      <Table className="h-3 w-3 mr-1" />
+                      + Table
+                    </Button>
+                    <Button
+                      type="button"
+                      size="sm"
+                      variant="outline"
+                      onClick={() => {
+                        const listHtml = `
+<ul style="margin: 16px 0; padding-left: 20px;">
+  <li>List item 1</li>
+  <li>List item 2</li>
+  <li>List item 3</li>
+</ul>`;
+                        setNewBook({...newBook, content: (newBook.content || '') + listHtml});
+                      }}
+                    >
+                      + List
+                    </Button>
+                    <Button
+                      type="button"
+                      size="sm"
+                      variant="outline"
+                      onClick={() => {
+                        const headerHtml = `<h3 style="font-size: 18px; font-weight: bold; margin: 16px 0 8px 0;">Section Header</h3>`;
+                        setNewBook({...newBook, content: (newBook.content || '') + headerHtml});
+                      }}
+                    >
+                      + Header
+                    </Button>
+                  </div>
+                  <textarea
+                    value={newBook.content || ''}
+                    onChange={(e) => setNewBook({...newBook, content: e.target.value})}
+                    className="w-full p-2 border rounded-md font-mono text-sm"
+                    rows={8}
+                    placeholder="Добавить текст содержимого книги здесь... Используйте кнопки выше для добавления таблиц, списков и заголовков."
+                  />
+                </div>
               </div>
               <div>
                 <label className="block text-sm font-medium mb-1">Добавить текст (Russian)</label>
-                <textarea
-                  value={newBook.contentRu || ''}
-                  onChange={(e) => setNewBook({...newBook, contentRu: e.target.value})}
-                  className="w-full p-2 border rounded-md"
-                  rows={6}
-                  placeholder="Добавить текст содержимого книги здесь..."
-                />
+                <div className="space-y-2">
+                  <div className="flex space-x-2">
+                    <Button
+                      type="button"
+                      size="sm"
+                      variant="outline"
+                      onClick={() => {
+                        setCurrentEditingField({
+                          type: 'book',
+                          field: 'contentRu',
+                          target: 'new'
+                        });
+                        setShowTableEditor(true);
+                      }}
+                    >
+                      <Table className="h-3 w-3 mr-1" />
+                      + Таблица
+                    </Button>
+                    <Button
+                      type="button"
+                      size="sm"
+                      variant="outline"
+                      onClick={() => {
+                        const listHtml = `
+<ul style="margin: 16px 0; padding-left: 20px;">
+  <li>Пункт списка 1</li>
+  <li>Пункт списка 2</li>
+  <li>Пункт списка 3</li>
+</ul>`;
+                        setNewBook({...newBook, contentRu: (newBook.contentRu || '') + listHtml});
+                      }}
+                    >
+                      + Список
+                    </Button>
+                    <Button
+                      type="button"
+                      size="sm"
+                      variant="outline"
+                      onClick={() => {
+                        const headerHtml = `<h3 style="font-size: 18px; font-weight: bold; margin: 16px 0 8px 0;">Заголовок раздела</h3>`;
+                        setNewBook({...newBook, contentRu: (newBook.contentRu || '') + headerHtml});
+                      }}
+                    >
+                      + Заголовок
+                    </Button>
+                  </div>
+                  <textarea
+                    value={newBook.contentRu || ''}
+                    onChange={(e) => setNewBook({...newBook, contentRu: e.target.value})}
+                    className="w-full p-2 border rounded-md font-mono text-sm"
+                    rows={8}
+                    placeholder="Добавить текст содержимого книги здесь... Используйте кнопки выше для добавления таблиц, списков и заголовков."
+                  />
+                </div>
               </div>
               <div className="flex space-x-3 pt-4">
                 <Button 
@@ -3352,29 +3437,15 @@ export default function Home() {
       )}
 
       {/* Table Editor Modal */}
-      {showTableEditor && (
-        <TableEditor
-          onInsertTable={(tableHtml) => {
-            if (currentTextFieldType === 'content' && editingCourse) {
-              setEditingCourse({
-                ...editingCourse,
-                content: (editingCourse.content || '') + '\n\n' + tableHtml
-              });
-            } else if (currentTextFieldType === 'contentRu' && editingCourse) {
-              setEditingCourse({
-                ...editingCourse,
-                contentRu: (editingCourse.contentRu || '') + '\n\n' + tableHtml
-              });
-            }
-            setShowTableEditor(false);
-            setCurrentTextFieldType(null);
-          }}
-          onClose={() => {
-            setShowTableEditor(false);
-            setCurrentTextFieldType(null);
-          }}
-        />
-      )}
+      <TableEditor
+        isOpen={showTableEditor}
+        onClose={() => {
+          setShowTableEditor(false);
+          setCurrentEditingField(null);
+        }}
+        onInsert={handleTableInsert}
+        language={currentEditingField?.field?.includes('Ru') ? 'ru' : 'en'}
+      />
 
     </div>
   );
