@@ -47,6 +47,9 @@ import {
   type InsertLessonTest,
   type TestAttempt,
   type InsertTestAttempt,
+  textContent,
+  type TextContent,
+  type InsertTextContent,
 } from "@shared/schema";
 import { db } from "./db";
 import { eq, desc, asc, and, sql, like } from "drizzle-orm";
@@ -157,6 +160,14 @@ export interface IStorage {
   getAllBooksForAdmin(): Promise<Book[]>;
   updateCourseVisibility(courseId: number, isVisible: boolean): Promise<void>;
   updateBookVisibility(bookId: number, isVisible: boolean): Promise<void>;
+
+  // Text content management operations
+  getAllTextContent(): Promise<TextContent[]>;
+  getTextContentByKey(key: string): Promise<TextContent | undefined>;
+  getTextContentByCategory(category: string): Promise<TextContent[]>;
+  createTextContent(content: InsertTextContent): Promise<TextContent>;
+  updateTextContent(id: number, content: Partial<InsertTextContent>): Promise<TextContent>;
+  deleteTextContent(id: number): Promise<void>;
 }
 
 export class DatabaseStorage implements IStorage {
@@ -914,6 +925,40 @@ export class DatabaseStorage implements IStorage {
       .update(books)
       .set({ isVisible, updatedAt: new Date() })
       .where(eq(books.id, bookId));
+  }
+
+  // Text content management operations
+  async getAllTextContent(): Promise<TextContent[]> {
+    return await db.select().from(textContent).orderBy(asc(textContent.category), asc(textContent.key));
+  }
+
+  async getTextContentByKey(key: string): Promise<TextContent | undefined> {
+    const [content] = await db.select().from(textContent).where(eq(textContent.key, key));
+    return content;
+  }
+
+  async getTextContentByCategory(category: string): Promise<TextContent[]> {
+    return await db.select().from(textContent)
+      .where(eq(textContent.category, category))
+      .orderBy(asc(textContent.key));
+  }
+
+  async createTextContent(content: InsertTextContent): Promise<TextContent> {
+    const [newContent] = await db.insert(textContent).values(content).returning();
+    return newContent;
+  }
+
+  async updateTextContent(id: number, content: Partial<InsertTextContent>): Promise<TextContent> {
+    const [updatedContent] = await db
+      .update(textContent)
+      .set({ ...content, updatedAt: new Date() })
+      .where(eq(textContent.id, id))
+      .returning();
+    return updatedContent;
+  }
+
+  async deleteTextContent(id: number): Promise<void> {
+    await db.delete(textContent).where(eq(textContent.id, id));
   }
 }
 

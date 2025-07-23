@@ -438,3 +438,18 @@ export type LessonTest = typeof lessonTests.$inferSelect;
 export type InsertLessonTest = z.infer<typeof insertLessonTestSchema>;
 export type TestAttempt = typeof testAttempts.$inferSelect;
 export type InsertTestAttempt = z.infer<typeof insertTestAttemptSchema>;
+
+// Text content management table
+export const textContent = pgTable('text_content', {
+  id: serial('id').primaryKey(),
+  key: varchar('key', { length: 255 }).notNull().unique(),
+  textEn: text('text_en').notNull(),
+  textRu: text('text_ru').notNull(),
+  category: varchar('category', { length: 100 }).notNull().default('general'),
+  description: text('description'),
+  updatedAt: timestamp('updated_at').defaultNow().notNull(),
+});
+
+export const insertTextContentSchema = createInsertSchema(textContent);
+export type TextContent = typeof textContent.$inferSelect;
+export type InsertTextContent = z.infer<typeof insertTextContentSchema>;

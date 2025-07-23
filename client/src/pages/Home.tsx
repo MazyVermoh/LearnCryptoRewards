@@ -7,6 +7,7 @@ import { useToast } from '@/hooks/use-toast';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { ContentVisibilityManager } from '@/components/admin/ContentVisibilityManager';
+import { TextContentManager } from '@/components/admin/TextContentManager';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Badge } from '@/components/ui/badge';
@@ -1425,6 +1426,13 @@ export default function Home() {
                 <Settings className="h-5 w-5 mb-1" />
                 Manage Visibility
               </Button>
+              <Button 
+                className="bg-indigo-600 text-white p-3 h-auto flex flex-col"
+                onClick={() => setAdminView('text-content')}
+              >
+                <Globe className="h-5 w-5 mb-1" />
+                Manage Text
+              </Button>
             </div>
           </div>
 
@@ -1472,6 +1480,13 @@ export default function Home() {
                 onClick={() => setAdminView('visibility')}
               >
                 Visibility
+              </Button>
+              <Button
+                variant={adminView === 'text-content' ? "default" : "outline"}
+                size="sm"
+                onClick={() => setAdminView('text-content')}
+              >
+                Text
               </Button>
             </div>
           </div>
@@ -1549,6 +1564,10 @@ export default function Home() {
 
           {adminView === 'visibility' && (
             <ContentVisibilityManager />
+          )}
+
+          {adminView === 'text-content' && (
+            <TextContentManager />
           )}
 
           {adminView === 'users' && (

@@ -24,6 +24,7 @@ import {
   insertChapterTestSchema,
   insertLessonTestSchema,
   insertTestAttemptSchema,
+  insertTextContentSchema,
 } from "@shared/schema";
 
 export async function registerRoutes(app: Express): Promise<Server> {
@@ -912,6 +913,70 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error) {
       console.error("Error checking test status:", error);
       res.status(500).json({ error: "Failed to check test status" });
+    }
+  });
+
+  // Text Content Management Routes
+  app.get("/api/admin/text-content", async (req, res) => {
+    try {
+      const { category } = req.query;
+      let content;
+      if (category) {
+        content = await storage.getTextContentByCategory(category as string);
+      } else {
+        content = await storage.getAllTextContent();
+      }
+      res.json(content);
+    } catch (error) {
+      console.error("Error fetching text content:", error);
+      res.status(500).json({ error: "Failed to fetch text content" });
+    }
+  });
+
+  app.get("/api/text-content/:key", async (req, res) => {
+    try {
+      const content = await storage.getTextContentByKey(req.params.key);
+      if (!content) {
+        return res.status(404).json({ error: "Text content not found" });
+      }
+      res.json(content);
+    } catch (error) {
+      console.error("Error fetching text content:", error);
+      res.status(500).json({ error: "Failed to fetch text content" });
+    }
+  });
+
+  app.post("/api/admin/text-content", async (req, res) => {
+    try {
+      const contentData = insertTextContentSchema.parse(req.body);
+      const content = await storage.createTextContent(contentData);
+      res.json(content);
+    } catch (error) {
+      console.error("Error creating text content:", error);
+      res.status(500).json({ error: "Failed to create text content" });
+    }
+  });
+
+  app.put("/api/admin/text-content/:id", async (req, res) => {
+    try {
+      const id = parseInt(req.params.id);
+      const contentData = req.body;
+      const content = await storage.updateTextContent(id, contentData);
+      res.json(content);
+    } catch (error) {
+      console.error("Error updating text content:", error);
+      res.status(500).json({ error: "Failed to update text content" });
+    }
+  });
+
+  app.delete("/api/admin/text-content/:id", async (req, res) => {
+    try {
+      const id = parseInt(req.params.id);
+      await storage.deleteTextContent(id);
+      res.json({ success: true });
+    } catch (error) {
+      console.error("Error deleting text content:", error);
+      res.status(500).json({ error: "Failed to delete text content" });
     }
   });
 
