@@ -6,8 +6,8 @@ import { setupVite, serveStatic, log } from "./vite";
 let telegramBot: any = null;
 
 const app = express();
-app.use(express.json());
-app.use(express.urlencoded({ extended: false }));
+app.use(express.json({ limit: '50mb' }));
+app.use(express.urlencoded({ extended: false, limit: '50mb' }));
 
 // Root path health check for deployment health checks
 // This must be defined BEFORE other middleware to ensure it gets priority
