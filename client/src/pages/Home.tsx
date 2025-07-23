@@ -13,6 +13,7 @@ import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { TableEditor } from '@/components/admin/TableEditor';
+import { ImageUpload } from '@/components/admin/ImageUpload';
 import { 
   GraduationCap, 
   BookOpen, 
@@ -355,7 +356,8 @@ export default function Home() {
     instructorRu: '',
     category: 'mind-thinking',
     duration: 60,
-    price: '0'
+    price: '0',
+    imageUrl: ''
   });
   const [newBook, setNewBook] = useState({
     title: '',
@@ -366,7 +368,8 @@ export default function Home() {
     authorRu: '',
     category: 'psychology-thinking-development',
     pages: 200,
-    price: '0'
+    price: '0',
+    coverImageUrl: ''
   });
   
   // Admin view states
@@ -2105,6 +2108,13 @@ export default function Home() {
                 />
               </div>
               <div>
+                <ImageUpload
+                  label="Course Image"
+                  currentImageUrl={newCourse.imageUrl}
+                  onImageChange={(url) => setNewCourse({...newCourse, imageUrl: url})}
+                />
+              </div>
+              <div>
                 <label className="block text-sm font-medium mb-1">Добавить текст (English)</label>
                 <div className="space-y-2">
                   <div className="flex space-x-2">
@@ -2331,6 +2341,13 @@ export default function Home() {
                   onChange={(e) => setNewBook({...newBook, pages: Number(e.target.value)})}
                   className="w-full p-2 border rounded-md"
                   placeholder="200"
+                />
+              </div>
+              <div>
+                <ImageUpload
+                  label="Book Cover Image"
+                  currentImageUrl={newBook.coverImageUrl}
+                  onImageChange={(url) => setNewBook({...newBook, coverImageUrl: url})}
                 />
               </div>
               <div>
@@ -2565,6 +2582,13 @@ export default function Home() {
                   onChange={(e) => setEditingCourse({...editingCourse, duration: Number(e.target.value) || 0})}
                   className="w-full p-2 border rounded-md"
                   min="0"
+                />
+              </div>
+              <div>
+                <ImageUpload
+                  label="Course Image"
+                  currentImageUrl={editingCourse.imageUrl}
+                  onImageChange={(url) => setEditingCourse({...editingCourse, imageUrl: url})}
                 />
               </div>
               <div>
@@ -2820,6 +2844,13 @@ export default function Home() {
                   onChange={(e) => setEditingBook({...editingBook, pages: Number(e.target.value) || 0})}
                   className="w-full p-2 border rounded-md"
                   min="0"
+                />
+              </div>
+              <div>
+                <ImageUpload
+                  label="Book Cover Image"
+                  currentImageUrl={editingBook.coverImageUrl}
+                  onImageChange={(url) => setEditingBook({...editingBook, coverImageUrl: url})}
                 />
               </div>
               <div>
