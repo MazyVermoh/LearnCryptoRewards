@@ -331,9 +331,14 @@ export default function BookReader() {
               </CardHeader>
               <CardContent>
                 <div className="prose dark:prose-invert max-w-none">
-                  <div className="whitespace-pre-wrap text-gray-800 dark:text-gray-200 leading-relaxed text-lg">
-                    {language === "ru" ? currentChapter.contentRu || currentChapter.content : currentChapter.content}
-                  </div>
+                  <div 
+                    className="text-gray-800 dark:text-gray-200 leading-relaxed text-lg"
+                    dangerouslySetInnerHTML={{
+                      __html: language === "ru" 
+                        ? currentChapter.contentRu || currentChapter.content || "Содержимое главы пока не добавлено."
+                        : currentChapter.content || "Chapter content will be available soon."
+                    }}
+                  />
                   {(!currentChapter.content && !currentChapter.contentRu) && (
                     <div className="text-center text-gray-500 py-8">
                       <p>Содержимое главы пока не добавлено</p>
