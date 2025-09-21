@@ -1,0 +1,632 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EduCrypto Bot - Telegram Mini App</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#3B82F6',
+                        secondary: '#10B981',
+                        accent: '#F59E0B',
+                        neutral: {
+                            50: '#F8FAFC',
+                            500: '#64748B',
+                            900: '#1E293B'
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'system-ui', 'sans-serif']
+                    }
+                }
+            }
+        }
+    </script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+</head>
+<body class="bg-neutral-50 font-sans">
+    <!-- @COMPONENT: MobileApp [main container] -->
+    <div class="max-w-sm mx-auto bg-white min-h-screen relative">
+        
+        <!-- @COMPONENT: Header [fixed navigation] -->
+        <header class="bg-white border-b border-gray-200 px-4 py-3 sticky top-0 z-50">
+            <div class="flex items-center justify-between">
+                <div class="flex items-center space-x-3">
+                    <div class="w-8 h-8 bg-primary rounded-full flex items-center justify-center">
+                        <i class="fas fa-graduation-cap text-white text-sm"></i>
+                    </div>
+                    <span class="font-semibold text-lg text-neutral-900">EduCrypto</span>
+                </div>
+                <div class="flex items-center space-x-4">
+                    <!-- @STATE: language selector dropdown -->
+                    <select class="text-sm border border-gray-300 rounded px-2 py-1" data-implementation="Language switcher">
+                        <option value="en">EN</option>
+                        <option value="ru">RU</option>
+                    </select>
+                    <!-- @STATE: notifications badge -->
+                    <div class="relative">
+                        <i class="fas fa-bell text-neutral-500 text-lg"></i>
+                        <span class="absolute -top-2 -right-2 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">3</span>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <!-- @COMPONENT: UserProfile [profile section] -->
+        <div class="bg-gradient-to-r from-primary to-blue-600 text-white p-4">
+            <div class="flex items-center space-x-4">
+                <!-- Profile image not guaranteed to be square -->
+                <img src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-4.0.3&auto=format&fit=crop&w=150&h=150" 
+                     alt="User profile" 
+                     class="w-16 h-16 rounded-full object-cover border-2 border-white" data-mock="true">
+                <div class="flex-1">
+                    <h2 class="font-semibold text-lg" data-bind="user.name">Alex Johnson</h2>
+                    <p class="text-blue-100 text-sm" data-bind="user.level">Level 12 Explorer</p>
+                    <div class="flex items-center space-x-2 mt-1">
+                        <i class="fas fa-coins text-accent"></i>
+                        <span class="font-medium" data-bind="user.tokens">2,847 EDU</span>
+                    </div>
+                </div>
+                <div class="text-right">
+                    <div class="text-sm text-blue-100">Today's Steps</div>
+                    <div class="text-2xl font-bold" data-bind="user.steps">8,420</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- @COMPONENT: NavigationTabs [main navigation] -->
+        <nav class="bg-white border-b border-gray-200">
+            <div class="flex">
+                <button class="flex-1 py-3 px-4 text-center border-b-2 border-primary text-primary font-medium text-sm" data-tab="courses">
+                    <i class="fas fa-book-open block mb-1"></i>
+                    Courses
+                </button>
+                <button class="flex-1 py-3 px-4 text-center border-b-2 border-transparent text-neutral-500 hover:text-neutral-700 font-medium text-sm" data-tab="library">
+                    <i class="fas fa-books block mb-1"></i>
+                    Library
+                </button>
+                <button class="flex-1 py-3 px-4 text-center border-b-2 border-transparent text-neutral-500 hover:text-neutral-700 font-medium text-sm" data-tab="rewards">
+                    <i class="fas fa-gift block mb-1"></i>
+                    Rewards
+                </button>
+                <button class="flex-1 py-3 px-4 text-center border-b-2 border-transparent text-neutral-500 hover:text-neutral-700 font-medium text-sm" data-tab="admin">
+                    <i class="fas fa-cog block mb-1"></i>
+                    Admin
+                </button>
+            </div>
+        </nav>
+
+        <!-- @COMPONENT: TabContent [dynamic content area] -->
+        <div class="p-4 pb-20">
+            
+            <!-- @COMPONENT: CoursesSection [courses tab content] -->
+            <div id="courses-tab" class="tab-content">
+                
+                <!-- Course Categories -->
+                <div class="mb-6">
+                    <h3 class="text-lg font-semibold mb-3">Browse Categories</h3>
+                    <div class="grid grid-cols-2 gap-3">
+                        <div class="bg-blue-50 p-4 rounded-lg border border-blue-200">
+                            <i class="fas fa-briefcase text-blue-600 text-2xl mb-2"></i>
+                            <h4 class="font-medium text-blue-900">Business</h4>
+                            <p class="text-blue-700 text-sm">24 courses</p>
+                        </div>
+                        <div class="bg-green-50 p-4 rounded-lg border border-green-200">
+                            <i class="fas fa-dumbbell text-green-600 text-2xl mb-2"></i>
+                            <h4 class="font-medium text-green-900">Fitness</h4>
+                            <p class="text-green-700 text-sm">18 courses</p>
+                        </div>
+                        <div class="bg-yellow-50 p-4 rounded-lg border border-yellow-200">
+                            <i class="fas fa-bitcoin text-yellow-600 text-2xl mb-2"></i>
+                            <h4 class="font-medium text-yellow-900">Crypto</h4>
+                            <p class="text-yellow-700 text-sm">12 courses</p>
+                        </div>
+                        <div class="bg-purple-50 p-4 rounded-lg border border-purple-200">
+                            <i class="fas fa-brain text-purple-600 text-2xl mb-2"></i>
+                            <h4 class="font-medium text-purple-900">Self-Dev</h4>
+                            <p class="text-purple-700 text-sm">31 courses</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Featured Courses -->
+                <div class="mb-6">
+                    <h3 class="text-lg font-semibold mb-3">Featured Courses</h3>
+                    <!-- @MAP: featuredCourses.map(course => ( -->
+                    <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-4 mb-3">
+                        <div class="flex items-start space-x-3">
+                            <!-- A professional business meeting with people in suits discussing charts -->
+                            <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?ixlib=rb-4.0.3&auto=format&fit=crop&w=100&h=100" 
+                                 alt="Business strategy course" 
+                                 class="w-16 h-16 rounded-lg object-cover" data-mock="true">
+                            <div class="flex-1">
+                                <h4 class="font-medium text-gray-900" data-bind="course.title">Advanced Business Strategy</h4>
+                                <p class="text-gray-600 text-sm mb-2" data-bind="course.instructor">By Sarah Chen</p>
+                                <div class="flex items-center space-x-2 mb-2">
+                                    <div class="flex">
+                                        <i class="fas fa-star text-yellow-400"></i>
+                                        <i class="fas fa-star text-yellow-400"></i>
+                                        <i class="fas fa-star text-yellow-400"></i>
+                                        <i class="fas fa-star text-yellow-400"></i>
+                                        <i class="fas fa-star text-gray-300"></i>
+                                    </div>
+                                    <span class="text-sm text-gray-500">4.8 (234)</span>
+                                </div>
+                                <div class="flex items-center justify-between">
+                                    <span class="text-sm font-medium text-secondary">85 EDU</span>
+                                    <button class="px-3 py-1 bg-primary text-white rounded-lg text-sm" data-event="click:enrollCourse">
+                                        Enroll
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-4 mb-3">
+                        <div class="flex items-start space-x-3">
+                            <!-- A person doing yoga in a peaceful outdoor setting -->
+                            <img src="https://images.unsplash.com/photo-1544367567-0f2fcb009e0b?ixlib=rb-4.0.3&auto=format&fit=crop&w=100&h=100" 
+                                 alt="Yoga and mindfulness course" 
+                                 class="w-16 h-16 rounded-lg object-cover" data-mock="true">
+                            <div class="flex-1">
+                                <h4 class="font-medium text-gray-900" data-bind="course.title">Yoga & Mindfulness</h4>
+                                <p class="text-gray-600 text-sm mb-2" data-bind="course.instructor">By Maya Rodriguez</p>
+                                <div class="flex items-center space-x-2 mb-2">
+                                    <div class="flex">
+                                        <i class="fas fa-star text-yellow-400"></i>
+                                        <i class="fas fa-star text-yellow-400"></i>
+                                        <i class="fas fa-star text-yellow-400"></i>
+                                        <i class="fas fa-star text-yellow-400"></i>
+                                        <i class="fas fa-star text-yellow-400"></i>
+                                    </div>
+                                    <span class="text-sm text-gray-500">5.0 (89)</span>
+                                </div>
+                                <div class="flex items-center justify-between">
+                                    <span class="text-sm font-medium text-secondary">65 EDU</span>
+                                    <button class="px-3 py-1 bg-primary text-white rounded-lg text-sm" data-event="click:enrollCourse">
+                                        Enroll
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- @END_MAP )) -->
+                </div>
+
+                <!-- My Courses -->
+                <div>
+                    <h3 class="text-lg font-semibold mb-3">My Courses</h3>
+                    <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-4">
+                        <div class="flex items-center space-x-3">
+                            <!-- A modern cryptocurrency trading setup with multiple monitors -->
+                            <img src="https://images.unsplash.com/photo-1611974789855-9c2a0a7236a3?ixlib=rb-4.0.3&auto=format&fit=crop&w=60&h=60" 
+                                 alt="Cryptocurrency basics course" 
+                                 class="w-12 h-12 rounded-lg object-cover" data-mock="true">
+                            <div class="flex-1">
+                                <h4 class="font-medium text-gray-900">Cryptocurrency Basics</h4>
+                                <p class="text-gray-600 text-sm">Progress: 67%</p>
+                                <div class="w-full bg-gray-200 rounded-full h-2 mt-2">
+                                    <div class="bg-secondary h-2 rounded-full" style="width: 67%"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- @COMPONENT: LibrarySection [library tab content] -->
+            <div id="library-tab" class="tab-content hidden">
+                
+                <!-- Search Bar -->
+                <div class="mb-6">
+                    <div class="relative">
+                        <i class="fas fa-search absolute left-3 top-3 text-gray-400"></i>
+                        <input type="text" placeholder="Search books and materials..." 
+                               class="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent" 
+                               data-implementation="Search functionality">
+                    </div>
+                </div>
+
+                <!-- Book Categories -->
+                <div class="mb-6">
+                    <h3 class="text-lg font-semibold mb-3">Categories</h3>
+                    <div class="flex space-x-2 overflow-x-auto pb-2">
+                        <button class="px-4 py-2 bg-primary text-white rounded-lg text-sm whitespace-nowrap">All</button>
+                        <button class="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg text-sm whitespace-nowrap">Business</button>
+                        <button class="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg text-sm whitespace-nowrap">Psychology</button>
+                        <button class="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg text-sm whitespace-nowrap">Technology</button>
+                        <button class="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg text-sm whitespace-nowrap">Finance</button>
+                    </div>
+                </div>
+
+                <!-- Featured Books -->
+                <div class="mb-6">
+                    <h3 class="text-lg font-semibold mb-3">Featured Books</h3>
+                    <div class="grid grid-cols-2 gap-4">
+                        <!-- @MAP: featuredBooks.map(book => ( -->
+                        <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-3">
+                            <!-- A minimalist book cover design with clean typography -->
+                            <img src="https://images.unsplash.com/photo-1543002588-bfa74002ed7e?ixlib=rb-4.0.3&auto=format&fit=crop&w=200&h=300" 
+                                 alt="Business strategy book cover" 
+                                 class="w-full h-32 object-cover rounded-lg mb-3" data-mock="true">
+                            <h4 class="font-medium text-gray-900 text-sm mb-1" data-bind="book.title">The Lean Startup</h4>
+                            <p class="text-gray-600 text-xs mb-2" data-bind="book.author">Eric Ries</p>
+                            <div class="flex items-center justify-between">
+                                <span class="text-xs text-secondary font-medium">25 EDU</span>
+                                <button class="px-2 py-1 bg-primary text-white rounded text-xs" data-event="click:purchaseBook">
+                                    Buy
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-3">
+                            <!-- A psychology book with brain imagery on the cover -->
+                            <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?ixlib=rb-4.0.3&auto=format&fit=crop&w=200&h=300" 
+                                 alt="Psychology book cover" 
+                                 class="w-full h-32 object-cover rounded-lg mb-3" data-mock="true">
+                            <h4 class="font-medium text-gray-900 text-sm mb-1" data-bind="book.title">Thinking, Fast and Slow</h4>
+                            <p class="text-gray-600 text-xs mb-2" data-bind="book.author">Daniel Kahneman</p>
+                            <div class="flex items-center justify-between">
+                                <span class="text-xs text-secondary font-medium">30 EDU</span>
+                                <button class="px-2 py-1 bg-primary text-white rounded text-xs" data-event="click:purchaseBook">
+                                    Buy
+                                </button>
+                            </div>
+                        </div>
+                        <!-- @END_MAP )) -->
+                    </div>
+                </div>
+
+                <!-- My Library -->
+                <div>
+                    <h3 class="text-lg font-semibold mb-3">My Library</h3>
+                    <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-4">
+                        <div class="flex items-center space-x-3">
+                            <!-- A cryptocurrency and blockchain book cover -->
+                            <img src="https://images.unsplash.com/photo-1621761191319-c6fb62004040?ixlib=rb-4.0.3&auto=format&fit=crop&w=60&h=80" 
+                                 alt="Cryptocurrency guide book" 
+                                 class="w-12 h-16 object-cover rounded" data-mock="true">
+                            <div class="flex-1">
+                                <h4 class="font-medium text-gray-900">Mastering Bitcoin</h4>
+                                <p class="text-gray-600 text-sm">Andreas M. Antonopoulos</p>
+                                <div class="flex items-center space-x-2 mt-2">
+                                    <button class="px-3 py-1 bg-primary text-white rounded-lg text-sm" data-event="click:readBook">
+                                        Read
+                                    </button>
+                                    <button class="px-3 py-1 bg-gray-100 text-gray-700 rounded-lg text-sm" data-event="click:downloadBook">
+                                        Download
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- @COMPONENT: RewardsSection [rewards tab content] -->
+            <div id="rewards-tab" class="tab-content hidden">
+                
+                <!-- Daily Rewards -->
+                <div class="mb-6">
+                    <h3 class="text-lg font-semibold mb-3">Daily Rewards</h3>
+                    <div class="bg-gradient-to-r from-secondary to-green-600 rounded-lg p-4 text-white mb-4">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <h4 class="font-semibold">Steps Challenge</h4>
+                                <p class="text-sm text-green-100">Walk 10,000 steps daily</p>
+                            </div>
+                            <div class="text-right">
+                                <div class="text-2xl font-bold" data-bind="user.todaySteps">8,420</div>
+                                <div class="text-sm text-green-100">/10,000 steps</div>
+                            </div>
+                        </div>
+                        <div class="w-full bg-green-200 rounded-full h-2 mt-3">
+                            <div class="bg-white h-2 rounded-full" style="width: 84.2%"></div>
+                        </div>
+                        <div class="mt-3 text-sm">
+                            <i class="fas fa-coins text-accent"></i>
+                            <span class="ml-1">Earn 50 EDU when completed</span>
+                        </div>
+                    </div>
+
+                    <!-- Subscription Rewards -->
+                    <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-4">
+                        <h4 class="font-medium text-gray-900 mb-3">Sponsor Channel Rewards</h4>
+                        <div class="space-y-3">
+                            <div class="flex items-center justify-between">
+                                <div class="flex items-center space-x-3">
+                                    <div class="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center">
+                                        <i class="fas fa-users text-blue-600"></i>
+                                    </div>
+                                    <div>
+                                        <p class="font-medium text-sm">CryptoNews Channel</p>
+                                        <p class="text-xs text-gray-500">Subscribe & earn 100 EDU</p>
+                                    </div>
+                                </div>
+                                <button class="px-3 py-1 bg-primary text-white rounded-lg text-sm" data-event="click:subscribeChannel">
+                                    Subscribe
+                                </button>
+                            </div>
+                            <div class="flex items-center justify-between">
+                                <div class="flex items-center space-x-3">
+                                    <div class="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center">
+                                        <i class="fas fa-check text-green-600"></i>
+                                    </div>
+                                    <div>
+                                        <p class="font-medium text-sm">Business Insights</p>
+                                        <p class="text-xs text-gray-500">Subscribed - 75 EDU earned</p>
+                                    </div>
+                                </div>
+                                <span class="text-sm text-green-600 font-medium">Completed</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Referral System -->
+                <div class="mb-6">
+                    <h3 class="text-lg font-semibold mb-3">Referral Program</h3>
+                    <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-4">
+                        <div class="text-center mb-4">
+                            <div class="text-2xl font-bold text-primary" data-bind="user.referralCount">12</div>
+                            <p class="text-sm text-gray-600">Friends Referred</p>
+                        </div>
+                        <div class="bg-gray-50 rounded-lg p-3 mb-4">
+                            <p class="text-sm text-gray-600 mb-2">Your Referral Code:</p>
+                            <div class="flex items-center justify-between">
+                                <code class="font-mono text-sm bg-white px-2 py-1 rounded" data-bind="user.referralCode">ALEX2024</code>
+                                <button class="px-3 py-1 bg-primary text-white rounded-lg text-sm" data-event="click:copyReferralCode">
+                                    Copy
+                                </button>
+                            </div>
+                        </div>
+                        <div class="text-center">
+                            <p class="text-sm text-gray-600 mb-2">Earn 200 EDU for each friend who joins!</p>
+                            <button class="px-4 py-2 bg-secondary text-white rounded-lg text-sm" data-event="click:shareReferral">
+                                Share Referral Link
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Transaction History -->
+                <div>
+                    <h3 class="text-lg font-semibold mb-3">Recent Transactions</h3>
+                    <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-4">
+                        <div class="space-y-3">
+                            <!-- @MAP: recentTransactions.map(transaction => ( -->
+                            <div class="flex items-center justify-between">
+                                <div class="flex items-center space-x-3">
+                                    <div class="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center">
+                                        <i class="fas fa-plus text-green-600"></i>
+                                    </div>
+                                    <div>
+                                        <p class="font-medium text-sm" data-bind="transaction.description">Steps Challenge</p>
+                                        <p class="text-xs text-gray-500" data-bind="transaction.date">2 hours ago</p>
+                                    </div>
+                                </div>
+                                <span class="text-sm font-medium text-green-600" data-bind="transaction.amount">+50 EDU</span>
+                            </div>
+                            <div class="flex items-center justify-between">
+                                <div class="flex items-center space-x-3">
+                                    <div class="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center">
+                                        <i class="fas fa-user-plus text-blue-600"></i>
+                                    </div>
+                                    <div>
+                                        <p class="font-medium text-sm" data-bind="transaction.description">Referral Bonus</p>
+                                        <p class="text-xs text-gray-500" data-bind="transaction.date">Yesterday</p>
+                                    </div>
+                                </div>
+                                <span class="text-sm font-medium text-green-600" data-bind="transaction.amount">+200 EDU</span>
+                            </div>
+                            <!-- @END_MAP )) -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- @COMPONENT: AdminSection [admin tab content] -->
+            <div id="admin-tab" class="tab-content hidden">
+                
+                <!-- Admin Overview -->
+                <div class="mb-6">
+                    <h3 class="text-lg font-semibold mb-3">Admin Dashboard</h3>
+                    <div class="grid grid-cols-2 gap-4 mb-4">
+                        <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-4 text-center">
+                            <div class="text-2xl font-bold text-primary" data-bind="admin.totalUsers">1,247</div>
+                            <p class="text-sm text-gray-600">Total Users</p>
+                        </div>
+                        <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-4 text-center">
+                            <div class="text-2xl font-bold text-secondary" data-bind="admin.activeCourses">85</div>
+                            <p class="text-sm text-gray-600">Active Courses</p>
+                        </div>
+                        <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-4 text-center">
+                            <div class="text-2xl font-bold text-accent" data-bind="admin.totalBooks">156</div>
+                            <p class="text-sm text-gray-600">Library Books</p>
+                        </div>
+                        <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-4 text-center">
+                            <div class="text-2xl font-bold text-purple-600" data-bind="admin.tokensDistributed">524K</div>
+                            <p class="text-sm text-gray-600">EDU Distributed</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Quick Actions -->
+                <div class="mb-6">
+                    <h3 class="text-lg font-semibold mb-3">Quick Actions</h3>
+                    <div class="grid grid-cols-2 gap-3">
+                        <button class="bg-primary text-white p-3 rounded-lg text-sm font-medium" data-event="click:addCourse">
+                            <i class="fas fa-plus mb-1 block"></i>
+                            Add Course
+                        </button>
+                        <button class="bg-secondary text-white p-3 rounded-lg text-sm font-medium" data-event="click:addBook">
+                            <i class="fas fa-book mb-1 block"></i>
+                            Add Book
+                        </button>
+                        <button class="bg-accent text-white p-3 rounded-lg text-sm font-medium" data-event="click:manageRewards">
+                            <i class="fas fa-gift mb-1 block"></i>
+                            Manage Rewards
+                        </button>
+                        <button class="bg-purple-600 text-white p-3 rounded-lg text-sm font-medium" data-event="click:viewAnalytics">
+                            <i class="fas fa-chart-line mb-1 block"></i>
+                            Analytics
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Recent Activity -->
+                <div class="mb-6">
+                    <h3 class="text-lg font-semibold mb-3">Recent Activity</h3>
+                    <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-4">
+                        <div class="space-y-3">
+                            <!-- @MAP: recentActivity.map(activity => ( -->
+                            <div class="flex items-center space-x-3">
+                                <div class="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center">
+                                    <i class="fas fa-user-plus text-blue-600"></i>
+                                </div>
+                                <div class="flex-1">
+                                    <p class="font-medium text-sm" data-bind="activity.description">New user registered</p>
+                                    <p class="text-xs text-gray-500" data-bind="activity.time">5 minutes ago</p>
+                                </div>
+                            </div>
+                            <div class="flex items-center space-x-3">
+                                <div class="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center">
+                                    <i class="fas fa-book text-green-600"></i>
+                                </div>
+                                <div class="flex-1">
+                                    <p class="font-medium text-sm" data-bind="activity.description">Course completed</p>
+                                    <p class="text-xs text-gray-500" data-bind="activity.time">12 minutes ago</p>
+                                </div>
+                            </div>
+                            <!-- @END_MAP )) -->
+                        </div>
+                    </div>
+                </div>
+
+                <!-- User Management -->
+                <div>
+                    <h3 class="text-lg font-semibold mb-3">User Management</h3>
+                    <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-4">
+                        <div class="flex items-center justify-between mb-4">
+                            <h4 class="font-medium">Recent Users</h4>
+                            <button class="px-3 py-1 bg-primary text-white rounded-lg text-sm" data-event="click:viewAllUsers">
+                                View All
+                            </button>
+                        </div>
+                        <div class="space-y-3">
+                            <!-- @MAP: recentUsers.map(user => ( -->
+                            <div class="flex items-center justify-between">
+                                <div class="flex items-center space-x-3">
+                                    <img src="https://images.unsplash.com/photo-1494790108755-2616b612b647?ixlib=rb-4.0.3&auto=format&fit=crop&w=50&h=50" 
+                                         alt="User avatar" 
+                                         class="w-8 h-8 rounded-full object-cover" data-mock="true">
+                                    <div>
+                                        <p class="font-medium text-sm" data-bind="user.name">Emma Watson</p>
+                                        <p class="text-xs text-gray-500" data-bind="user.joinDate">Joined 2 days ago</p>
+                                    </div>
+                                </div>
+                                <span class="text-sm text-gray-600" data-bind="user.tokens">1,240 EDU</span>
+                            </div>
+                            <!-- @END_MAP )) -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- @END_COMPONENT: TabContent -->
+
+        <!-- @COMPONENT: BottomNavigation [fixed bottom navigation] -->
+        <nav class="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 max-w-sm mx-auto">
+            <div class="flex">
+                <button class="flex-1 py-3 px-4 text-center text-primary" data-nav="home">
+                    <i class="fas fa-home block mb-1"></i>
+                    <span class="text-xs">Home</span>
+                </button>
+                <button class="flex-1 py-3 px-4 text-center text-neutral-500" data-nav="progress">
+                    <i class="fas fa-chart-line block mb-1"></i>
+                    <span class="text-xs">Progress</span>
+                </button>
+                <button class="flex-1 py-3 px-4 text-center text-neutral-500" data-nav="wallet">
+                    <i class="fas fa-wallet block mb-1"></i>
+                    <span class="text-xs">Wallet</span>
+                </button>
+                <button class="flex-1 py-3 px-4 text-center text-neutral-500" data-nav="profile">
+                    <i class="fas fa-user block mb-1"></i>
+                    <span class="text-xs">Profile</span>
+                </button>
+            </div>
+        </nav>
+        <!-- @END_COMPONENT: BottomNavigation -->
+    </div>
+    <!-- @END_COMPONENT: MobileApp -->
+
+    <script>
+        // @FUNCTIONALITY: Tab switching functionality
+        (function() {
+            const tabs = document.querySelectorAll('[data-tab]');
+            const tabContents = document.querySelectorAll('.tab-content');
+            
+            tabs.forEach(tab => {
+                tab.addEventListener('click', function() {
+                    const targetTab = this.getAttribute('data-tab');
+                    
+                    // Remove active classes from all tabs
+                    tabs.forEach(t => {
+                        t.classList.remove('border-primary', 'text-primary');
+                        t.classList.add('border-transparent', 'text-neutral-500');
+                    });
+                    
+                    // Add active class to clicked tab
+                    this.classList.add('border-primary', 'text-primary');
+                    this.classList.remove('border-transparent', 'text-neutral-500');
+                    
+                    // Hide all tab contents
+                    tabContents.forEach(content => {
+                        content.classList.add('hidden');
+                    });
+                    
+                    // Show target tab content
+                    const targetContent = document.getElementById(targetTab + '-tab');
+                    if (targetContent) {
+                        targetContent.classList.remove('hidden');
+                    }
+                });
+            });
+        })();
+
+        // @FUNCTIONALITY: Copy referral code functionality
+        document.addEventListener('click', function(e) {
+            if (e.target.matches('[data-event="click:copyReferralCode"]')) {
+                const codeElement = document.querySelector('[data-bind="user.referralCode"]');
+                if (codeElement) {
+                    navigator.clipboard.writeText(codeElement.textContent).then(() => {
+                        // TODO: Show success toast notification
+                        console.log('Referral code copied!');
+                    });
+                }
+            }
+        });
+
+        // @FUNCTIONALITY: Mock interaction handlers
+        document.addEventListener('click', function(e) {
+            const eventAttr = e.target.getAttribute('data-event');
+            if (eventAttr) {
+                console.log('Event triggered:', eventAttr);
+                // TODO: Implement specific event handlers for each action
+                // Examples:
+                // - enrollCourse: Handle course enrollment
+                // - purchaseBook: Handle book purchase
+                // - subscribeChannel: Handle channel subscription
+                // - shareReferral: Handle referral sharing
+                // - addCourse: Handle course addition (admin)
+                // - manageRewards: Handle reward management
+            }
+        });
+    </script>
+</body>
+</html>
