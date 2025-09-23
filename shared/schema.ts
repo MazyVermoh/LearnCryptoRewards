@@ -38,7 +38,7 @@ export const users = pgTable("users", {
   dailySteps: integer("daily_steps").default(0),
   level: integer("level").default(1),
   referralCode: varchar("referral_code").unique(),
-  referredBy: varchar("referred_by").references(() => users.id),
+  referredBy: varchar("referred_by").references((): any => users.id),
   language: varchar("language").default("en"),
   createdAt: timestamp("created_at").defaultNow(),
   updatedAt: timestamp("updated_at").defaultNow(),

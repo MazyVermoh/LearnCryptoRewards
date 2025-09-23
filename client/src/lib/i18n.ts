@@ -291,32 +291,8 @@ export const translations = {
     questionRequired: "Вопрос обязателен",
     answerRequired: "Текст ответа обязателен",
     correctAnswerRequired: "Пожалуйста, выберите правильный ответ"
-  }
-};
+  },
+} as const satisfies Record<'en' | 'ru', Record<string, string>>;
 
-export const useLanguage = () => {
-  const [language, setLanguage] = useState<'en' | 'ru'>(() => {
-    const saved = localStorage.getItem('language');
-    return (saved as 'en' | 'ru') || 'en';
-  });
-
-  const changeLanguage = (lang: 'en' | 'ru') => {
-    setLanguage(lang);
-    localStorage.setItem('language', lang);
-  };
-
-  const t = (key: string) => {
-    const keys = key.split('.');
-    let value: any = translations[language];
-    
-    for (const k of keys) {
-      value = value?.[k];
-    }
-    
-    return value || key;
-  };
-
-  return { language, changeLanguage, t };
-};
-
-import { useState } from 'react';
+export type Language = keyof typeof translations;
+export type TranslationKey = keyof (typeof translations)['en'];

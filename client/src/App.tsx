@@ -9,12 +9,16 @@ import BookReader from "@/pages/BookReader";
 import CourseReader from "@/pages/CourseReader";
 import TestManager from "@/pages/TestManager";
 import TelegramBotPreview from "@/pages/TelegramBotPreview";
+import RegistrationPage from "@/pages/Registration";
+import ProfilePage from "@/pages/Profile";
 import NotFound from "@/pages/not-found";
 
 function Router() {
   return (
     <Switch>
       <Route path="/" component={Home} />
+      <Route path="/register" component={RegistrationPage} />
+      <Route path="/profile" component={ProfilePage} />
       <Route path="/books/:id/read" component={BookReader} />
       <Route path="/courses/:id/read" component={CourseReader} />
       <Route path="/admin/tests" component={TestManager} />

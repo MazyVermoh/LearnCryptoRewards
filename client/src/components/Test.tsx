@@ -9,6 +9,25 @@ import { apiRequest, queryClient } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
 import { useLanguage } from "@/hooks/useLanguage";
 
+interface TestQuestion {
+  id: number;
+  question: string;
+  questionRu?: string | null;
+  options: string[];
+  optionsRu?: string[] | null;
+  correctAnswer: number;
+  explanation?: string | null;
+  explanationRu?: string | null;
+}
+
+interface TestStatusResponse {
+  hasPassed: boolean;
+}
+
+interface TestAttemptResult {
+  isCorrect: boolean;
+}
+
 interface TestProps {
   testType: 'chapter' | 'lesson';
   testId: number;
@@ -24,10 +43,10 @@ export default function Test({ testType, testId, chapterId, lessonId, userId, on
   const { language } = useLanguage();
   const [selectedAnswer, setSelectedAnswer] = useState<number | null>(null);
   const [submitted, setSubmitted] = useState(false);
-  const [result, setResult] = useState<any>(null);
+  const [result, setResult] = useState<TestAttemptResult | null>(null);
 
   // Fetch test data
-  const { data: tests = [] } = useQuery({
+  const { data: tests = [] } = useQuery<TestQuestion[]>({
     queryKey: [`/api/${testType === 'chapter' ? 'chapters' : 'lessons'}/${testId}/tests`],
     retry: false,
   });
@@ -36,27 +55,30 @@ export default function Test({ testType, testId, chapterId, lessonId, userId, on
   const test = tests[0];
 
   // Check if user has already passed this test
-  const { data: testStatus } = useQuery({
+  const { data: testStatus } = useQuery<TestStatusResponse | null>({
     queryKey: [`/api/users/${userId}/test-status`, { testType, testId: test?.id }],
     enabled: !!test,
     retry: false,
   });
 
   // Submit test answer mutation
-  const submitMutation = useMutation({
+  const submitMutation = useMutation<TestAttemptResult, Error, number>({
     mutationFn: async (answer: number) => {
-      return apiRequest('/api/test-attempts', {
-        method: 'POST',
-        body: JSON.stringify({
-          userId,
-          testType,
-          testId: test.id,
-          chapterId: testType === 'chapter' ? chapterId : null,
-          lessonId: testType === 'lesson' ? lessonId : null,
-          selectedAnswer: answer,
-          isCorrect: answer === test.correctAnswer,
-        }),
+      if (!test) {
+        throw new Error('Test not loaded');
+      }
+
+      const response = await apiRequest('POST', '/api/test-attempts', {
+        userId,
+        testType,
+        testId: test.id,
+        chapterId: testType === 'chapter' ? chapterId : null,
+        lessonId: testType === 'lesson' ? lessonId : null,
+        selectedAnswer: answer,
+        isCorrect: answer === test.correctAnswer,
       });
+
+      return (await response.json()) as TestAttemptResult;
     },
     onSuccess: (data) => {
       setResult(data);
@@ -79,13 +101,13 @@ export default function Test({ testType, testId, chapterId, lessonId, userId, on
       
       // Invalidate relevant queries
       queryClient.invalidateQueries({
-        queryKey: [`/api/users/${userId}/test-status`]
+        queryKey: [`/api/users/${userId}/test-status`],
       });
     },
-    onError: (error) => {
-      toast({ 
-        title: "Error submitting answer", 
-        variant: "destructive" 
+    onError: () => {
+      toast({
+        title: 'Error submitting answer',
+        variant: 'destructive',
       });
     },
   });

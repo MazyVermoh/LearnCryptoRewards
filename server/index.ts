@@ -1,229 +1,186 @@
-import express, { type Request, Response, NextFunction } from "express";
-import { registerRoutes } from "./routes";
-import { setupVite, serveStatic, log } from "./vite";
+import express, { type Request, type Response, type NextFunction } from 'express';
 
-// Telegram bot will be initialized safely
-let telegramBot: any = null;
+import { appConfig } from './config/env';
+import { rateLimiter } from './middleware/rate-limit';
+import { telegramWebhookRateLimiter } from './middleware/telegram-rate-limit';
+import { verifyTelegramWebhook } from './middleware/telegram-webhook';
+import { registerRoutes } from './routes';
+import { initializeQuadrantBot, getQuadrantBot } from './handlers/telegram/bot';
+import { setupVite, serveStatic } from './vite';
+import { logger } from './utils/logger';
 
 const app = express();
-app.use(express.json({ limit: '50mb' }));
-app.use(express.urlencoded({ extended: false, limit: '50mb' }));
+app.disable('x-powered-by');
+app.set('trust proxy', 1);
 
-// Root path health check for deployment health checks
-// This must be defined BEFORE other middleware to ensure it gets priority
+app.use(rateLimiter);
+app.use(express.json({ limit: appConfig.http.bodyLimit }));
+app.use(express.urlencoded({ extended: false, limit: appConfig.http.bodyLimit }));
+
+const version = '1.0.0';
+
+const buildHealthPayload = () => ({
+  status: 'ok',
+  message: 'Quadrant Rewards Platform is running',
+  timestamp: new Date().toISOString(),
+  uptime: process.uptime(),
+  environment: appConfig.nodeEnv,
+  version,
+});
+
 app.get('/', (req: Request, res: Response, next) => {
-  // Check if this is a health check request
-  const userAgent = req.headers['user-agent']?.toLowerCase() || '';
-  const isHealthCheck = userAgent.includes('health') || 
-                       userAgent.includes('uptime') || 
-                       userAgent.includes('monitor') ||
-                       req.query.health !== undefined ||
-                       req.headers['x-health-check'];
+  const userAgent = req.headers['user-agent']?.toLowerCase() ?? '';
+  const isHealthCheck =
+    userAgent.includes('health') ||
+    userAgent.includes('uptime') ||
+    userAgent.includes('monitor') ||
+    req.query.health !== undefined ||
+    req.headers['x-health-check'] !== undefined;
 
-  if (isHealthCheck) {
-    return res.status(200).json({ 
-      status: 'ok', 
-      message: 'MIND Token Educational Platform is running',
-      timestamp: new Date().toISOString(),
-      uptime: process.uptime(),
-      environment: process.env.NODE_ENV || 'development',
-      version: '1.0.0'
-    });
+  if (isHealthCheck || appConfig.nodeEnv === 'production') {
+    return res.status(200).json(buildHealthPayload());
   }
-  
-  // For deployment in production, always return 200 for root path
-  if (process.env.NODE_ENV === 'production') {
-    return res.status(200).json({ 
-      status: 'ok', 
-      message: 'MIND Token Educational Platform is running',
-      timestamp: new Date().toISOString(),
-      uptime: process.uptime(),
-      environment: process.env.NODE_ENV || 'development',
-      version: '1.0.0'
-    });
-  }
-  
-  // In development, pass to next middleware (Vite will handle)
-  next();
+
+  return next();
 });
 
-// API root endpoint
-app.get('/api', (req: Request, res: Response) => {
-  res.status(200).json({ 
-    status: 'ok', 
-    message: 'MIND Token Educational Platform API is running',
+app.get('/api', (_req: Request, res: Response) => {
+  res.status(200).json(buildHealthPayload());
+});
+
+app.get('/api/health', (_req: Request, res: Response) => {
+  res.status(200).json({
+    status: 'ok',
     timestamp: new Date().toISOString(),
     uptime: process.uptime(),
-    environment: process.env.NODE_ENV || 'development',
-    version: '1.0.0'
+    environment: appConfig.nodeEnv,
   });
 });
 
-// Health check endpoint for deployment
-app.get('/api/health', (req: Request, res: Response) => {
-  res.status(200).json({ 
-    status: 'ok', 
+app.get('/api/status', (_req: Request, res: Response) => {
+  res.status(200).json({
+    status: 'ok',
+    message: 'Quadrant Rewards Platform API is running',
     timestamp: new Date().toISOString(),
-    uptime: process.uptime(),
-    environment: process.env.NODE_ENV || 'development'
+    version,
   });
 });
 
-// API status endpoint - doesn't interfere with static files
-app.get('/api/status', (req: Request, res: Response) => {
-  res.status(200).json({ 
-    status: 'ok', 
-    message: 'MIND Token Educational Platform API is running',
-    timestamp: new Date().toISOString(),
-    version: '1.0.0'
-  });
-});
+const telegramBot = initializeQuadrantBot();
 
-app.use((req, res, next) => {
-  const start = Date.now();
-  const path = req.path;
-  let capturedJsonResponse: Record<string, any> | undefined = undefined;
-
-  const originalResJson = res.json;
-  res.json = function (bodyJson, ...args) {
-    capturedJsonResponse = bodyJson;
-    return originalResJson.apply(res, [bodyJson, ...args]);
-  };
-
-  res.on("finish", () => {
-    const duration = Date.now() - start;
-    if (path.startsWith("/api")) {
-      let logLine = `${req.method} ${path} ${res.statusCode} in ${duration}ms`;
-      if (capturedJsonResponse) {
-        logLine += ` :: ${JSON.stringify(capturedJsonResponse)}`;
-      }
-
-      if (logLine.length > 80) {
-        logLine = logLine.slice(0, 79) + "…";
-      }
-
-      log(logLine);
+app.post(
+  '/telegram/webhook',
+  telegramWebhookRateLimiter,
+  verifyTelegramWebhook,
+  async (req: Request, res: Response) => {
+    const bot = getQuadrantBot();
+    if (!bot) {
+      logger.warn('Received Telegram webhook update while bot is disabled');
+      return res.status(503).json({ error: 'Telegram bot not configured' });
     }
-  });
 
-  next();
-});
-
-// Telegram webhook endpoints (with error handling to prevent server startup issues)
-app.post('/telegram/webhook', async (req: Request, res: Response) => {
-  try {
-    if (telegramBot) {
-      await telegramBot.processUpdate(req.body);
+    try {
+      await bot.handleUpdate(req.body);
+      res.status(200).json({ ok: true });
+    } catch (error) {
+      logger.error({ message: 'Telegram webhook processing error', error });
+      res.status(500).json({ error: 'Internal server error' });
     }
-    res.status(200).json({ ok: true });
-  } catch (error) {
-    console.error('Telegram webhook error:', error);
-    res.status(500).json({ error: 'Internal server error' });
+  },
+);
+
+app.get('/telegram/info', async (_req: Request, res: Response) => {
+  const bot = getQuadrantBot();
+  if (!bot) {
+    return res.status(503).json({ error: 'Telegram bot not configured' });
   }
-});
 
-app.get('/telegram/info', async (req: Request, res: Response) => {
   try {
-    if (!telegramBot) {
-      return res.status(503).json({ error: 'Telegram bot not initialized' });
-    }
-    const botInfo = await telegramBot.getMe();
-    res.json(botInfo);
+    const info = await bot.telegram.getMe();
+    res.json(info);
   } catch (error) {
-    console.error('Error getting bot info:', error);
+    logger.error({ message: 'Failed to fetch Telegram bot info', error });
     res.status(500).json({ error: 'Failed to get bot info' });
   }
 });
 
 app.post('/telegram/set-webhook', async (req: Request, res: Response) => {
+  const bot = getQuadrantBot();
+  if (!bot) {
+    return res.status(503).json({ error: 'Telegram bot not configured' });
+  }
+
+  const { url } = req.body ?? {};
+  if (!url || typeof url !== 'string') {
+    return res.status(400).json({ error: 'Webhook URL is required' });
+  }
+
   try {
-    if (!telegramBot) {
-      return res.status(503).json({ error: 'Telegram bot not initialized' });
-    }
-    const { url } = req.body;
-    if (!url) {
-      return res.status(400).json({ error: 'Webhook URL is required' });
-    }
-    const result = await telegramBot.setWebhook(url);
-    res.json(result);
+    await bot.telegram.setWebhook(url, {
+      secret_token: appConfig.telegram.webhookSecret,
+      allowed_updates: ['message', 'callback_query'],
+    });
+    res.json({ ok: true });
   } catch (error) {
-    console.error('Error setting webhook:', error);
+    logger.error({ message: 'Failed to set Telegram webhook', error });
     res.status(500).json({ error: 'Failed to set webhook' });
   }
 });
 
 (async () => {
   try {
-    // Initialize telegram bot safely
-    try {
-      const telegramModule = await import("./telegram-bot.js");
-      telegramBot = telegramModule.telegramBot;
-      console.log('✅ Telegram bot initialized successfully');
-    } catch (error) {
-      console.warn('⚠️ Telegram bot not available:', error instanceof Error ? error.message : 'Unknown error');
-      console.warn('Telegram features will be disabled');
-    }
-
     const server = await registerRoutes(app);
 
-    // Setup environment-specific middleware
-    if (app.get("env") === "development") {
+    if (app.get('env') === 'development') {
       await setupVite(app, server);
     } else {
       serveStatic(app);
     }
 
-    // Error handling middleware (must be last)
-    app.use((err: any, _req: Request, res: Response, _next: NextFunction) => {
-      const status = err.status || err.statusCode || 500;
-      const message = err.message || "Internal Server Error";
-      
-      console.error('Server error:', err);
-      res.status(status).json({ message });
+    app.use((err: unknown, _req: Request, res: Response, _next: NextFunction) => {
+      logger.error({ message: 'Unhandled server error', error: err });
+      const status =
+        typeof err === 'object' && err && 'status' in err
+          ? (err as { status?: number }).status
+          : 500;
+      const message = err instanceof Error ? err.message : 'Internal Server Error';
+      res.status(status ?? 500).json({ message });
     });
 
-    // Server configuration
-    const port = parseInt(process.env.PORT || '5000');
-    const host = "0.0.0.0";
-    
+    const host = appConfig.host;
+    const port = appConfig.port;
+
     server.listen(port, host, () => {
-      log(`🚀 MIND Token Educational Platform server running on http://${host}:${port}`);
-      log(`📊 Health check available at http://${host}:${port}/`);
-      log(`📊 API health check available at http://${host}:${port}/api/health`);
-      log(`🌍 Environment: ${process.env.NODE_ENV || 'development'}`);
-    });
-    
-    // Handle server startup errors
-    server.on('error', (err: any) => {
-      console.error('❌ Server startup error:', err);
-      if (err.code === 'EADDRINUSE') {
-        console.error(`Port ${port} is already in use`);
-        // In production, this should fail fast
-        if (process.env.NODE_ENV === 'production') {
-          console.error('❌ Production server cannot start - port conflict');
-        }
+      logger.info(`Server listening on http://${host}:${port}`);
+      logger.info(`Health check available at http://${host}:${port}/api/health`);
+      if (telegramBot) {
+        logger.info('Quadrant bot initialised and ready to receive updates');
       }
     });
 
-    // Graceful shutdown
+    server.on('error', (err: NodeJS.ErrnoException) => {
+      logger.error({ message: 'Server startup error', error: err });
+      if (err.code === 'EADDRINUSE') {
+        logger.error(`Port ${port} is already in use`);
+      }
+    });
+
     process.on('SIGTERM', () => {
-      log('🛑 SIGTERM received, shutting down gracefully');
+      logger.info('SIGTERM received, shutting down gracefully');
       server.close(() => {
-        log('✅ Server closed');
+        logger.info('Server closed');
         process.exit(0);
       });
     });
 
     process.on('SIGINT', () => {
-      log('🛑 SIGINT received, shutting down gracefully');
+      logger.info('SIGINT received, shutting down gracefully');
       server.close(() => {
-        log('✅ Server closed');
+        logger.info('Server closed');
         process.exit(0);
       });
     });
-
   } catch (error) {
-    console.error('❌ Failed to start server:', error);
-    console.error('Server initialization failed, but process will continue running');
+    logger.error({ message: 'Failed to start server', error });
   }
 })();

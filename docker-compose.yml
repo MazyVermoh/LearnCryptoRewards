@@ -1,0 +1,39 @@
+version: '3.9'
+
+services:
+  db:
+    image: postgres:15-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-learn_crypto_rewards}
+      POSTGRES_USER: ${POSTGRES_USER:-postgres}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-postgres}
+    ports:
+      - '5432:5432'
+    volumes:
+      - db-data:/var/lib/postgresql/data
+
+  app:
+    build: .
+    depends_on:
+      - db
+    restart: unless-stopped
+    environment:
+      NODE_ENV: production
+      HOST: 0.0.0.0
+      PORT: 5000
+      DATABASE_URL: postgres://${POSTGRES_USER:-postgres}:${POSTGRES_PASSWORD:-postgres}@db:5432/${POSTGRES_DB:-learn_crypto_rewards}
+      TELEGRAM_BOT_TOKEN: ${TELEGRAM_BOT_TOKEN:-}
+      TELEGRAM_WEBHOOK_URL: ${TELEGRAM_WEBHOOK_URL:-}
+      TELEGRAM_WEBHOOK_SECRET: ${TELEGRAM_WEBHOOK_SECRET:-}
+      TELEGRAM_WEB_APP_URL: ${TELEGRAM_WEB_APP_URL:-}
+      WEB_APP_BASE_URL: ${WEB_APP_BASE_URL:-}
+      ADMIN_IDS: ${ADMIN_IDS:-}
+      DAILY_REWARD_LIMIT: ${DAILY_REWARD_LIMIT:-1000}
+      ACTION_COOLDOWN: ${ACTION_COOLDOWN:-30}
+    ports:
+      - '5000:5000'
+    command: ['node', 'dist/index.js']
+
+volumes:
+  db-data:
