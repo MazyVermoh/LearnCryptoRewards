@@ -42,7 +42,11 @@ class WebAppPayload(BaseModel):
 class TelegramBotManager:
     """Wrapper around python-telegram-bot to reproduce existing bot behaviour."""
 
-    def __init__(self, token: str | None, web_app_base_url: str | None = None) -> None:
+    def __init__(
+        self,
+        token: str | None,
+        web_app_base_url: str | None = None,
+    ) -> None:
         if not token:
             raise TelegramBotNotConfigured("TELEGRAM_BOT_TOKEN must be provided")
 
@@ -262,8 +266,10 @@ class TelegramBotManager:
     def _build_web_app_url(self, user_id: str) -> str:
         if self.web_app_base_url:
             base = self.web_app_base_url
-        elif settings.telegram_web_app_url:
-            base = settings.telegram_web_app_url
+        elif settings.resolved_web_app_base_url:
+            base = settings.resolved_web_app_base_url
+        elif settings.web_app_base_url:
+            base = settings.web_app_base_url
         elif settings.replit_domains:
             base = f"https://{settings.replit_domains}"
         else:
@@ -291,6 +297,9 @@ def initialise_telegram_bot() -> TelegramBotManager | None:
     if not token:
         return None
 
-    manager = TelegramBotManager(token=token, web_app_base_url=settings.telegram_web_app_url)
+    manager = TelegramBotManager(
+        token=token,
+        web_app_base_url=settings.resolved_web_app_base_url,
+    )
     telegram_bot_manager = manager
     return manager

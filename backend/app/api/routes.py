@@ -2,7 +2,19 @@
 
 from fastapi import APIRouter
 
-from app.api.v1 import admin, books, content, courses, health, rewards, sponsors, telegram, tests, transactions, users
+from app.api.v1 import (
+    admin,
+    books,
+    content,
+    courses,
+    health,
+    rewards,
+    sponsors,
+    telegram,
+    tests,
+    transactions,
+    users,
+)
 
 api_router = APIRouter()
 api_router.include_router(health.router, prefix="/health", tags=["health"])

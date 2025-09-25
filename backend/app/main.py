@@ -6,6 +6,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from app.api.routes import api_router
+from app.api.v1.telegram import public_router as telegram_public_router
 from app.core.config import settings
 from app.services.telegram_bot import initialise_telegram_bot
 
@@ -23,6 +24,7 @@ app.add_middleware(
 )
 
 app.include_router(api_router, prefix="/api")
+app.include_router(telegram_public_router)
 
 
 @app.get("/", summary="Root health check")

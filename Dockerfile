@@ -1,23 +1,23 @@
 # syntax=docker/dockerfile:1.5
 
-FROM node:20-alpine AS base
-WORKDIR /app
-ENV NODE_ENV=production
+FROM python:3.12-slim AS base
 
-FROM base AS deps
-COPY package.json package-lock.json ./
-RUN npm ci --omit=dev
+ENV PYTHONDONTWRITEBYTECODE=1 \
+    PYTHONUNBUFFERED=1
 
-FROM base AS builder
 WORKDIR /app
-COPY package.json package-lock.json ./
-RUN npm ci
-COPY . .
-RUN npm run build
 
-FROM base AS runtime
-WORKDIR /app
-COPY --from=deps /app/node_modules ./node_modules
-COPY --from=builder /app/dist ./dist
-COPY package.json ./package.json
-CMD ["node", "dist/index.js"]
+# Install Python dependencies
+COPY backend/requirements.txt ./requirements.txt
+RUN pip install --no-cache-dir --upgrade pip \
+    && pip install --no-cache-dir -r requirements.txt
+
+# Copy application source
+COPY backend ./backend
+COPY rewards.yml ./rewards.yml
+
+ENV PYTHONPATH=/app/backend
+
+EXPOSE 5000
+
+CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "5000"]
